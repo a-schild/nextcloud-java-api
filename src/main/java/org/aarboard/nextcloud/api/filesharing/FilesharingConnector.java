@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.aarboard.nextcloud.api.provisioning;
+package org.aarboard.nextcloud.api.filesharing;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import org.aarboard.nextcloud.api.ServerConfig;
-import org.aarboard.nextcloud.api.utils.XMLAnswer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
@@ -53,144 +52,225 @@ import org.apache.http.util.EntityUtils;
  *
  * @author a.schild
  * 
- * https://docs.nextcloud.com/server/11.0/admin_manual/configuration_user/user_provisioning_api.html
+ * https://docs.nextcloud.com/server/11/developer_manual/core/ocs-share-api.html
  * 
  */
-public class ProvisionConnector 
+public class FilesharingConnector 
 {
-    private final static Log LOG = LogFactory.getLog(ProvisionConnector.class);
+    private final static Log LOG = LogFactory.getLog(FilesharingConnector.class);
 
     private final static int   NC_OK= 100; // Nexclout OK message
     
-    private final static String ROOT_PART= "ocs/v1.php/cloud/";
-    private final static String USERS_PART= ROOT_PART+"users";
-    private final static String GROUPS_PART= ROOT_PART+"groups";
+    private final static String ROOT_PART= "ocs/v1.php/apps/files_sharing/api/v1/";
+    private final static String SHARES_PART= ROOT_PART+"shares";
 
     private final ServerConfig _serverConfig;
 
-    public ProvisionConnector(ServerConfig serverConfig) {
+    public FilesharingConnector(ServerConfig serverConfig) {
         this._serverConfig = serverConfig;
     }
     
     /**
-     * Return all users of this instance
+     * Return all shares of this user
      * 
      * @return 
      * @throws java.lang.Exception 
      */
-    public Collection<User> getUsers() throws Exception
+    public Collection<Share> getShares() throws Exception
     {
-        return getUsers(null, -1, -1);
+        return getShares(null, false, false);
     }
 
     /**
-     * Return matching users
+     * Return all shares of this user
      * 
-     * @param search pass null when you don't wish to filter
-     * @param limit pass -1 for no limit
-     * @param offset pass -1 for no offset
+     * @param path      path to file/folder
+     * @param reShares  returns not only the shares from the current user but all shares from the given file
+     * @param subShares returns all shares within a folder, given that path defines a folder
      * @return 
      * @throws java.lang.Exception 
      */
-    public Collection<User> getUsers(
-            String search, int limit, int offset) throws Exception
+    public Collection<Share> getShares(String path, boolean reShares, boolean subShares) throws Exception
     {
         List<NameValuePair> queryParams= new LinkedList<>();
-        if (limit != -1)
+        if (path != null)
         {
-            queryParams.add(new BasicNameValuePair("limit", Integer.toString(limit)));
+            queryParams.add(new BasicNameValuePair("path", path));
         }
-        if (offset != -1)
+        if (reShares)
         {
-            queryParams.add(new BasicNameValuePair("offset", Integer.toString(offset)));
+            queryParams.add(new BasicNameValuePair("reshares", "true"));
         }
-        if (search != null)
+        if (subShares)
         {
-            queryParams.add(new BasicNameValuePair("search", search));
+            queryParams.add(new BasicNameValuePair("subfiles", "true"));
         }
-        String queryAnswer= executeGet(USERS_PART, queryParams);
+        String queryAnswer= executeGet(SHARES_PART, queryParams);
         if (queryAnswer != null)
         {
             LOG.debug(queryAnswer);
         }
-        UsersXMLAnswer xa= new UsersXMLAnswer();
+        SharesXMLAnswer xa= new SharesXMLAnswer();
         xa.parseAnswer(queryAnswer);
         if (xa.getStatusCode() == NC_OK)
         {
-            return xa.getUsers();
+            return xa.getShares();
+        }
+        return null;
+    }
+
+    /**
+     * Return share info for a single share
+     * 
+     * @param shareId      id of chare (Not path of share)
+     * @return 
+     * @throws java.lang.Exception 
+     */
+    public Share getShareInfo(int shareId) throws Exception
+    {
+        String queryAnswer= executeGet(SHARES_PART+"/"+Integer.toString(shareId), null);
+        if (queryAnswer != null)
+        {
+            LOG.debug(queryAnswer);
+        }
+        SharesXMLAnswer xa= new SharesXMLAnswer();
+        xa.parseAnswer(queryAnswer);
+        if (xa.getStatusCode() == NC_OK)
+        {
+            if (xa.getShares() == null)
+            {
+                return null;
+            }
+            else if (xa.getShares().size() == 1)
+            {
+                return xa.getShares().get(0);
+            }
+            else
+            {
+                LOG.warn("More than one share found, not possible <"+shareId+">");
+                return null;
+            }
         }
         return null;
     }
     
-    public boolean createGroup(String groupId) throws Exception
+    /**
+     * 
+     * @param path                  path to the file/folder which should be shared
+     * @param shareType             0 = user; 1 = group; 3 = public link; 6 = federated cloud share
+     * @param shareWithUserOrGroupId user / group id with which the file should be shared
+     * @param publicUpload          allow public upload to a public shared folder (true/false)
+     * @param password              password to protect public link Share with
+     * @param permissions           1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all (default: 31, for public shares: 1)
+     * @return new Share ID if success
+     * @throws Exception 
+     */
+    public Share doShare(
+            String path,
+            ShareType shareType,
+            String shareWithUserOrGroupId,
+            Boolean publicUpload,
+            String password,
+            SharePermissions permissions) throws Exception
     {
         List<NameValuePair> postParams= new LinkedList<>();
-        postParams.add(new BasicNameValuePair("groupid", groupId));
-        String postAnswer= executePost(GROUPS_PART, postParams);
+        postParams.add(new BasicNameValuePair("path", path));
+        postParams.add(new BasicNameValuePair("shareType", Integer.toString(shareType.getIntValue())));
+        postParams.add(new BasicNameValuePair("shareWith", shareWithUserOrGroupId));
+        if (publicUpload != null)
+        {
+            postParams.add(new BasicNameValuePair("publicUpload", publicUpload ? "true" : "false"));
+        }
+        if (password != null)
+        {
+            postParams.add(new BasicNameValuePair("password", password));
+        }
+        if (permissions != null)
+        {
+            postParams.add(new BasicNameValuePair("permissions", Integer.toString(permissions.getCurrentPermission())));
+        }
+        
+        String postAnswer= executePost(SHARES_PART, postParams);
         if (postAnswer != null)
         {
-            LOG.debug("Create group answer");
+            LOG.debug("Create share answer "+postAnswer);
+            SingleShareXMLAnswer xa= new SingleShareXMLAnswer();
+            xa.parseAnswer(postAnswer);
+            if (xa.getStatusCode() == NC_OK)
+            {
+                return xa.getShare();
+            }
+            else
+            {
+                return null;
+            }
         }
-        XMLAnswer xa= new XMLAnswer();
-        xa.parseAnswer(postAnswer);
-        return xa.getStatusCode() == NC_OK;
-    }
-
-    public boolean deleteGroup(String groupId) throws Exception
-    {
-        String postAnswer= executeDelete(GROUPS_PART, groupId);
-        if (postAnswer != null)
+        else
         {
-            LOG.debug(postAnswer);
-        }
-        XMLAnswer xa= new XMLAnswer();
-        xa.parseAnswer(postAnswer);
-        return xa.getStatusCode() == NC_OK;
-    }
-
-    
-    public Collection<Group> getGroups() throws Exception
-    {
-        return getGroups(null, -1, -1);
-    }
-    
-    /**
-     * Return matching users
-     * 
-     * @param search pass null when you don't wish to filter
-     * @param limit pass -1 for no limit
-     * @param offset pass -1 for no offset
-     * @return 
-     */
-    public Collection<Group> getGroups(String search, int limit, int offset) throws Exception
-    {
-        List<NameValuePair> queryParams= new LinkedList<>();
-        if (limit != -1)
-        {
-            queryParams.add(new BasicNameValuePair("limit", Integer.toString(limit)));
-        }
-        if (offset != -1)
-        {
-            queryParams.add(new BasicNameValuePair("offset", Integer.toString(offset)));
-        }
-        if (search != null)
-        {
-            queryParams.add(new BasicNameValuePair("search", search));
-        }
-
-        String queryAnswer= executeGet(GROUPS_PART, queryParams);
-        if (queryAnswer != null)
-        {
-            LOG.debug(queryAnswer);
-        }
-        GroupsXMLAnswer xa= new GroupsXMLAnswer();
-        xa.parseAnswer(queryAnswer);
-        if (xa.getStatusCode() == NC_OK)
-        {
-            return xa.getGroups();
+            LOG.debug("Create share failed for path "+path+" user/group "+shareWithUserOrGroupId);
         }
         return null;
     }
+    
+//
+//    public boolean deleteGroup(String groupId) throws Exception
+//    {
+//        String postAnswer= executeDelete(GROUPS_PART, groupId);
+//        if (postAnswer != null)
+//        {
+//            LOG.debug(postAnswer);
+//        }
+//        XMLAnswer xa= new XMLAnswer(postAnswer);
+//        return xa.getStatusCode() == NC_OK;
+//    }
+//
+//    
+//    public Collection<String> getGroups() throws Exception
+//    {
+//        return getGroups(null, -1, -1);
+//    }
+//    
+//    /**
+//     * Return matching users
+//     * 
+//     * @param search pass null when you don't wish to filter
+//     * @param limit pass -1 for no limit
+//     * @param offset pass -1 for no offset
+//     * @return 
+//     */
+//    public Collection<String> getGroups(String search, int limit, int offset) throws Exception
+//    {
+//        List<NameValuePair> queryParams= new LinkedList<>();
+//        if (limit != -1)
+//        {
+//            queryParams.add(new BasicNameValuePair("limit", Integer.toString(limit)));
+//        }
+//        if (offset != -1)
+//        {
+//            queryParams.add(new BasicNameValuePair("offset", Integer.toString(offset)));
+//        }
+//        if (search != null)
+//        {
+//            queryParams.add(new BasicNameValuePair("search", search));
+//        }
+//
+//        String queryAnswer= executeGet(GROUPS_PART, queryParams);
+//        if (queryAnswer != null)
+//        {
+//            LOG.debug(queryAnswer);
+//        }
+//        XMLAnswer xa= new XMLAnswer(queryAnswer);
+//        if (xa.getStatusCode() == NC_OK)
+//        {
+//            List<String> retVal= new LinkedList<>();
+//            for (String uName : xa.getElements())
+//            {
+//                retVal.add(uName);
+//            }
+//            return retVal;
+//        }
+//        return null;
+//    }
 
     protected String executeGet(String part, List<NameValuePair> queryParams) throws Exception
     {
@@ -274,6 +354,7 @@ public class ProvisionConnector
             }
             else
             {
+                LOG.warn("Post failed "+statusLine.getReasonPhrase()+" "+statusLine.getStatusCode());
                 return null;
             }
         } finally {

@@ -18,7 +18,13 @@ package org.aarboard.nextcloud.api;
 
 import java.util.Collection;
 import java.util.List;
+import org.aarboard.nextcloud.api.filesharing.FilesharingConnector;
+import org.aarboard.nextcloud.api.filesharing.Share;
+import org.aarboard.nextcloud.api.filesharing.SharePermissions;
+import org.aarboard.nextcloud.api.filesharing.ShareType;
+import org.aarboard.nextcloud.api.provisioning.Group;
 import org.aarboard.nextcloud.api.provisioning.ProvisionConnector;
+import org.aarboard.nextcloud.api.provisioning.User;
 import org.aarboard.nextcloud.api.webdav.Folders;
 
 public class NextcloudConnector {
@@ -36,13 +42,13 @@ public class NextcloudConnector {
         return pc.createGroup(groupId);
     }
     
-    public Collection<String> getUsers() throws Exception
+    public Collection<User> getUsers() throws Exception
     {
         ProvisionConnector pc= new ProvisionConnector(_serverConfig);
         return pc.getUsers();
     }
     
-    public Collection<String> getUsers(
+    public Collection<User> getUsers(
             String search, int limit, int offset) throws Exception
     {
         ProvisionConnector pc= new ProvisionConnector(_serverConfig);
@@ -57,7 +63,7 @@ public class NextcloudConnector {
     }
 
     
-    public Collection<String> getGroups() throws Exception
+    public Collection<Group> getGroups() throws Exception
     {
         ProvisionConnector pc= new ProvisionConnector(_serverConfig);
         return pc.getGroups();
@@ -71,7 +77,7 @@ public class NextcloudConnector {
      * @param offset pass -1 for no offset
      * @return 
      */
-    public Collection<String> getGroups(String search, int limit, int offset) throws Exception
+    public Collection<Group> getGroups(String search, int limit, int offset) throws Exception
     {
         ProvisionConnector pc= new ProvisionConnector(_serverConfig);
         return pc.getGroups(search, limit, offset);
@@ -100,5 +106,62 @@ public class NextcloudConnector {
         Folders fc= new Folders(_serverConfig);
         fc.deleteFolder(path);
     }
+    
+    /**
+     * 
+     * @param path                  path to the file/folder which should be shared
+     * @param shareType             0 = user; 1 = group; 3 = public link; 6 = federated cloud share
+     * @param shareWithUserOrGroupId user / group id with which the file should be shared
+     * @param publicUpload          allow public upload to a public shared folder (true/false)
+     * @param password              password to protect public link Share with
+     * @param permissions           1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all (default: 31, for public shares: 1)
+     * @return new Share ID if success
+     * @throws Exception 
+     */
+    public Share doShare(
+            String path,
+            ShareType shareType,
+            String shareWithUserOrGroupId,
+            Boolean publicUpload,
+            String password,
+            SharePermissions permissions) throws Exception
+    {
+        FilesharingConnector fc= new FilesharingConnector(_serverConfig);
+        return fc.doShare(path, shareType, shareWithUserOrGroupId, publicUpload, password, permissions);
+    }
+    
+    public Collection<Share> getShares() throws Exception
+    {
+        FilesharingConnector fc= new FilesharingConnector(_serverConfig);
+        return fc.getShares();
+    }    
+    
+    /**
+     * Return all shares of this user
+     * 
+     * @param path      path to file/folder
+     * @param reShares  returns not only the shares from the current user but all shares from the given file
+     * @param subShares returns all shares within a folder, given that path defines a folder
+     * @return 
+     * @throws java.lang.Exception 
+     */
+    public Collection<Share> getShares(String path, boolean reShares, boolean subShares) throws Exception
+    {
+        FilesharingConnector fc= new FilesharingConnector(_serverConfig);
+        return fc.getShares(path, reShares, subShares);
+    }    
+    
+    /**
+     * Return share info for a single share
+     * 
+     * @param shareId      id of chare (Not path of share)
+     * @return 
+     * @throws java.lang.Exception 
+     */
+    public Share getShareInfo(int shareId) throws Exception
+    {
+        FilesharingConnector fc= new FilesharingConnector(_serverConfig);
+        return fc.getShareInfo(shareId);
+    }    
     
 }

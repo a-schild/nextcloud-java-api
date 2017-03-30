@@ -7,6 +7,7 @@ Java api library to access nextcloud features from java applications
 # Currently implemented features
 - Management of groups
 - Folder management (Without access control)
+- List shares and create new file shares (No way to delete/update shares atm.)
 - Tested agains nextCloud 11.0.2 server version, but should also work with older nextCloud and ownCloud systems
 
 # Usage
