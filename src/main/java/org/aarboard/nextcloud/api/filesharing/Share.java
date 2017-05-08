@@ -208,7 +208,7 @@ public class Share
     }
     
     /**
-    * @param token the token to set
+    * @return the token
     */
 	public String getToken() {
 		return token;	
