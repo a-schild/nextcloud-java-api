@@ -34,6 +34,7 @@ public class Share
     private String      fileTarget;
     private String      shareWithId;
     private String      shareWithDisplayName;
+    private String      token;
 
     public Share() {
     }
@@ -205,6 +206,20 @@ public class Share
     public void setShareWithDisplayName(String shareWithDisplayName) {
         this.shareWithDisplayName = shareWithDisplayName;
     }
+    
+    /**
+    * @return the token
+    */
+	public String getToken() {
+		return token;	
+	}
+    
+    /**
+     * @param token the token to set
+     */
+	public void setToken(String token) {
+		this.token = token;	
+	}
     
     
 }

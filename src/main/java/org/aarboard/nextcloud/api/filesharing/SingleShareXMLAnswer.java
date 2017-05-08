@@ -91,7 +91,9 @@ public class SingleShareXMLAnswer extends XMLAnswer
                 case  "stime": ;
                 case  "parent": ;
                 case  "expiration": ;
-                case  "token": ;
+                case  "token": 
+	                    s.setToken(n.getTextContent());
+	                    break;
                 case  "mimetype": ;
                 case  "storage_id": ;
                 case  "storage": ;
