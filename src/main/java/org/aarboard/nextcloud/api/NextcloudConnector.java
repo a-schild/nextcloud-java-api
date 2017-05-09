@@ -16,8 +16,12 @@
  */
 package org.aarboard.nextcloud.api;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
+
 import org.aarboard.nextcloud.api.filesharing.FilesharingConnector;
 import org.aarboard.nextcloud.api.filesharing.Share;
 import org.aarboard.nextcloud.api.filesharing.SharePermissions;
@@ -26,6 +30,9 @@ import org.aarboard.nextcloud.api.provisioning.Group;
 import org.aarboard.nextcloud.api.provisioning.ProvisionConnector;
 import org.aarboard.nextcloud.api.provisioning.User;
 import org.aarboard.nextcloud.api.webdav.Folders;
+
+import com.github.sardine.Sardine;
+import com.github.sardine.SardineFactory;
 
 public class NextcloudConnector {
     
@@ -136,6 +143,24 @@ public class NextcloudConnector {
         return fc.getShares();
     }    
     
+    /**
+     * 
+     * @param fileInputStream      inputstream of the file which should be uploaded
+     * @param remotePath           path where the file should be uploaded to
+     * @throws Exception
+     */
+    public void uploadFile( InputStream fileInputStream, String remotePath) throws Exception
+    {
+ 		String password = _serverConfig.getPassword();
+ 		String username = _serverConfig.getUserName();
+ 		String host = _serverConfig.getServerName();
+ 		
+ 		Sardine sardine = SardineFactory.begin(username, password);
+ 		sardine.enablePreemptiveAuthentication(host);
+
+ 		sardine.put(remotePath, fileInputStream);
+    }
+
     /**
      * Return all shares of this user
      * 
