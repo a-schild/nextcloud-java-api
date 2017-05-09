@@ -149,7 +149,7 @@ public class NextcloudConnector {
      * @param remotePath           path where the file should be uploaded to
      * @throws Exception
      */
-    public void uploadFile( FileInputStream fileInputStream, String remotePath) throws Exception
+    public void uploadFile( InputStream fileInputStream, String remotePath) throws Exception
     {
  		String password = _serverConfig.getPassword();
  		String username = _serverConfig.getUserName();
