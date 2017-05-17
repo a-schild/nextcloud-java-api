@@ -16,12 +16,12 @@
  */
 package org.aarboard.nextcloud.api;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 
+import org.aarboard.nextcloud.api.exception.NextcloudApiException;
 import org.aarboard.nextcloud.api.filesharing.FilesharingConnector;
 import org.aarboard.nextcloud.api.filesharing.Share;
 import org.aarboard.nextcloud.api.filesharing.SharePermissions;
@@ -43,34 +43,46 @@ public class NextcloudConnector {
         _serverConfig= new ServerConfig(serverName, useHTTPS, port, userName, password);
     }
     
-    public boolean createGroup(String groupId) throws Exception    
+    public boolean createUser(String userId, String password)
+    {
+        ProvisionConnector pc= new ProvisionConnector(_serverConfig);
+        return pc.createUser(userId, password);
+    }
+
+    public boolean deleteUser(String userId)
+    {
+        ProvisionConnector pc= new ProvisionConnector(_serverConfig);
+        return pc.deleteUser(userId);
+    }
+
+    public boolean createGroup(String groupId)
     {
         ProvisionConnector pc= new ProvisionConnector(_serverConfig);
         return pc.createGroup(groupId);
     }
     
-    public Collection<User> getUsers() throws Exception
+    public Collection<User> getUsers()
     {
         ProvisionConnector pc= new ProvisionConnector(_serverConfig);
         return pc.getUsers();
     }
     
     public Collection<User> getUsers(
-            String search, int limit, int offset) throws Exception
+            String search, int limit, int offset)
     {
         ProvisionConnector pc= new ProvisionConnector(_serverConfig);
         return pc.getUsers(search, limit, offset);
     }
     
     
-    public boolean deleteGroup(String groupId) throws Exception
+    public boolean deleteGroup(String groupId)
     {
         ProvisionConnector pc= new ProvisionConnector(_serverConfig);
         return pc.deleteGroup(groupId);
     }
 
     
-    public Collection<Group> getGroups() throws Exception
+    public Collection<Group> getGroups()
     {
         ProvisionConnector pc= new ProvisionConnector(_serverConfig);
         return pc.getGroups();
@@ -84,31 +96,31 @@ public class NextcloudConnector {
      * @param offset pass -1 for no offset
      * @return 
      */
-    public Collection<Group> getGroups(String search, int limit, int offset) throws Exception
+    public Collection<Group> getGroups(String search, int limit, int offset)
     {
         ProvisionConnector pc= new ProvisionConnector(_serverConfig);
         return pc.getGroups(search, limit, offset);
     }
 
-    public List<String> getFolders(String path) throws Exception
+    public List<String> getFolders(String path)
     {
         Folders fc= new Folders(_serverConfig);
         return fc.getFolders(path);
     }
     
-    public boolean folderExists(String path)  throws Exception
+    public boolean folderExists(String path)
     {
         Folders fc= new Folders(_serverConfig);
         return fc.exists(path);
     }
 
-    public void createFolder(String path) throws Exception
+    public void createFolder(String path)
     {
         Folders fc= new Folders(_serverConfig);
         fc.createFolder(path);
     }
 
-    public void deleteFolder(String path) throws Exception
+    public void deleteFolder(String path)
     {
         Folders fc= new Folders(_serverConfig);
         fc.deleteFolder(path);
@@ -131,13 +143,13 @@ public class NextcloudConnector {
             String shareWithUserOrGroupId,
             Boolean publicUpload,
             String password,
-            SharePermissions permissions) throws Exception
+            SharePermissions permissions)
     {
         FilesharingConnector fc= new FilesharingConnector(_serverConfig);
         return fc.doShare(path, shareType, shareWithUserOrGroupId, publicUpload, password, permissions);
     }
     
-    public Collection<Share> getShares() throws Exception
+    public Collection<Share> getShares()
     {
         FilesharingConnector fc= new FilesharingConnector(_serverConfig);
         return fc.getShares();
@@ -149,16 +161,20 @@ public class NextcloudConnector {
      * @param remotePath           path where the file should be uploaded to
      * @throws Exception
      */
-    public void uploadFile( InputStream fileInputStream, String remotePath) throws Exception
+    public void uploadFile(InputStream fileInputStream, String remotePath)
     {
- 		String password = _serverConfig.getPassword();
- 		String username = _serverConfig.getUserName();
- 		String host = _serverConfig.getServerName();
- 		
- 		Sardine sardine = SardineFactory.begin(username, password);
- 		sardine.enablePreemptiveAuthentication(host);
+         String password = _serverConfig.getPassword();
+         String username = _serverConfig.getUserName();
+         String host = _serverConfig.getServerName();
 
- 		sardine.put(remotePath, fileInputStream);
+         Sardine sardine = SardineFactory.begin(username, password);
+         sardine.enablePreemptiveAuthentication(host);
+
+         try {
+            sardine.put(remotePath, fileInputStream);
+        } catch (IOException e) {
+            throw new NextcloudApiException(e);
+        }
     }
 
     /**
@@ -170,7 +186,7 @@ public class NextcloudConnector {
      * @return 
      * @throws java.lang.Exception 
      */
-    public Collection<Share> getShares(String path, boolean reShares, boolean subShares) throws Exception
+    public Collection<Share> getShares(String path, boolean reShares, boolean subShares)
     {
         FilesharingConnector fc= new FilesharingConnector(_serverConfig);
         return fc.getShares(path, reShares, subShares);
@@ -183,7 +199,7 @@ public class NextcloudConnector {
      * @return 
      * @throws java.lang.Exception 
      */
-    public Share getShareInfo(int shareId) throws Exception
+    public Share getShareInfo(int shareId)
     {
         FilesharingConnector fc= new FilesharingConnector(_serverConfig);
         return fc.getShareInfo(shareId);

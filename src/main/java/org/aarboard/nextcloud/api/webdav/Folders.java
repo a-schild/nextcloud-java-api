@@ -19,9 +19,12 @@ package org.aarboard.nextcloud.api.webdav;
 import com.github.sardine.DavResource;
 import com.github.sardine.Sardine;
 import com.github.sardine.SardineFactory;
+
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import org.aarboard.nextcloud.api.ServerConfig;
+import org.aarboard.nextcloud.api.exception.NextcloudApiException;
 
 /**
  *
@@ -38,14 +41,19 @@ public class Folders {
     }
 
     
-    public List<String> getFolders(String rootPath) throws Exception
+    public List<String> getFolders(String rootPath)
     {
         String path=  (_serverConfig.isUseHTTPS() ? "https" : "http") +"://"+_serverConfig.getServerName()+"/"+WEB_DAV_BASE_PATH+rootPath ;
         
         List<String> retVal= new LinkedList<>();
         Sardine sardine = SardineFactory.begin();
         sardine.setCredentials(_serverConfig.getUserName(), _serverConfig.getPassword());
-        List<DavResource> resources = sardine.list(path);
+        List<DavResource> resources;
+        try {
+            resources = sardine.list(path);
+        } catch (IOException e) {
+            throw new NextcloudApiException(e);
+        }
         for (DavResource res : resources)
         {
             retVal.add(res.getName());
@@ -53,31 +61,43 @@ public class Folders {
         return retVal;
     }
     
-    public boolean exists(String rootPath)  throws Exception
+    public boolean exists(String rootPath)
     {
         String path=  (_serverConfig.isUseHTTPS() ? "https" : "http") +"://"+_serverConfig.getServerName()+"/"+WEB_DAV_BASE_PATH+rootPath ;
         
         Sardine sardine = SardineFactory.begin();
         sardine.setCredentials(_serverConfig.getUserName(), _serverConfig.getPassword());
-        return sardine.exists(path);
+        try {
+            return sardine.exists(path);
+        } catch (IOException e) {
+            throw new NextcloudApiException(e);
+        }
     }
 
-    public void createFolder(String rootPath) throws Exception
+    public void createFolder(String rootPath)
     {
         String path=  (_serverConfig.isUseHTTPS() ? "https" : "http") +"://"+_serverConfig.getServerName()+"/"+WEB_DAV_BASE_PATH+rootPath ;
         
         Sardine sardine = SardineFactory.begin();
         sardine.setCredentials(_serverConfig.getUserName(), _serverConfig.getPassword());
-        sardine.createDirectory(path);
+        try {
+            sardine.createDirectory(path);
+        } catch (IOException e) {
+            throw new NextcloudApiException(e);
+        }
     }
 
-    public void deleteFolder(String rootPath) throws Exception
+    public void deleteFolder(String rootPath)
     {
         String path=  (_serverConfig.isUseHTTPS() ? "https" : "http") +"://"+_serverConfig.getServerName()+"/"+WEB_DAV_BASE_PATH+rootPath ;
         
         Sardine sardine = SardineFactory.begin();
         sardine.setCredentials(_serverConfig.getUserName(), _serverConfig.getPassword());
-        sardine.delete(path);
+        try {
+            sardine.delete(path);
+        } catch (IOException e) {
+            throw new NextcloudApiException(e);
+        }
     }
 }
 
