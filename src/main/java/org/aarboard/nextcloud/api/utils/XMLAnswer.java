@@ -46,7 +46,7 @@ public class XMLAnswer {
     }
 
     
-    public void parseAnswer(String xmlAnswer) throws Exception
+    public void parseAnswer(String xmlAnswer)
     {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setXIncludeAware(false);
