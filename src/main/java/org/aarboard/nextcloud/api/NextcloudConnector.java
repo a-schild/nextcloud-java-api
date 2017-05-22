@@ -36,176 +36,183 @@ import com.github.sardine.Sardine;
 import com.github.sardine.SardineFactory;
 
 public class NextcloudConnector {
+    
+    private final ServerConfig    _serverConfig;
+    
+    public NextcloudConnector(String serverName, boolean useHTTPS, int port, String userName, String password ) 
+    {
+        _serverConfig= new ServerConfig(serverName, useHTTPS, port, userName, password);
+    }
+    
+    public boolean createUser(String userId, String password)
+    {
+        ProvisionConnector pc= new ProvisionConnector(_serverConfig);
+        return pc.createUser(userId, password);
+    }
 
-	private final ServerConfig _serverConfig;
+    public boolean deleteUser(String userId)
+    {
+        ProvisionConnector pc= new ProvisionConnector(_serverConfig);
+        return pc.deleteUser(userId);
+    }
 
-	public NextcloudConnector(String serverName, boolean useHTTPS, int port, String userName, String password) {
-		_serverConfig = new ServerConfig(serverName, useHTTPS, port, userName, password);
-	}
+    public boolean createGroup(String groupId)
+    {
+        ProvisionConnector pc= new ProvisionConnector(_serverConfig);
+        return pc.createGroup(groupId);
+    }
+    
+    public Collection<User> getUsers()
+    {
+        ProvisionConnector pc= new ProvisionConnector(_serverConfig);
+        return pc.getUsers();
+    }
+    
+    public Collection<User> getUsers(
+            String search, int limit, int offset)
+    {
+        ProvisionConnector pc= new ProvisionConnector(_serverConfig);
+        return pc.getUsers(search, limit, offset);
+    }
+    
+    
+    public boolean deleteGroup(String groupId)
+    {
+        ProvisionConnector pc= new ProvisionConnector(_serverConfig);
+        return pc.deleteGroup(groupId);
+    }
 
-	public boolean createUser(String userId, String password) {
-		ProvisionConnector pc = new ProvisionConnector(_serverConfig);
-		return pc.createUser(userId, password);
-	}
+    
+    public Collection<Group> getGroups()
+    {
+        ProvisionConnector pc= new ProvisionConnector(_serverConfig);
+        return pc.getGroups();
+    }
+    
+    /**
+     * Return matching users
+     * 
+     * @param search pass null when you don't wish to filter
+     * @param limit pass -1 for no limit
+     * @param offset pass -1 for no offset
+     * @return 
+     */
+    public Collection<Group> getGroups(String search, int limit, int offset)
+    {
+        ProvisionConnector pc= new ProvisionConnector(_serverConfig);
+        return pc.getGroups(search, limit, offset);
+    }
 
-	public boolean deleteUser(String userId) {
-		ProvisionConnector pc = new ProvisionConnector(_serverConfig);
-		return pc.deleteUser(userId);
-	}
+    public List<String> getFolders(String path)
+    {
+        Folders fc= new Folders(_serverConfig);
+        return fc.getFolders(path);
+    }
+    
+    public boolean folderExists(String path)
+    {
+        Folders fc= new Folders(_serverConfig);
+        return fc.exists(path);
+    }
 
-	public boolean createGroup(String groupId) {
-		ProvisionConnector pc = new ProvisionConnector(_serverConfig);
-		return pc.createGroup(groupId);
-	}
+    public void createFolder(String path)
+    {
+        Folders fc= new Folders(_serverConfig);
+        fc.createFolder(path);
+    }
 
-	public Collection<User> getUsers() {
-		ProvisionConnector pc = new ProvisionConnector(_serverConfig);
-		return pc.getUsers();
-	}
+    public void deleteFolder(String path)
+    {
+        Folders fc= new Folders(_serverConfig);
+        fc.deleteFolder(path);
+    }
+    
+    /**
+     * 
+     * @param path                  path to the file/folder which should be shared
+     * @param shareType             0 = user; 1 = group; 3 = public link; 6 = federated cloud share
+     * @param shareWithUserOrGroupId user / group id with which the file should be shared
+     * @param publicUpload          allow public upload to a public shared folder (true/false)
+     * @param password              password to protect public link Share with
+     * @param permissions           1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all (default: 31, for public shares: 1)
+     * @return new Share ID if success
+     * @throws Exception 
+     */
+    public Share doShare(
+            String path,
+            ShareType shareType,
+            String shareWithUserOrGroupId,
+            Boolean publicUpload,
+            String password,
+            SharePermissions permissions)
+    {
+        FilesharingConnector fc= new FilesharingConnector(_serverConfig);
+        return fc.doShare(path, shareType, shareWithUserOrGroupId, publicUpload, password, permissions);
+    }
+    
+    public Collection<Share> getShares()
+    {
+        FilesharingConnector fc= new FilesharingConnector(_serverConfig);
+        return fc.getShares();
+    }    
+    
+    /**
+     * 
+     * @param fileInputStream      inputstream of the file which should be uploaded
+     * @param remotePath           path where the file should be uploaded to
+     * @throws Exception
+     */
+    public void uploadFile(InputStream fileInputStream, String remotePath)
+    {
+         String password = _serverConfig.getPassword();
+         String username = _serverConfig.getUserName();
+         String host = _serverConfig.getServerName();
 
-	public Collection<User> getUsers(String search, int limit, int offset) {
-		ProvisionConnector pc = new ProvisionConnector(_serverConfig);
-		return pc.getUsers(search, limit, offset);
-	}
+         Sardine sardine = SardineFactory.begin(username, password);
+         sardine.enablePreemptiveAuthentication(host);
 
-	public boolean deleteGroup(String groupId) {
-		ProvisionConnector pc = new ProvisionConnector(_serverConfig);
-		return pc.deleteGroup(groupId);
-	}
+         try {
+            sardine.put(remotePath, fileInputStream);
+        } catch (IOException e) {
+            throw new NextcloudApiException(e);
+        }
+    }
 
-	public Collection<Group> getGroups() {
-		ProvisionConnector pc = new ProvisionConnector(_serverConfig);
-		return pc.getGroups();
-	}
-
-	/**
-	 * Return matching users
-	 * 
-	 * @param search
-	 *            pass null when you don't wish to filter
-	 * @param limit
-	 *            pass -1 for no limit
-	 * @param offset
-	 *            pass -1 for no offset
-	 * @return
-	 */
-	public Collection<Group> getGroups(String search, int limit, int offset) {
-		ProvisionConnector pc = new ProvisionConnector(_serverConfig);
-		return pc.getGroups(search, limit, offset);
-	}
-
-	public List<String> getFolders(String path) {
-		Folders fc = new Folders(_serverConfig);
-		return fc.getFolders(path);
-	}
-
-	public boolean folderExists(String path) {
-		Folders fc = new Folders(_serverConfig);
-		return fc.exists(path);
-	}
-
-	public void createFolder(String path) {
-		Folders fc = new Folders(_serverConfig);
-		fc.createFolder(path);
-	}
-
-	public void deleteFolder(String path) {
-		Folders fc = new Folders(_serverConfig);
-		fc.deleteFolder(path);
-	}
-
-	/**
-	 * 
-	 * @param path
-	 *            path to the file/folder which should be shared
-	 * @param shareType
-	 *            0 = user; 1 = group; 3 = public link; 6 = federated cloud
-	 *            share
-	 * @param shareWithUserOrGroupId
-	 *            user / group id with which the file should be shared
-	 * @param publicUpload
-	 *            allow public upload to a public shared folder (true/false)
-	 * @param password
-	 *            password to protect public link Share with
-	 * @param permissions
-	 *            1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 =
-	 *            all (default: 31, for public shares: 1)
-	 * @return new Share ID if success
-	 * @throws Exception
-	 */
-	public Share doShare(String path, ShareType shareType, String shareWithUserOrGroupId, Boolean publicUpload,
-			String password, SharePermissions permissions) {
-		FilesharingConnector fc = new FilesharingConnector(_serverConfig);
-		return fc.doShare(path, shareType, shareWithUserOrGroupId, publicUpload, password, permissions);
-	}
-
-	public Collection<Share> getShares() {
-		FilesharingConnector fc = new FilesharingConnector(_serverConfig);
-		return fc.getShares();
-	}
-
-	/**
-	 * 
-	 * @param fileInputStream
-	 *            inputstream of the file which should be uploaded
-	 * @param remotePath
-	 *            path where the file should be uploaded to
-	 * @throws Exception
-	 */
-	public void uploadFile(InputStream fileInputStream, String remotePath) {
-		String password = _serverConfig.getPassword();
-		String username = _serverConfig.getUserName();
-		String host = _serverConfig.getServerName();
-
-		Sardine sardine = SardineFactory.begin(username, password);
-		sardine.enablePreemptiveAuthentication(host);
-
-		try {
-			sardine.put(remotePath, fileInputStream);
-		} catch (IOException e) {
-			throw new NextcloudApiException(e);
-		}
-	}
-
-	/**
-	 * 
-	 * @param remotePath
-	 */
-	public void removeFile(String path) {
-		Files f = new Files(_serverConfig);
-		f.removeFile(path);
-	}
-
-	/**
-	 * Return all shares of this user
-	 * 
-	 * @param path
-	 *            path to file/folder
-	 * @param reShares
-	 *            returns not only the shares from the current user but all
-	 *            shares from the given file
-	 * @param subShares
-	 *            returns all shares within a folder, given that path defines a
-	 *            folder
-	 * @return
-	 * @throws java.lang.Exception
-	 */
-	public Collection<Share> getShares(String path, boolean reShares, boolean subShares) {
-		FilesharingConnector fc = new FilesharingConnector(_serverConfig);
-		return fc.getShares(path, reShares, subShares);
-	}
-
-	/**
-	 * Return share info for a single share
-	 * 
-	 * @param shareId
-	 *            id of chare (Not path of share)
-	 * @return
-	 * @throws java.lang.Exception
-	 */
-	public Share getShareInfo(int shareId) {
-		FilesharingConnector fc = new FilesharingConnector(_serverConfig);
-		return fc.getShareInfo(shareId);
-	}
-
+    /**
+     * 
+     * @param remotePath
+     */
+    public void removeFile(String path){
+    	Files f = new Files(_serverConfig);
+    	f.removeFile(path);
+    }
+    
+    /**
+     * Return all shares of this user
+     * 
+     * @param path      path to file/folder
+     * @param reShares  returns not only the shares from the current user but all shares from the given file
+     * @param subShares returns all shares within a folder, given that path defines a folder
+     * @return 
+     * @throws java.lang.Exception 
+     */
+    public Collection<Share> getShares(String path, boolean reShares, boolean subShares)
+    {
+        FilesharingConnector fc= new FilesharingConnector(_serverConfig);
+        return fc.getShares(path, reShares, subShares);
+    }    
+    
+    /**
+     * Return share info for a single share
+     * 
+     * @param shareId      id of chare (Not path of share)
+     * @return 
+     * @throws java.lang.Exception 
+     */
+    public Share getShareInfo(int shareId)
+    {
+        FilesharingConnector fc= new FilesharingConnector(_serverConfig);
+        return fc.getShareInfo(shareId);
+    }    
+    
 }
