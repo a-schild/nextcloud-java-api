@@ -29,6 +29,7 @@ import org.aarboard.nextcloud.api.filesharing.ShareType;
 import org.aarboard.nextcloud.api.provisioning.Group;
 import org.aarboard.nextcloud.api.provisioning.ProvisionConnector;
 import org.aarboard.nextcloud.api.provisioning.User;
+import org.aarboard.nextcloud.api.webdav.Files;
 import org.aarboard.nextcloud.api.webdav.Folders;
 
 import com.github.sardine.Sardine;
@@ -177,6 +178,15 @@ public class NextcloudConnector {
         }
     }
 
+    /**
+     * 
+     * @param remotePath
+     */
+    public void removeFile(String path){
+    	Files f = new Files(_serverConfig);
+    	f.removeFile(path);
+    }
+    
     /**
      * Return all shares of this user
      * 
