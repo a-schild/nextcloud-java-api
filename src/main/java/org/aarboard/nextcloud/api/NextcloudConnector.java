@@ -16,12 +16,10 @@
  */
 package org.aarboard.nextcloud.api;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 
-import org.aarboard.nextcloud.api.exception.NextcloudApiException;
 import org.aarboard.nextcloud.api.filesharing.FilesharingConnector;
 import org.aarboard.nextcloud.api.filesharing.Share;
 import org.aarboard.nextcloud.api.filesharing.SharePermissions;
@@ -29,10 +27,8 @@ import org.aarboard.nextcloud.api.filesharing.ShareType;
 import org.aarboard.nextcloud.api.provisioning.Group;
 import org.aarboard.nextcloud.api.provisioning.ProvisionConnector;
 import org.aarboard.nextcloud.api.provisioning.User;
+import org.aarboard.nextcloud.api.webdav.Files;
 import org.aarboard.nextcloud.api.webdav.Folders;
-
-import com.github.sardine.Sardine;
-import com.github.sardine.SardineFactory;
 
 public class NextcloudConnector {
     
@@ -163,20 +159,30 @@ public class NextcloudConnector {
      */
     public void uploadFile(InputStream fileInputStream, String remotePath)
     {
-         String password = _serverConfig.getPassword();
-         String username = _serverConfig.getUserName();
-         String host = _serverConfig.getServerName();
-
-         Sardine sardine = SardineFactory.begin(username, password);
-         sardine.enablePreemptiveAuthentication(host);
-
-         try {
-            sardine.put(remotePath, fileInputStream);
-        } catch (IOException e) {
-            throw new NextcloudApiException(e);
-        }
+        Files f = new Files(_serverConfig);
+        f.uploadFile(fileInputStream, remotePath);
     }
 
+    /**
+     * 
+     * @param remotePath
+     */
+    public void removeFile(String path){
+    	Files f = new Files(_serverConfig);
+    	f.removeFile(path);
+    }
+    
+    /**
+     * Return if the file exists ore not
+     * 
+     * @param path path to the file
+     * @return boolean value whether the file exists or not
+     */
+    public boolean fileExists(String path){
+    	Files f = new Files(_serverConfig);
+    	return f.fileExists(path);
+    }
+    
     /**
      * Return all shares of this user
      * 
@@ -186,6 +192,7 @@ public class NextcloudConnector {
      * @return 
      * @throws java.lang.Exception 
      */
+    
     public Collection<Share> getShares(String path, boolean reShares, boolean subShares)
     {
         FilesharingConnector fc= new FilesharingConnector(_serverConfig);

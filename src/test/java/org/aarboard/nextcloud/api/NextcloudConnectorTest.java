@@ -16,6 +16,7 @@
  */
 package org.aarboard.nextcloud.api;
 
+import java.io.FileInputStream;
 import java.util.Collection;
 import java.util.List;
 import org.aarboard.nextcloud.api.provisioning.Group;
@@ -195,6 +196,58 @@ public class NextcloudConnectorTest {
             _nc.createFolder(rootPath);
             _nc.deleteFolder(rootPath);
         }
+    }
+    
+    
+    /**
+     * Test of fileExists method, of class Files.
+     */
+    @Test
+    public void testFileExists() throws Exception {
+        System.out.println("fileExists");
+        if (_nc != null)
+        {
+            String rootPath = "test.txt";
+            boolean expResult = true;
+            boolean result = _nc.fileExists(rootPath);
+            assertEquals(expResult, result);
+
+
+            rootPath = "clientsync-no-exist";
+            expResult = false;
+            result = _nc.fileExists(rootPath);
+            assertEquals(expResult, result);
+        }
+    }
+    
+    /**
+     * Test of uploadFile method, of class Files
+     */
+    @Test
+    public void testUploadFile() throws Exception {
+    	System.out.println("uploadFile");
+    	if(_nc != null)
+    	{
+    		String pathTo = null;
+    		String fileName = "test.txt";
+			FileInputStream fileInputStream = new FileInputStream(pathTo + fileName);
+			String remotePath = fileName; 
+			_nc.uploadFile(fileInputStream, remotePath);
+    	}
+    }
+    
+    /**
+     * Test of removeFile method, of class Files
+     */
+    @Test
+    public void testRemoveFile() throws Exception {
+    	System.out.println("uploadFile");
+    	if(_nc != null)
+    	{
+    		String fileName = "test.txt";
+			String remotePath = fileName; 
+			_nc.removeFile(remotePath);
+    	}
     }
     
 }
