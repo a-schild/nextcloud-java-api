@@ -23,8 +23,6 @@ import java.util.List;
 import org.aarboard.nextcloud.api.ServerConfig;
 import org.aarboard.nextcloud.api.utils.ConnectorCommon;
 import org.aarboard.nextcloud.api.utils.XMLAnswer;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -37,8 +35,6 @@ import org.apache.http.message.BasicNameValuePair;
  */
 public class ProvisionConnector 
 {
-    private final static Log LOG = LogFactory.getLog(ProvisionConnector.class);
-
     private final static int   NC_OK= 100; // Nextcloud OK message
     
     private final static String ROOT_PART= "ocs/v1.php/cloud/";
@@ -56,25 +52,15 @@ public class ProvisionConnector
         List<NameValuePair> postParams= new LinkedList<>();
         postParams.add(new BasicNameValuePair("userid", userId));
         postParams.add(new BasicNameValuePair("password", password));
-        String postAnswer= connectorCommon.executePost(USERS_PART, postParams);
-        if (postAnswer != null)
-        {
-            LOG.debug("Create user answer");
-        }
         XMLAnswer xa= new XMLAnswer();
-        xa.parseAnswer(postAnswer);
+        connectorCommon.executePost(USERS_PART, postParams, xa);
         return xa.getStatusCode() == NC_OK;
     }
 
     public boolean deleteUser(String userId)
     {
-        String postAnswer= connectorCommon.executeDelete(USERS_PART, userId);
-        if (postAnswer != null)
-        {
-            LOG.debug(postAnswer);
-        }
         XMLAnswer xa= new XMLAnswer();
-        xa.parseAnswer(postAnswer);
+        connectorCommon.executeDelete(USERS_PART, userId, xa);
         return xa.getStatusCode() == NC_OK;
     }
 
@@ -114,13 +100,8 @@ public class ProvisionConnector
         {
             queryParams.add(new BasicNameValuePair("search", search));
         }
-        String queryAnswer= connectorCommon.executeGet(USERS_PART, queryParams);
-        if (queryAnswer != null)
-        {
-            LOG.debug(queryAnswer);
-        }
         UsersXMLAnswer xa= new UsersXMLAnswer();
-        xa.parseAnswer(queryAnswer);
+        connectorCommon.executeGet(USERS_PART, queryParams, xa);
         if (xa.getStatusCode() == NC_OK)
         {
             return xa.getUsers();
@@ -132,25 +113,15 @@ public class ProvisionConnector
     {
         List<NameValuePair> postParams= new LinkedList<>();
         postParams.add(new BasicNameValuePair("groupid", groupId));
-        String postAnswer= connectorCommon.executePost(GROUPS_PART, postParams);
-        if (postAnswer != null)
-        {
-            LOG.debug("Create group answer");
-        }
         XMLAnswer xa= new XMLAnswer();
-        xa.parseAnswer(postAnswer);
+        connectorCommon.executePost(GROUPS_PART, postParams, xa);
         return xa.getStatusCode() == NC_OK;
     }
 
     public boolean deleteGroup(String groupId)
     {
-        String postAnswer= connectorCommon.executeDelete(GROUPS_PART, groupId);
-        if (postAnswer != null)
-        {
-            LOG.debug(postAnswer);
-        }
         XMLAnswer xa= new XMLAnswer();
-        xa.parseAnswer(postAnswer);
+        connectorCommon.executeDelete(GROUPS_PART, groupId, xa);
         return xa.getStatusCode() == NC_OK;
     }
 
@@ -184,13 +155,8 @@ public class ProvisionConnector
             queryParams.add(new BasicNameValuePair("search", search));
         }
 
-        String queryAnswer= connectorCommon.executeGet(GROUPS_PART, queryParams);
-        if (queryAnswer != null)
-        {
-            LOG.debug(queryAnswer);
-        }
         GroupsXMLAnswer xa= new GroupsXMLAnswer();
-        xa.parseAnswer(queryAnswer);
+        connectorCommon.executeGet(GROUPS_PART, queryParams, xa);
         if (xa.getStatusCode() == NC_OK)
         {
             return xa.getGroups();

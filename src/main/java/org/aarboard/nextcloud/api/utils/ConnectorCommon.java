@@ -1,6 +1,7 @@
 package org.aarboard.nextcloud.api.utils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -30,7 +31,6 @@ import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 
 public class ConnectorCommon
 {
@@ -42,16 +42,16 @@ public class ConnectorCommon
         this.serverConfig = serverConfig;
     }
 
-    public String executeGet(String part, List<NameValuePair> queryParams)
+    public <R> R executeGet(String part, List<NameValuePair> queryParams, ResultParser<R> parser)
     {
         try {
-            return tryExecuteGet(part, queryParams);
+            return tryExecuteGet(part, queryParams, parser);
         } catch (IOException e) {
             throw new NextcloudApiException(e);
         }
     }
 
-    private String tryExecuteGet(String part, List<NameValuePair> queryParams) throws IOException
+    private <R> R tryExecuteGet(String part, List<NameValuePair> queryParams, ResultParser<R> parser) throws IOException
     {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpHost targetHost = new HttpHost(serverConfig.getServerName(), serverConfig.getPort(), serverConfig.isUseHTTPS() ? "https" : "http");
@@ -81,27 +81,23 @@ public class ConnectorCommon
             {
                 HttpEntity entity = response.getEntity();
                 if (entity != null) {
-                    return EntityUtils.toString(entity);
+                    return parser.parseAnswer(entity.getContent());
                 }
-            }
-            else
-            {
-                return null;
             }
         }
         return null;
     }
 
-    public String executePost(String part, List<NameValuePair> postParams)
+    public <R> R executePost(String part, List<NameValuePair> postParams, ResultParser<R> parser)
     {
         try {
-            return tryExecutePost(part, postParams);
+            return tryExecutePost(part, postParams, parser);
         } catch (IOException e) {
             throw new NextcloudApiException(e);
         }
     }
 
-    private String tryExecutePost(String part, List<NameValuePair> postParams) throws IOException
+    private <R> R tryExecutePost(String part, List<NameValuePair> postParams, ResultParser<R> parser) throws IOException
     {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpHost targetHost = new HttpHost(serverConfig.getServerName(), serverConfig.getPort(), serverConfig.isUseHTTPS()  ? "https" : "http");
@@ -131,28 +127,27 @@ public class ConnectorCommon
             {
                 HttpEntity entity = response.getEntity();
                 if (entity != null) {
-                    return EntityUtils.toString(entity);
+                    return parser.parseAnswer(entity.getContent());
                 }
             }
             else
             {
                 LOG.warn("Post failed "+statusLine.getReasonPhrase()+" "+statusLine.getStatusCode());
-                return null;
             }
         }
         return null;
     }
 
-    public String executeDelete(String part1, String part2)
+    public <R> R executeDelete(String part1, String part2, ResultParser<R> parser)
     {
         try {
-            return tryExecuteDelete(part1, part2);
+            return tryExecuteDelete(part1, part2, parser);
         } catch (IOException e) {
             throw new NextcloudApiException(e);
         }
     }
 
-    private String tryExecuteDelete(String part1, String part2) throws IOException
+    private <R> R tryExecuteDelete(String part1, String part2, ResultParser<R> parser) throws IOException
     {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpHost targetHost = new HttpHost(serverConfig.getServerName(), serverConfig.getPort(), serverConfig.isUseHTTPS() ? "https" : "http");
@@ -182,12 +177,8 @@ public class ConnectorCommon
             {
                 HttpEntity entity = response.getEntity();
                 if (entity != null) {
-                    return EntityUtils.toString(entity);
+                    return parser.parseAnswer(entity.getContent());
                 }
-            }
-            else
-            {
-                return null;
             }
         }
         return null;
@@ -209,5 +200,9 @@ public class ConnectorCommon
         } catch (URISyntaxException e) {
             throw new NextcloudApiException(e);
         }
+    }
+
+    public interface ResultParser<R> {
+        public R parseAnswer(InputStream inputStream);
     }
 }

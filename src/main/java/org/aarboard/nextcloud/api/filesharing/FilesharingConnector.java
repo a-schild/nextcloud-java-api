@@ -84,13 +84,8 @@ public class FilesharingConnector
         {
             queryParams.add(new BasicNameValuePair("subfiles", "true"));
         }
-        String queryAnswer= connectorCommon.executeGet(SHARES_PART, queryParams);
-        if (queryAnswer != null)
-        {
-            LOG.debug(queryAnswer);
-        }
         SharesXMLAnswer xa= new SharesXMLAnswer();
-        xa.parseAnswer(queryAnswer);
+        connectorCommon.executeGet(SHARES_PART, queryParams, xa);
         if (xa.getStatusCode() == NC_OK)
         {
             return xa.getShares();
@@ -107,13 +102,8 @@ public class FilesharingConnector
      */
     public Share getShareInfo(int shareId)
     {
-        String queryAnswer= connectorCommon.executeGet(SHARES_PART+"/"+Integer.toString(shareId), null);
-        if (queryAnswer != null)
-        {
-            LOG.debug(queryAnswer);
-        }
         SharesXMLAnswer xa= new SharesXMLAnswer();
-        xa.parseAnswer(queryAnswer);
+        connectorCommon.executeGet(SHARES_PART+"/"+Integer.toString(shareId), null, xa);
         if (xa.getStatusCode() == NC_OK)
         {
             if (xa.getShares() == null)
@@ -168,25 +158,12 @@ public class FilesharingConnector
         {
             postParams.add(new BasicNameValuePair("permissions", Integer.toString(permissions.getCurrentPermission())));
         }
-        
-        String postAnswer= connectorCommon.executePost(SHARES_PART, postParams);
-        if (postAnswer != null)
+
+        SingleShareXMLAnswer xa= new SingleShareXMLAnswer();
+        connectorCommon.executePost(SHARES_PART, postParams, xa);
+        if (xa.getStatusCode() == NC_OK)
         {
-            LOG.debug("Create share answer "+postAnswer);
-            SingleShareXMLAnswer xa= new SingleShareXMLAnswer();
-            xa.parseAnswer(postAnswer);
-            if (xa.getStatusCode() == NC_OK)
-            {
-                return xa.getShare();
-            }
-            else
-            {
-                return null;
-            }
-        }
-        else
-        {
-            LOG.debug("Create share failed for path "+path+" user/group "+shareWithUserOrGroupId);
+            return xa.getShare();
         }
         return null;
     }

@@ -17,10 +17,14 @@
 package org.aarboard.nextcloud.api.utils;
 
 import java.io.IOException;
-import java.io.StringReader;
+import java.io.InputStream;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
+import org.aarboard.nextcloud.api.exception.NextcloudApiException;
+import org.aarboard.nextcloud.api.utils.ConnectorCommon.ResultParser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
@@ -33,7 +37,7 @@ import org.xml.sax.SAXException;
  *
  * @author a.schild
  */
-public class XMLAnswer {
+public class XMLAnswer implements ResultParser<XMLAnswer> {
     private final Log LOG = LogFactory.getLog(XMLAnswer.class);
     
     private String status= null;
@@ -45,54 +49,55 @@ public class XMLAnswer {
     public XMLAnswer() {
     }
 
-    
-    public void parseAnswer(String xmlAnswer)
+    @Override
+    public XMLAnswer parseAnswer(InputStream xmlAnswer)
     {
+        try {
+            tryParseAnswer(xmlAnswer);
+        } catch (Exception e) {
+            throw new NextcloudApiException(e);
+        } finally {
+            try {
+                xmlAnswer.close();
+            } catch (IOException e) {
+                // Ignore
+            }
+        }
+        return this;
+    }
+
+    private void tryParseAnswer(InputStream xmlAnswer) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setXIncludeAware(false);
-        DocumentBuilder db = null;
-        try {
-            db = dbf.newDocumentBuilder();
-            InputSource is = new InputSource();
-            is.setCharacterStream(new StringReader(xmlAnswer));
-            try {
-                Document doc = db.parse(is);
-                Node rootNode= doc.getFirstChild(); // OCS root tag
-                if (rootNode.getNodeName().equals("ocs"))
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        InputSource is = new InputSource();
+        is.setByteStream(xmlAnswer);
+        Document doc = db.parse(is);
+        Node rootNode= doc.getFirstChild(); // OCS root tag
+        if (rootNode.getNodeName().equals("ocs"))
+        {
+            NodeList ocsChildren= rootNode.getChildNodes();
+            for (int i= 0; i < ocsChildren.getLength(); i++)
+            {
+                Node n= ocsChildren.item(i);
+                if (n.getNodeName().equals("meta"))
                 {
-                    NodeList ocsChildren= rootNode.getChildNodes();
-                    for (int i= 0; i < ocsChildren.getLength(); i++)
-                    {
-                        Node n= ocsChildren.item(i);
-                        if (n.getNodeName().equals("meta"))
-                        {
-                            handleMetaPart(n);
-                        }
-                        else if (n.getNodeName().equals("data"))
-                        {
-                            handleDataPart(n);
-                        }
-                        else
-                        {
-                            handleOtherPart(n);
-                        }
-                    }
+                    handleMetaPart(n);
+                }
+                else if (n.getNodeName().equals("data"))
+                {
+                    handleDataPart(n);
                 }
                 else
                 {
-                    throw new IllegalArgumentException("Root tag in answer is not <ocs> but <"+rootNode.getNodeName());
+                    handleOtherPart(n);
                 }
-                
-            } catch (SAXException e) {
-                LOG.error("SAX exception", e);
-            } catch (IOException e) {
-                // handle IOException
-                LOG.error("IO exception", e);
             }
-        } catch (ParserConfigurationException e1) {
-            // handle ParserConfigurationException
-            LOG.error("Parser config exception", e1);
-        }        
+        }
+        else
+        {
+            throw new IllegalArgumentException("Root tag in answer is not <ocs> but <"+rootNode.getNodeName());
+        }
     }
 
     /**
