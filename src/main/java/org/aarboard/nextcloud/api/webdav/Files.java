@@ -32,7 +32,9 @@ public class Files {
 		String path = (_serverConfig.isUseHTTPS() ? "https" : "http") + "://" + _serverConfig.getServerName() + "/" + WEB_DAV_BASE_PATH + rootPath;
 		
 		Sardine sardine = SardineFactory.begin();
+		
 		sardine.setCredentials(_serverConfig.getUserName(), _serverConfig.getPassword());
+        sardine.enablePreemptiveAuthentication(_serverConfig.getServerName());
 		try {
 			sardine.delete(path);
 		} catch ( IOException e ) {
