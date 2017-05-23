@@ -1,6 +1,7 @@
 package org.aarboard.nextcloud.api.webdav;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.aarboard.nextcloud.api.ServerConfig;
 import org.aarboard.nextcloud.api.exception.NextcloudApiException;
@@ -23,6 +24,48 @@ public class Files {
 		this._serverConfig = _serverConfig;
 	}
 	
+	/**
+	 * method to check if a file already exists
+	 * 
+	 * @param rootPath path of the file
+	 * @return boolean value if the given file exists or not
+	 */
+	public boolean fileExists(String rootPath){
+		String path = (_serverConfig.isUseHTTPS() ? "https" : "http") + "://" + _serverConfig.getServerName() + "/" + WEB_DAV_BASE_PATH + rootPath;
+		
+		Sardine sardine = SardineFactory.begin();
+		
+		sardine.setCredentials(_serverConfig.getUserName(), _serverConfig.getPassword());
+		sardine.enablePreemptiveAuthentication(_serverConfig.getServerName());
+		
+		try {
+			return sardine.exists(path);
+		} catch (IOException e) {
+			throw new NextcloudApiException(e);
+		}
+	}
+	
+    /**
+     * 
+     * @param fileInputStream      inputstream of the file which should be uploaded
+     * @param remotePath           path where the file should be uploaded to
+     * @throws Exception
+     */
+    public void uploadFile(InputStream fileInputStream, String remotePath)
+    {
+    	String path = (_serverConfig.isUseHTTPS() ? "https" : "http") + "://" + _serverConfig.getServerName() + "/" + WEB_DAV_BASE_PATH + remotePath;
+		
+		Sardine sardine = SardineFactory.begin();
+		
+        sardine.setCredentials(_serverConfig.getUserName(), _serverConfig.getPassword());
+        sardine.enablePreemptiveAuthentication(_serverConfig.getServerName());
+
+        try {
+            sardine.put(path, fileInputStream);
+        } catch (IOException e) {
+            throw new NextcloudApiException(e);
+        }
+    }
 	
 	/**
 	 * method to remove files
@@ -41,5 +84,6 @@ public class Files {
 			throw new NextcloudApiException(e);
 		}
 	}
+	
 	
 }

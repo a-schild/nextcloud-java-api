@@ -164,18 +164,8 @@ public class NextcloudConnector {
      */
     public void uploadFile(InputStream fileInputStream, String remotePath)
     {
-         String password = _serverConfig.getPassword();
-         String username = _serverConfig.getUserName();
-         String host = _serverConfig.getServerName();
-
-         Sardine sardine = SardineFactory.begin(username, password);
-         sardine.enablePreemptiveAuthentication(host);
-
-         try {
-            sardine.put(remotePath, fileInputStream);
-        } catch (IOException e) {
-            throw new NextcloudApiException(e);
-        }
+        Files f = new Files(_serverConfig);
+        f.uploadFile(fileInputStream, remotePath);
     }
 
     /**
@@ -188,6 +178,17 @@ public class NextcloudConnector {
     }
     
     /**
+     * Return if the file exists ore not
+     * 
+     * @param path path to the file
+     * @return boolean value whether the file exists or not
+     */
+    public boolean fileExists(String path){
+    	Files f = new Files(_serverConfig);
+    	return f.fileExists(path);
+    }
+    
+    /**
      * Return all shares of this user
      * 
      * @param path      path to file/folder
@@ -196,6 +197,7 @@ public class NextcloudConnector {
      * @return 
      * @throws java.lang.Exception 
      */
+    
     public Collection<Share> getShares(String path, boolean reShares, boolean subShares)
     {
         FilesharingConnector fc= new FilesharingConnector(_serverConfig);
