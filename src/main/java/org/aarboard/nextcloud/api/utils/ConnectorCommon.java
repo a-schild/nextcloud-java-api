@@ -21,11 +21,13 @@ import org.apache.http.StatusLine;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
@@ -48,99 +50,37 @@ public class ConnectorCommon
     public <R> R executeGet(String part, List<NameValuePair> queryParams, ResponseParser<R> parser)
     {
         try {
-            return tryExecuteGet(part, queryParams, parser);
+            URI url= buildUrl(part, queryParams);
+
+            HttpRequestBase request = new HttpGet(url.toString());
+            return executeRequest(parser, request);
         } catch (IOException e) {
             throw new NextcloudApiException(e);
         }
-    }
-
-    private <R> R tryExecuteGet(String part, List<NameValuePair> queryParams, ResponseParser<R> parser) throws IOException
-    {
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        final HttpClientContext context = prepareContext();
-
-        URI url= buildUrl(part, queryParams);
-
-        HttpGet httpget = new HttpGet(url.toString());
-        httpget.addHeader("OCS-APIRequest", "true");
-        httpget.addHeader("Content-Type", "application/x-www-form-urlencoded");
-        httpget.setProtocolVersion(HttpVersion.HTTP_1_1);
-
-        try(CloseableHttpResponse response = httpclient.execute(httpget, context)) {
-            handleResponse(parser, response);
-        }
-        return null;
     }
 
     public <R> R executePost(String part, List<NameValuePair> postParams, ResponseParser<R> parser)
     {
         try {
-            return tryExecutePost(part, postParams, parser);
+            URI url= buildUrl(part, postParams);
+
+            HttpRequestBase request = new HttpPost(url.toString());
+            return executeRequest(parser, request);
         } catch (IOException e) {
             throw new NextcloudApiException(e);
         }
-    }
-
-    private <R> R tryExecutePost(String part, List<NameValuePair> postParams, ResponseParser<R> parser) throws IOException
-    {
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        final HttpClientContext context = prepareContext();
-
-        URI url= buildUrl(part, postParams);
-
-        HttpPost httpPost = new HttpPost(url.toString());
-        httpPost.addHeader("OCS-APIRequest", "true");
-        httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
-        httpPost.setProtocolVersion(HttpVersion.HTTP_1_1);
-
-        try(CloseableHttpResponse response = httpclient.execute(httpPost, context)) {
-            handleResponse(parser, response);
-        }
-        return null;
     }
 
     public <R> R executeDelete(String part1, String part2, ResponseParser<R> parser)
     {
         try {
-            return tryExecuteDelete(part1, part2, parser);
+            URI url= buildUrl(part1+"/"+part2, null);
+
+            HttpRequestBase request = new HttpDelete(url.toString());
+            return executeRequest(parser, request);
         } catch (IOException e) {
             throw new NextcloudApiException(e);
         }
-    }
-
-    private <R> R tryExecuteDelete(String part1, String part2, ResponseParser<R> parser) throws IOException
-    {
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        final HttpClientContext context = prepareContext();
-
-        URI url= buildUrl(part1+"/"+part2, null);
-
-        HttpDelete httpPost = new HttpDelete(url.toString());
-        httpPost.addHeader("OCS-APIRequest", "true");
-        httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
-        httpPost.setProtocolVersion(HttpVersion.HTTP_1_1);
-
-        try (CloseableHttpResponse response = httpclient.execute(httpPost, context)) {
-            handleResponse(parser, response);
-        }
-        return null;
-    }
-
-    private HttpClientContext prepareContext() {
-        HttpHost targetHost = new HttpHost(serverConfig.getServerName(), serverConfig.getPort(), serverConfig.isUseHTTPS() ? "https" : "http");
-        AuthCache authCache = new BasicAuthCache();
-        authCache.put(targetHost, new BasicScheme());
-
-        CredentialsProvider credsProvider = new BasicCredentialsProvider();
-        UsernamePasswordCredentials credentials
-         = new UsernamePasswordCredentials(serverConfig.getUserName(), serverConfig.getPassword());
-        credsProvider.setCredentials(AuthScope.ANY, credentials);
-
-        // Add AuthCache to the execution context
-        HttpClientContext context = HttpClientContext.create();
-        context.setCredentialsProvider(credsProvider);
-        context.setAuthCache(authCache);
-        return context;
     }
 
     private URI buildUrl(String subPath, List<NameValuePair> queryParams)
@@ -159,6 +99,39 @@ public class ConnectorCommon
         } catch (URISyntaxException e) {
             throw new NextcloudApiException(e);
         }
+    }
+
+    private <R> R executeRequest(ResponseParser<R> parser, HttpRequestBase request)
+            throws IOException, ClientProtocolException
+    {
+        request.addHeader("OCS-APIRequest", "true");
+        request.addHeader("Content-Type", "application/x-www-form-urlencoded");
+        request.setProtocolVersion(HttpVersion.HTTP_1_1);
+
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        HttpClientContext context = prepareContext();
+
+        try (CloseableHttpResponse response = httpclient.execute(request, context)) {
+            return handleResponse(parser, response);
+        }
+    }
+
+    private HttpClientContext prepareContext()
+    {
+        HttpHost targetHost = new HttpHost(serverConfig.getServerName(), serverConfig.getPort(), serverConfig.isUseHTTPS() ? "https" : "http");
+        AuthCache authCache = new BasicAuthCache();
+        authCache.put(targetHost, new BasicScheme());
+
+        CredentialsProvider credsProvider = new BasicCredentialsProvider();
+        UsernamePasswordCredentials credentials
+         = new UsernamePasswordCredentials(serverConfig.getUserName(), serverConfig.getPassword());
+        credsProvider.setCredentials(AuthScope.ANY, credentials);
+
+        // Add AuthCache to the execution context
+        HttpClientContext context = HttpClientContext.create();
+        context.setCredentialsProvider(credsProvider);
+        context.setAuthCache(authCache);
+        return context;
     }
 
     private <R> R handleResponse(ResponseParser<R> parser, CloseableHttpResponse response) throws IOException
@@ -181,7 +154,8 @@ public class ConnectorCommon
         return null;
     }
 
-    public interface ResponseParser<R> {
+    public interface ResponseParser<R>
+    {
         public R parseResponse(Reader reader);
     }
 }
