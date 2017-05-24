@@ -19,8 +19,10 @@ package org.aarboard.nextcloud.api.filesharing;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.aarboard.nextcloud.api.ServerConfig;
+import org.aarboard.nextcloud.api.utils.NextcloudResponseHelper;
 import org.aarboard.nextcloud.api.utils.ConnectorCommon;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,12 +36,10 @@ import org.apache.http.message.BasicNameValuePair;
  * https://docs.nextcloud.com/server/11/developer_manual/core/ocs-share-api.html
  * 
  */
-public class FilesharingConnector 
+public class FilesharingConnector
 {
     private final static Log LOG = LogFactory.getLog(FilesharingConnector.class);
 
-    private final static int   NC_OK= 100; // Nextcloud OK message
-    
     private final static String ROOT_PART= "ocs/v1.php/apps/files_sharing/api/v1/";
     private final static String SHARES_PART= ROOT_PART+"shares";
 
@@ -48,28 +48,36 @@ public class FilesharingConnector
     public FilesharingConnector(ServerConfig serverConfig) {
         this.connectorCommon = new ConnectorCommon(serverConfig);
     }
-    
+
     /**
      * Return all shares of this user
      * 
      * @return 
-     * @throws java.lang.Exception 
      */
     public Collection<Share> getShares()
     {
         return getShares(null, false, false);
     }
 
+    public CompletableFuture<SharesXMLAnswer> getSharesAsync()
+    {
+        return getSharesAsync(null, false, false);
+    }
+
     /**
-     * Return all shares of this user
+     * Return all shares from a given file/folder
      * 
      * @param path      path to file/folder
      * @param reShares  returns not only the shares from the current user but all shares from the given file
      * @param subShares returns all shares within a folder, given that path defines a folder
      * @return 
-     * @throws java.lang.Exception 
      */
     public Collection<Share> getShares(String path, boolean reShares, boolean subShares)
+    {
+        return NextcloudResponseHelper.getAndWrapException(getSharesAsync(path,reShares,subShares)).shareList;
+    }
+
+    public CompletableFuture<SharesXMLAnswer> getSharesAsync(String path, boolean reShares, boolean subShares)
     {
         List<NameValuePair> queryParams= new LinkedList<>();
         if (path != null)
@@ -84,13 +92,7 @@ public class FilesharingConnector
         {
             queryParams.add(new BasicNameValuePair("subfiles", "true"));
         }
-        SharesXMLAnswer xa= new SharesXMLAnswer();
-        connectorCommon.executeGet(SHARES_PART, queryParams, xa);
-        if (xa.getStatusCode() == NC_OK)
-        {
-            return xa.getShares();
-        }
-        return null;
+        return connectorCommon.executeGet(SHARES_PART, queryParams, SharesXMLAnswerParser.getInstance());
     }
 
     /**
@@ -98,13 +100,11 @@ public class FilesharingConnector
      * 
      * @param shareId      id of chare (Not path of share)
      * @return 
-     * @throws java.lang.Exception 
      */
     public Share getShareInfo(int shareId)
     {
-        SharesXMLAnswer xa= new SharesXMLAnswer();
-        connectorCommon.executeGet(SHARES_PART+"/"+Integer.toString(shareId), null, xa);
-        if (xa.getStatusCode() == NC_OK)
+        SharesXMLAnswer xa= NextcloudResponseHelper.getAndWrapException(getShareInfoAsync(shareId));
+        if (xa.getStatusCode() == NextcloudResponseHelper.NC_OK)
         {
             if (xa.getShares() == null)
             {
@@ -122,7 +122,12 @@ public class FilesharingConnector
         }
         return null;
     }
-    
+
+    public CompletableFuture<SharesXMLAnswer> getShareInfoAsync(int shareId)
+    {
+        return connectorCommon.executeGet(SHARES_PART+"/"+Integer.toString(shareId), null, SharesXMLAnswerParser.getInstance());
+    }
+
     /**
      * 
      * @param path                  path to the file/folder which should be shared
@@ -132,9 +137,19 @@ public class FilesharingConnector
      * @param password              password to protect public link Share with
      * @param permissions           1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all (default: 31, for public shares: 1)
      * @return new Share ID if success
-     * @throws Exception 
      */
     public Share doShare(
+            String path,
+            ShareType shareType,
+            String shareWithUserOrGroupId,
+            Boolean publicUpload,
+            String password,
+            SharePermissions permissions)
+    {
+        return NextcloudResponseHelper.getAndWrapException(doShareAsync(path, shareType, shareWithUserOrGroupId, publicUpload, password, permissions)).share;
+    }
+
+    public CompletableFuture<SingleShareXMLAnswer> doShareAsync(
             String path,
             ShareType shareType,
             String shareWithUserOrGroupId,
@@ -159,12 +174,6 @@ public class FilesharingConnector
             postParams.add(new BasicNameValuePair("permissions", Integer.toString(permissions.getCurrentPermission())));
         }
 
-        SingleShareXMLAnswer xa= new SingleShareXMLAnswer();
-        connectorCommon.executePost(SHARES_PART, postParams, xa);
-        if (xa.getStatusCode() == NC_OK)
-        {
-            return xa.getShare();
-        }
-        return null;
+        return connectorCommon.executePost(SHARES_PART, postParams, SingleShareXMLAnswerParser.getInstance());
     }
 }

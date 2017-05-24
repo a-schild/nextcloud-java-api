@@ -7,6 +7,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.aarboard.nextcloud.api.ServerConfig;
 import org.aarboard.nextcloud.api.exception.NextcloudApiException;
@@ -14,6 +15,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
@@ -23,19 +25,19 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.impl.nio.client.HttpAsyncClients;
 
 public class ConnectorCommon
 {
@@ -47,7 +49,7 @@ public class ConnectorCommon
         this.serverConfig = serverConfig;
     }
 
-    public <R> R executeGet(String part, List<NameValuePair> queryParams, ResponseParser<R> parser)
+    public <R> CompletableFuture<R> executeGet(String part, List<NameValuePair> queryParams, ResponseParser<R> parser)
     {
         try {
             URI url= buildUrl(part, queryParams);
@@ -59,7 +61,7 @@ public class ConnectorCommon
         }
     }
 
-    public <R> R executePost(String part, List<NameValuePair> postParams, ResponseParser<R> parser)
+    public <R> CompletableFuture<R> executePost(String part, List<NameValuePair> postParams, ResponseParser<R> parser)
     {
         try {
             URI url= buildUrl(part, postParams);
@@ -71,7 +73,7 @@ public class ConnectorCommon
         }
     }
 
-    public <R> R executeDelete(String part1, String part2, ResponseParser<R> parser)
+    public <R> CompletableFuture<R> executeDelete(String part1, String part2, ResponseParser<R> parser)
     {
         try {
             URI url= buildUrl(part1+"/"+part2, null);
@@ -101,19 +103,20 @@ public class ConnectorCommon
         }
     }
 
-    private <R> R executeRequest(ResponseParser<R> parser, HttpRequestBase request)
+    private <R> CompletableFuture<R> executeRequest(final ResponseParser<R> parser, HttpRequestBase request)
             throws IOException, ClientProtocolException
     {
         request.addHeader("OCS-APIRequest", "true");
         request.addHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setProtocolVersion(HttpVersion.HTTP_1_1);
 
-        CloseableHttpClient httpclient = HttpClients.createDefault();
+        CloseableHttpAsyncClient httpclient = HttpAsyncClients.createDefault();
+        httpclient.start();
         HttpClientContext context = prepareContext();
 
-        try (CloseableHttpResponse response = httpclient.execute(request, context)) {
-            return handleResponse(parser, response);
-        }
+        CompletableFuture<R> futureResponse = new CompletableFuture<>();
+        httpclient.execute(request, context, new ResponseCallback<R>(parser, futureResponse));
+        return futureResponse;
     }
 
     private HttpClientContext prepareContext()
@@ -134,24 +137,59 @@ public class ConnectorCommon
         return context;
     }
 
-    private <R> R handleResponse(ResponseParser<R> parser, CloseableHttpResponse response) throws IOException
+    private final class ResponseCallback<R> implements FutureCallback<HttpResponse>
     {
-        StatusLine statusLine= response.getStatusLine();
-        if (statusLine.getStatusCode() == HttpStatus.SC_OK)
+        private final ResponseParser<R> parser;
+        private final CompletableFuture<R> futureResponse;
+
+        private ResponseCallback(ResponseParser<R> parser, CompletableFuture<R> futureResponse)
         {
-            HttpEntity entity = response.getEntity();
-            if (entity != null)
-            {
-                Charset charset = ContentType.getOrDefault(entity).getCharset();
-                Reader reader = new InputStreamReader(entity.getContent(), charset);
-                return parser.parseResponse(reader);
-            }
-            else
-            {
-                LOG.warn("Request failed "+statusLine.getReasonPhrase()+" "+statusLine.getStatusCode());
+            this.parser = parser;
+            this.futureResponse = futureResponse;
+        }
+
+        @Override
+        public void completed(HttpResponse response)
+        {
+            try {
+                R result = handleResponse(parser, response);
+                futureResponse.complete(result);
+            } catch(Exception ex) {
+                futureResponse.completeExceptionally(ex);
             }
         }
-        return null;
+
+        private R handleResponse(ResponseParser<R> parser, HttpResponse response) throws IOException
+        {
+            StatusLine statusLine= response.getStatusLine();
+            if (statusLine.getStatusCode() == HttpStatus.SC_OK)
+            {
+                HttpEntity entity = response.getEntity();
+                if (entity != null)
+                {
+                    Charset charset = ContentType.getOrDefault(entity).getCharset();
+                    Reader reader = new InputStreamReader(entity.getContent(), charset);
+                    return parser.parseResponse(reader);
+                }
+                else
+                {
+                    LOG.warn("Request failed "+statusLine.getReasonPhrase()+" "+statusLine.getStatusCode());
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public void failed(Exception ex)
+        {
+            futureResponse.completeExceptionally(ex);
+        }
+
+        @Override
+        public void cancelled()
+        {
+            futureResponse.cancel(true);
+        }
     }
 
     public interface ResponseParser<R>
