@@ -1,9 +1,11 @@
 package org.aarboard.nextcloud.api.utils;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import org.aarboard.nextcloud.api.ServerConfig;
@@ -26,6 +28,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.ContentType;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
@@ -54,19 +57,7 @@ public class ConnectorCommon
     private <R> R tryExecuteGet(String part, List<NameValuePair> queryParams, ResponseParser<R> parser) throws IOException
     {
         CloseableHttpClient httpclient = HttpClients.createDefault();
-        HttpHost targetHost = new HttpHost(serverConfig.getServerName(), serverConfig.getPort(), serverConfig.isUseHTTPS() ? "https" : "http");
-        AuthCache authCache = new BasicAuthCache();
-        authCache.put(targetHost, new BasicScheme());
-
-        CredentialsProvider credsProvider = new BasicCredentialsProvider();
-        UsernamePasswordCredentials credentials
-         = new UsernamePasswordCredentials(serverConfig.getUserName(), serverConfig.getPassword());
-        credsProvider.setCredentials(AuthScope.ANY, credentials);
-
-        // Add AuthCache to the execution context
-        final HttpClientContext context = HttpClientContext.create();
-        context.setCredentialsProvider(credsProvider);
-        context.setAuthCache(authCache);
+        final HttpClientContext context = prepareContext();
 
         URI url= buildUrl(part, queryParams);
 
@@ -76,14 +67,7 @@ public class ConnectorCommon
         httpget.setProtocolVersion(HttpVersion.HTTP_1_1);
 
         try(CloseableHttpResponse response = httpclient.execute(httpget, context)) {
-            StatusLine statusLine= response.getStatusLine();
-            if (statusLine.getStatusCode() == HttpStatus.SC_OK)
-            {
-                HttpEntity entity = response.getEntity();
-                if (entity != null) {
-                    return parser.parseResponse(entity.getContent());
-                }
-            }
+            handleResponse(parser, response);
         }
         return null;
     }
@@ -100,19 +84,7 @@ public class ConnectorCommon
     private <R> R tryExecutePost(String part, List<NameValuePair> postParams, ResponseParser<R> parser) throws IOException
     {
         CloseableHttpClient httpclient = HttpClients.createDefault();
-        HttpHost targetHost = new HttpHost(serverConfig.getServerName(), serverConfig.getPort(), serverConfig.isUseHTTPS()  ? "https" : "http");
-        AuthCache authCache = new BasicAuthCache();
-        authCache.put(targetHost, new BasicScheme());
-
-        CredentialsProvider credsProvider = new BasicCredentialsProvider();
-        UsernamePasswordCredentials credentials
-         = new UsernamePasswordCredentials(serverConfig.getUserName(), serverConfig.getPassword());
-        credsProvider.setCredentials(AuthScope.ANY, credentials);
-
-        // Add AuthCache to the execution context
-        final HttpClientContext context = HttpClientContext.create();
-        context.setCredentialsProvider(credsProvider);
-        context.setAuthCache(authCache);
+        final HttpClientContext context = prepareContext();
 
         URI url= buildUrl(part, postParams);
 
@@ -122,18 +94,7 @@ public class ConnectorCommon
         httpPost.setProtocolVersion(HttpVersion.HTTP_1_1);
 
         try(CloseableHttpResponse response = httpclient.execute(httpPost, context)) {
-            StatusLine statusLine= response.getStatusLine();
-            if (statusLine.getStatusCode() == HttpStatus.SC_OK)
-            {
-                HttpEntity entity = response.getEntity();
-                if (entity != null) {
-                    return parser.parseResponse(entity.getContent());
-                }
-            }
-            else
-            {
-                LOG.warn("Post failed "+statusLine.getReasonPhrase()+" "+statusLine.getStatusCode());
-            }
+            handleResponse(parser, response);
         }
         return null;
     }
@@ -150,6 +111,22 @@ public class ConnectorCommon
     private <R> R tryExecuteDelete(String part1, String part2, ResponseParser<R> parser) throws IOException
     {
         CloseableHttpClient httpclient = HttpClients.createDefault();
+        final HttpClientContext context = prepareContext();
+
+        URI url= buildUrl(part1+"/"+part2, null);
+
+        HttpDelete httpPost = new HttpDelete(url.toString());
+        httpPost.addHeader("OCS-APIRequest", "true");
+        httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
+        httpPost.setProtocolVersion(HttpVersion.HTTP_1_1);
+
+        try (CloseableHttpResponse response = httpclient.execute(httpPost, context)) {
+            handleResponse(parser, response);
+        }
+        return null;
+    }
+
+    private HttpClientContext prepareContext() {
         HttpHost targetHost = new HttpHost(serverConfig.getServerName(), serverConfig.getPort(), serverConfig.isUseHTTPS() ? "https" : "http");
         AuthCache authCache = new BasicAuthCache();
         authCache.put(targetHost, new BasicScheme());
@@ -160,28 +137,10 @@ public class ConnectorCommon
         credsProvider.setCredentials(AuthScope.ANY, credentials);
 
         // Add AuthCache to the execution context
-        final HttpClientContext context = HttpClientContext.create();
+        HttpClientContext context = HttpClientContext.create();
         context.setCredentialsProvider(credsProvider);
         context.setAuthCache(authCache);
-
-        URI url= buildUrl(part1+"/"+part2, null);
-
-        HttpDelete httpPost = new HttpDelete(url.toString());
-        httpPost.addHeader("OCS-APIRequest", "true");
-        httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
-        httpPost.setProtocolVersion(HttpVersion.HTTP_1_1);
-
-        try (CloseableHttpResponse response = httpclient.execute(httpPost, context)) {
-            StatusLine statusLine= response.getStatusLine();
-            if (statusLine.getStatusCode() == HttpStatus.SC_OK)
-            {
-                HttpEntity entity = response.getEntity();
-                if (entity != null) {
-                    return parser.parseResponse(entity.getContent());
-                }
-            }
-        }
-        return null;
+        return context;
     }
 
     private URI buildUrl(String subPath, List<NameValuePair> queryParams)
@@ -202,7 +161,27 @@ public class ConnectorCommon
         }
     }
 
+    private <R> R handleResponse(ResponseParser<R> parser, CloseableHttpResponse response) throws IOException
+    {
+        StatusLine statusLine= response.getStatusLine();
+        if (statusLine.getStatusCode() == HttpStatus.SC_OK)
+        {
+            HttpEntity entity = response.getEntity();
+            if (entity != null)
+            {
+                Charset charset = ContentType.getOrDefault(entity).getCharset();
+                Reader reader = new InputStreamReader(entity.getContent(), charset);
+                return parser.parseResponse(reader);
+            }
+            else
+            {
+                LOG.warn("Request failed "+statusLine.getReasonPhrase()+" "+statusLine.getStatusCode());
+            }
+        }
+        return null;
+    }
+
     public interface ResponseParser<R> {
-        public R parseResponse(InputStream inputStream);
+        public R parseResponse(Reader reader);
     }
 }

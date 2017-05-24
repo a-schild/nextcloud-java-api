@@ -17,7 +17,7 @@
 package org.aarboard.nextcloud.api.utils;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.Reader;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -50,7 +50,7 @@ public class XMLAnswer implements ResponseParser<XMLAnswer> {
     }
 
     @Override
-    public XMLAnswer parseResponse(InputStream xmlStream)
+    public XMLAnswer parseResponse(Reader xmlStream)
     {
         try {
             tryParseAnswer(xmlStream);
@@ -66,12 +66,12 @@ public class XMLAnswer implements ResponseParser<XMLAnswer> {
         return this;
     }
 
-    private void tryParseAnswer(InputStream xmlStream) throws ParserConfigurationException, SAXException, IOException {
+    private void tryParseAnswer(Reader xmlStream) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setXIncludeAware(false);
         DocumentBuilder db = dbf.newDocumentBuilder();
         InputSource is = new InputSource();
-        is.setByteStream(xmlStream);
+        is.setCharacterStream(xmlStream);
         Document doc = db.parse(is);
         Node rootNode= doc.getFirstChild(); // OCS root tag
         if (rootNode.getNodeName().equals("ocs"))
