@@ -24,7 +24,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.aarboard.nextcloud.api.exception.NextcloudApiException;
-import org.aarboard.nextcloud.api.utils.ConnectorCommon.ResultParser;
+import org.aarboard.nextcloud.api.utils.ConnectorCommon.ResponseParser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
@@ -37,7 +37,7 @@ import org.xml.sax.SAXException;
  *
  * @author a.schild
  */
-public class XMLAnswer implements ResultParser<XMLAnswer> {
+public class XMLAnswer implements ResponseParser<XMLAnswer> {
     private final Log LOG = LogFactory.getLog(XMLAnswer.class);
     
     private String status= null;
@@ -50,15 +50,15 @@ public class XMLAnswer implements ResultParser<XMLAnswer> {
     }
 
     @Override
-    public XMLAnswer parseAnswer(InputStream xmlAnswer)
+    public XMLAnswer parseResponse(InputStream xmlStream)
     {
         try {
-            tryParseAnswer(xmlAnswer);
+            tryParseAnswer(xmlStream);
         } catch (Exception e) {
             throw new NextcloudApiException(e);
         } finally {
             try {
-                xmlAnswer.close();
+                xmlStream.close();
             } catch (IOException e) {
                 // Ignore
             }
@@ -66,37 +66,41 @@ public class XMLAnswer implements ResultParser<XMLAnswer> {
         return this;
     }
 
-    private void tryParseAnswer(InputStream xmlAnswer) throws ParserConfigurationException, SAXException, IOException {
+    private void tryParseAnswer(InputStream xmlStream) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setXIncludeAware(false);
         DocumentBuilder db = dbf.newDocumentBuilder();
         InputSource is = new InputSource();
-        is.setByteStream(xmlAnswer);
+        is.setByteStream(xmlStream);
         Document doc = db.parse(is);
         Node rootNode= doc.getFirstChild(); // OCS root tag
         if (rootNode.getNodeName().equals("ocs"))
         {
-            NodeList ocsChildren= rootNode.getChildNodes();
-            for (int i= 0; i < ocsChildren.getLength(); i++)
-            {
-                Node n= ocsChildren.item(i);
-                if (n.getNodeName().equals("meta"))
-                {
-                    handleMetaPart(n);
-                }
-                else if (n.getNodeName().equals("data"))
-                {
-                    handleDataPart(n);
-                }
-                else
-                {
-                    handleOtherPart(n);
-                }
-            }
+            handleOCS(rootNode);
         }
         else
         {
             throw new IllegalArgumentException("Root tag in answer is not <ocs> but <"+rootNode.getNodeName());
+        }
+    }
+
+    private void handleOCS(Node rootNode) {
+        NodeList ocsChildren= rootNode.getChildNodes();
+        for (int i= 0; i < ocsChildren.getLength(); i++)
+        {
+            Node n= ocsChildren.item(i);
+            if (n.getNodeName().equals("meta"))
+            {
+                handleMetaPart(n);
+            }
+            else if (n.getNodeName().equals("data"))
+            {
+                handleDataPart(n);
+            }
+            else
+            {
+                handleOtherPart(n);
+            }
         }
     }
 

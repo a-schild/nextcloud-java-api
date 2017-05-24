@@ -42,7 +42,7 @@ public class ConnectorCommon
         this.serverConfig = serverConfig;
     }
 
-    public <R> R executeGet(String part, List<NameValuePair> queryParams, ResultParser<R> parser)
+    public <R> R executeGet(String part, List<NameValuePair> queryParams, ResponseParser<R> parser)
     {
         try {
             return tryExecuteGet(part, queryParams, parser);
@@ -51,7 +51,7 @@ public class ConnectorCommon
         }
     }
 
-    private <R> R tryExecuteGet(String part, List<NameValuePair> queryParams, ResultParser<R> parser) throws IOException
+    private <R> R tryExecuteGet(String part, List<NameValuePair> queryParams, ResponseParser<R> parser) throws IOException
     {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpHost targetHost = new HttpHost(serverConfig.getServerName(), serverConfig.getPort(), serverConfig.isUseHTTPS() ? "https" : "http");
@@ -81,14 +81,14 @@ public class ConnectorCommon
             {
                 HttpEntity entity = response.getEntity();
                 if (entity != null) {
-                    return parser.parseAnswer(entity.getContent());
+                    return parser.parseResponse(entity.getContent());
                 }
             }
         }
         return null;
     }
 
-    public <R> R executePost(String part, List<NameValuePair> postParams, ResultParser<R> parser)
+    public <R> R executePost(String part, List<NameValuePair> postParams, ResponseParser<R> parser)
     {
         try {
             return tryExecutePost(part, postParams, parser);
@@ -97,7 +97,7 @@ public class ConnectorCommon
         }
     }
 
-    private <R> R tryExecutePost(String part, List<NameValuePair> postParams, ResultParser<R> parser) throws IOException
+    private <R> R tryExecutePost(String part, List<NameValuePair> postParams, ResponseParser<R> parser) throws IOException
     {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpHost targetHost = new HttpHost(serverConfig.getServerName(), serverConfig.getPort(), serverConfig.isUseHTTPS()  ? "https" : "http");
@@ -127,7 +127,7 @@ public class ConnectorCommon
             {
                 HttpEntity entity = response.getEntity();
                 if (entity != null) {
-                    return parser.parseAnswer(entity.getContent());
+                    return parser.parseResponse(entity.getContent());
                 }
             }
             else
@@ -138,7 +138,7 @@ public class ConnectorCommon
         return null;
     }
 
-    public <R> R executeDelete(String part1, String part2, ResultParser<R> parser)
+    public <R> R executeDelete(String part1, String part2, ResponseParser<R> parser)
     {
         try {
             return tryExecuteDelete(part1, part2, parser);
@@ -147,7 +147,7 @@ public class ConnectorCommon
         }
     }
 
-    private <R> R tryExecuteDelete(String part1, String part2, ResultParser<R> parser) throws IOException
+    private <R> R tryExecuteDelete(String part1, String part2, ResponseParser<R> parser) throws IOException
     {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpHost targetHost = new HttpHost(serverConfig.getServerName(), serverConfig.getPort(), serverConfig.isUseHTTPS() ? "https" : "http");
@@ -177,7 +177,7 @@ public class ConnectorCommon
             {
                 HttpEntity entity = response.getEntity();
                 if (entity != null) {
-                    return parser.parseAnswer(entity.getContent());
+                    return parser.parseResponse(entity.getContent());
                 }
             }
         }
@@ -202,7 +202,7 @@ public class ConnectorCommon
         }
     }
 
-    public interface ResultParser<R> {
-        public R parseAnswer(InputStream inputStream);
+    public interface ResponseParser<R> {
+        public R parseResponse(InputStream inputStream);
     }
 }
