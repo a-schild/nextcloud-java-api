@@ -110,12 +110,10 @@ public class ConnectorCommon
         request.addHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setProtocolVersion(HttpVersion.HTTP_1_1);
 
-        CloseableHttpAsyncClient httpclient = HttpAsyncClients.createDefault();
-        httpclient.start();
         HttpClientContext context = prepareContext();
 
         CompletableFuture<R> futureResponse = new CompletableFuture<>();
-        httpclient.execute(request, context, new ResponseCallback<R>(parser, futureResponse));
+        HttpAsyncClientSingleton.httpclient.execute(request, context, new ResponseCallback<R>(parser, futureResponse));
         return futureResponse;
     }
 
@@ -189,6 +187,18 @@ public class ConnectorCommon
         public void cancelled()
         {
             futureResponse.cancel(true);
+        }
+    }
+
+    private static class HttpAsyncClientSingleton
+    {
+        private static final CloseableHttpAsyncClient httpclient = HttpAsyncClients.createDefault();
+
+        private HttpAsyncClientSingleton() {
+        }
+
+        static {
+            httpclient.start();
         }
     }
 
