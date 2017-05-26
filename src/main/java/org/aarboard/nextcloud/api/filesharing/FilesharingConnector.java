@@ -22,10 +22,9 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.aarboard.nextcloud.api.ServerConfig;
-import org.aarboard.nextcloud.api.utils.NextcloudResponseHelper;
+import org.aarboard.nextcloud.api.exception.MoreThanOneShareFoundException;
 import org.aarboard.nextcloud.api.utils.ConnectorCommon;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.aarboard.nextcloud.api.utils.NextcloudResponseHelper;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -38,8 +37,6 @@ import org.apache.http.message.BasicNameValuePair;
  */
 public class FilesharingConnector
 {
-    private final static Log LOG = LogFactory.getLog(FilesharingConnector.class);
-
     private final static String ROOT_PART= "ocs/v1.php/apps/files_sharing/api/v1/";
     private final static String SHARES_PART= ROOT_PART+"shares";
 
@@ -74,7 +71,7 @@ public class FilesharingConnector
      */
     public Collection<Share> getShares(String path, boolean reShares, boolean subShares)
     {
-        return NextcloudResponseHelper.getAndWrapException(getSharesAsync(path,reShares,subShares)).shareList;
+        return NextcloudResponseHelper.getAndCheckStatus(getSharesAsync(path,reShares,subShares)).shareList;
     }
 
     public CompletableFuture<SharesXMLAnswer> getSharesAsync(String path, boolean reShares, boolean subShares)
@@ -103,24 +100,16 @@ public class FilesharingConnector
      */
     public Share getShareInfo(int shareId)
     {
-        SharesXMLAnswer xa= NextcloudResponseHelper.getAndWrapException(getShareInfoAsync(shareId));
-        if (xa.getStatusCode() == NextcloudResponseHelper.NC_OK)
+        SharesXMLAnswer xa= NextcloudResponseHelper.getAndCheckStatus(getShareInfoAsync(shareId));
+        if (xa.getShares() == null)
         {
-            if (xa.getShares() == null)
-            {
-                return null;
-            }
-            else if (xa.getShares().size() == 1)
-            {
-                return xa.getShares().get(0);
-            }
-            else
-            {
-                LOG.warn("More than one share found, not possible <"+shareId+">");
-                return null;
-            }
+            return null;
         }
-        return null;
+        else if (xa.getShares().size() == 1)
+        {
+            return xa.getShares().get(0);
+        }
+        throw new MoreThanOneShareFoundException(shareId);
     }
 
     public CompletableFuture<SharesXMLAnswer> getShareInfoAsync(int shareId)
@@ -146,7 +135,7 @@ public class FilesharingConnector
             String password,
             SharePermissions permissions)
     {
-        return NextcloudResponseHelper.getAndWrapException(doShareAsync(path, shareType, shareWithUserOrGroupId, publicUpload, password, permissions)).share;
+        return NextcloudResponseHelper.getAndCheckStatus(doShareAsync(path, shareType, shareWithUserOrGroupId, publicUpload, password, permissions)).share;
     }
 
     public CompletableFuture<SingleShareXMLAnswer> doShareAsync(

@@ -97,7 +97,7 @@ public class ProvisionConnector
     public Collection<User> getUsers(
             String search, int limit, int offset)
     {
-        return NextcloudResponseHelper.getAndWrapException(getUsersAsync(search, limit, offset)).userList;
+        return NextcloudResponseHelper.getAndCheckStatus(getUsersAsync(search, limit, offset)).userList;
     }
 
     public CompletableFuture<UsersXMLAnswer> getUsersAsync(
@@ -161,7 +161,7 @@ public class ProvisionConnector
      */
     public List<Group> getGroups(String search, int limit, int offset)
     {
-        return NextcloudResponseHelper.getAndWrapException(getGroupsAsync(search, limit, offset)).groupList;
+        return NextcloudResponseHelper.getAndCheckStatus(getGroupsAsync(search, limit, offset)).groupList;
     }
 
     public CompletableFuture<GroupsXMLAnswer> getGroupsAsync(String search, int limit, int offset)
