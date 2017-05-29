@@ -19,7 +19,6 @@ package org.aarboard.nextcloud.api.filesharing;
 import java.util.LinkedList;
 import java.util.List;
 import org.aarboard.nextcloud.api.utils.XMLAnswer;
-import org.w3c.dom.Node;
 
 /**
  *
@@ -27,30 +26,9 @@ import org.w3c.dom.Node;
  */
 public class SharesXMLAnswer extends XMLAnswer
 {
-
     protected List<Share>    shareList= new LinkedList<>();
-    
-    public SharesXMLAnswer() {
-    }
 
     public List<Share> getShares() {
         return shareList;
     }
-
-    @Override
-    protected void handleUnknownDataNode(Node otherDataNode) {
-        if (otherDataNode.getNodeName().equals("element"))
-        {
-            // Start share element
-            Share s= SingleShareXMLAnswer.parseSingleShare(otherDataNode.getChildNodes());
-            shareList.add(s);
-        }
-        else
-        {
-            super.handleUnknownDataNode(otherDataNode);
-        }
-    }
-    
-    
-    
 }

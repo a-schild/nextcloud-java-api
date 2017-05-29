@@ -6,4 +6,8 @@ public class NextcloudApiException extends RuntimeException {
     public NextcloudApiException(Throwable cause) {
         super(cause);
     }
+
+    public NextcloudApiException(String message) {
+        super(message);
+    }
 }

@@ -1,9 +1,13 @@
 package org.aarboard.nextcloud.api.utils;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.aarboard.nextcloud.api.ServerConfig;
 import org.aarboard.nextcloud.api.exception.NextcloudApiException;
@@ -11,6 +15,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
@@ -18,19 +23,21 @@ import org.apache.http.StatusLine;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.concurrent.FutureCallback;
+import org.apache.http.entity.ContentType;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.impl.nio.client.HttpAsyncClients;
 
 public class ConnectorCommon
 {
@@ -42,155 +49,40 @@ public class ConnectorCommon
         this.serverConfig = serverConfig;
     }
 
-    public String executeGet(String part, List<NameValuePair> queryParams)
+    public <R> CompletableFuture<R> executeGet(String part, List<NameValuePair> queryParams, ResponseParser<R> parser)
     {
         try {
-            return tryExecuteGet(part, queryParams);
+            URI url= buildUrl(part, queryParams);
+
+            HttpRequestBase request = new HttpGet(url.toString());
+            return executeRequest(parser, request);
         } catch (IOException e) {
             throw new NextcloudApiException(e);
         }
     }
 
-    private String tryExecuteGet(String part, List<NameValuePair> queryParams) throws IOException
-    {
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        HttpHost targetHost = new HttpHost(serverConfig.getServerName(), serverConfig.getPort(), serverConfig.isUseHTTPS() ? "https" : "http");
-        AuthCache authCache = new BasicAuthCache();
-        authCache.put(targetHost, new BasicScheme());
-
-        CredentialsProvider credsProvider = new BasicCredentialsProvider();
-        UsernamePasswordCredentials credentials
-         = new UsernamePasswordCredentials(serverConfig.getUserName(), serverConfig.getPassword());
-        credsProvider.setCredentials(AuthScope.ANY, credentials);
-
-        // Add AuthCache to the execution context
-        final HttpClientContext context = HttpClientContext.create();
-        context.setCredentialsProvider(credsProvider);
-        context.setAuthCache(authCache);
-
-        URI url= buildUrl(part, queryParams);
-
-        HttpGet httpget = new HttpGet(url.toString());
-        httpget.addHeader("OCS-APIRequest", "true");
-        httpget.addHeader("Content-Type", "application/x-www-form-urlencoded");
-        httpget.setProtocolVersion(HttpVersion.HTTP_1_1);
-
-        try(CloseableHttpResponse response = httpclient.execute(httpget, context)) {
-            StatusLine statusLine= response.getStatusLine();
-            if (statusLine.getStatusCode() == HttpStatus.SC_OK)
-            {
-                HttpEntity entity = response.getEntity();
-                if (entity != null) {
-                    return EntityUtils.toString(entity);
-                }
-            }
-            else
-            {
-                return null;
-            }
-        }
-        return null;
-    }
-
-    public String executePost(String part, List<NameValuePair> postParams)
+    public <R> CompletableFuture<R> executePost(String part, List<NameValuePair> postParams, ResponseParser<R> parser)
     {
         try {
-            return tryExecutePost(part, postParams);
+            URI url= buildUrl(part, postParams);
+
+            HttpRequestBase request = new HttpPost(url.toString());
+            return executeRequest(parser, request);
         } catch (IOException e) {
             throw new NextcloudApiException(e);
         }
     }
 
-    private String tryExecutePost(String part, List<NameValuePair> postParams) throws IOException
-    {
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        HttpHost targetHost = new HttpHost(serverConfig.getServerName(), serverConfig.getPort(), serverConfig.isUseHTTPS()  ? "https" : "http");
-        AuthCache authCache = new BasicAuthCache();
-        authCache.put(targetHost, new BasicScheme());
-
-        CredentialsProvider credsProvider = new BasicCredentialsProvider();
-        UsernamePasswordCredentials credentials
-         = new UsernamePasswordCredentials(serverConfig.getUserName(), serverConfig.getPassword());
-        credsProvider.setCredentials(AuthScope.ANY, credentials);
-
-        // Add AuthCache to the execution context
-        final HttpClientContext context = HttpClientContext.create();
-        context.setCredentialsProvider(credsProvider);
-        context.setAuthCache(authCache);
-
-        URI url= buildUrl(part, postParams);
-
-        HttpPost httpPost = new HttpPost(url.toString());
-        httpPost.addHeader("OCS-APIRequest", "true");
-        httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
-        httpPost.setProtocolVersion(HttpVersion.HTTP_1_1);
-
-        try(CloseableHttpResponse response = httpclient.execute(httpPost, context)) {
-            StatusLine statusLine= response.getStatusLine();
-            if (statusLine.getStatusCode() == HttpStatus.SC_OK)
-            {
-                HttpEntity entity = response.getEntity();
-                if (entity != null) {
-                    return EntityUtils.toString(entity);
-                }
-            }
-            else
-            {
-                LOG.warn("Post failed "+statusLine.getReasonPhrase()+" "+statusLine.getStatusCode());
-                return null;
-            }
-        }
-        return null;
-    }
-
-    public String executeDelete(String part1, String part2)
+    public <R> CompletableFuture<R> executeDelete(String part1, String part2, ResponseParser<R> parser)
     {
         try {
-            return tryExecuteDelete(part1, part2);
+            URI url= buildUrl(part1+"/"+part2, null);
+
+            HttpRequestBase request = new HttpDelete(url.toString());
+            return executeRequest(parser, request);
         } catch (IOException e) {
             throw new NextcloudApiException(e);
         }
-    }
-
-    private String tryExecuteDelete(String part1, String part2) throws IOException
-    {
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        HttpHost targetHost = new HttpHost(serverConfig.getServerName(), serverConfig.getPort(), serverConfig.isUseHTTPS() ? "https" : "http");
-        AuthCache authCache = new BasicAuthCache();
-        authCache.put(targetHost, new BasicScheme());
-
-        CredentialsProvider credsProvider = new BasicCredentialsProvider();
-        UsernamePasswordCredentials credentials
-         = new UsernamePasswordCredentials(serverConfig.getUserName(), serverConfig.getPassword());
-        credsProvider.setCredentials(AuthScope.ANY, credentials);
-
-        // Add AuthCache to the execution context
-        final HttpClientContext context = HttpClientContext.create();
-        context.setCredentialsProvider(credsProvider);
-        context.setAuthCache(authCache);
-
-        URI url= buildUrl(part1+"/"+part2, null);
-
-        HttpDelete httpPost = new HttpDelete(url.toString());
-        httpPost.addHeader("OCS-APIRequest", "true");
-        httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
-        httpPost.setProtocolVersion(HttpVersion.HTTP_1_1);
-
-        try (CloseableHttpResponse response = httpclient.execute(httpPost, context)) {
-            StatusLine statusLine= response.getStatusLine();
-            if (statusLine.getStatusCode() == HttpStatus.SC_OK)
-            {
-                HttpEntity entity = response.getEntity();
-                if (entity != null) {
-                    return EntityUtils.toString(entity);
-                }
-            }
-            else
-            {
-                return null;
-            }
-        }
-        return null;
     }
 
     private URI buildUrl(String subPath, List<NameValuePair> queryParams)
@@ -209,5 +101,109 @@ public class ConnectorCommon
         } catch (URISyntaxException e) {
             throw new NextcloudApiException(e);
         }
+    }
+
+    private <R> CompletableFuture<R> executeRequest(final ResponseParser<R> parser, HttpRequestBase request)
+            throws IOException, ClientProtocolException
+    {
+        request.addHeader("OCS-APIRequest", "true");
+        request.addHeader("Content-Type", "application/x-www-form-urlencoded");
+        request.setProtocolVersion(HttpVersion.HTTP_1_1);
+
+        HttpClientContext context = prepareContext();
+
+        CompletableFuture<R> futureResponse = new CompletableFuture<>();
+        HttpAsyncClientSingleton.httpclient.execute(request, context, new ResponseCallback<R>(parser, futureResponse));
+        return futureResponse;
+    }
+
+    private HttpClientContext prepareContext()
+    {
+        HttpHost targetHost = new HttpHost(serverConfig.getServerName(), serverConfig.getPort(), serverConfig.isUseHTTPS() ? "https" : "http");
+        AuthCache authCache = new BasicAuthCache();
+        authCache.put(targetHost, new BasicScheme());
+
+        CredentialsProvider credsProvider = new BasicCredentialsProvider();
+        UsernamePasswordCredentials credentials
+         = new UsernamePasswordCredentials(serverConfig.getUserName(), serverConfig.getPassword());
+        credsProvider.setCredentials(AuthScope.ANY, credentials);
+
+        // Add AuthCache to the execution context
+        HttpClientContext context = HttpClientContext.create();
+        context.setCredentialsProvider(credsProvider);
+        context.setAuthCache(authCache);
+        return context;
+    }
+
+    private final class ResponseCallback<R> implements FutureCallback<HttpResponse>
+    {
+        private final ResponseParser<R> parser;
+        private final CompletableFuture<R> futureResponse;
+
+        private ResponseCallback(ResponseParser<R> parser, CompletableFuture<R> futureResponse)
+        {
+            this.parser = parser;
+            this.futureResponse = futureResponse;
+        }
+
+        @Override
+        public void completed(HttpResponse response)
+        {
+            try {
+                R result = handleResponse(parser, response);
+                futureResponse.complete(result);
+            } catch(Exception ex) {
+                futureResponse.completeExceptionally(ex);
+            }
+        }
+
+        private R handleResponse(ResponseParser<R> parser, HttpResponse response) throws IOException
+        {
+            StatusLine statusLine= response.getStatusLine();
+            if (statusLine.getStatusCode() == HttpStatus.SC_OK)
+            {
+                HttpEntity entity = response.getEntity();
+                if (entity != null)
+                {
+                    Charset charset = ContentType.getOrDefault(entity).getCharset();
+                    Reader reader = new InputStreamReader(entity.getContent(), charset);
+                    return parser.parseResponse(reader);
+                }
+                else
+                {
+                    LOG.warn("Request failed "+statusLine.getReasonPhrase()+" "+statusLine.getStatusCode());
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public void failed(Exception ex)
+        {
+            futureResponse.completeExceptionally(ex);
+        }
+
+        @Override
+        public void cancelled()
+        {
+            futureResponse.cancel(true);
+        }
+    }
+
+    private static class HttpAsyncClientSingleton
+    {
+        private static final CloseableHttpAsyncClient httpclient = HttpAsyncClients.createDefault();
+
+        private HttpAsyncClientSingleton() {
+        }
+
+        static {
+            httpclient.start();
+        }
+    }
+
+    public interface ResponseParser<R>
+    {
+        public R parseResponse(Reader reader);
     }
 }

@@ -19,12 +19,13 @@ package org.aarboard.nextcloud.api.provisioning;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.aarboard.nextcloud.api.ServerConfig;
+import org.aarboard.nextcloud.api.utils.NextcloudResponseHelper;
 import org.aarboard.nextcloud.api.utils.ConnectorCommon;
 import org.aarboard.nextcloud.api.utils.XMLAnswer;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.aarboard.nextcloud.api.utils.XMLAnswerParser;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -35,12 +36,8 @@ import org.apache.http.message.BasicNameValuePair;
  * https://docs.nextcloud.com/server/11.0/admin_manual/configuration_user/user_provisioning_api.html
  * 
  */
-public class ProvisionConnector 
+public class ProvisionConnector
 {
-    private final static Log LOG = LogFactory.getLog(ProvisionConnector.class);
-
-    private final static int   NC_OK= 100; // Nextcloud OK message
-    
     private final static String ROOT_PART= "ocs/v1.php/cloud/";
     private final static String USERS_PART= ROOT_PART+"users";
     private final static String GROUPS_PART= ROOT_PART+"groups";
@@ -53,40 +50,40 @@ public class ProvisionConnector
 
     public boolean createUser(String userId, String password)
     {
+        return NextcloudResponseHelper.isStatusCodeOkay(createUserAsync(userId, password));
+    }
+
+    public CompletableFuture<XMLAnswer> createUserAsync(String userId, String password)
+    {
         List<NameValuePair> postParams= new LinkedList<>();
         postParams.add(new BasicNameValuePair("userid", userId));
         postParams.add(new BasicNameValuePair("password", password));
-        String postAnswer= connectorCommon.executePost(USERS_PART, postParams);
-        if (postAnswer != null)
-        {
-            LOG.debug("Create user answer");
-        }
-        XMLAnswer xa= new XMLAnswer();
-        xa.parseAnswer(postAnswer);
-        return xa.getStatusCode() == NC_OK;
+        return connectorCommon.executePost(USERS_PART, postParams, XMLAnswerParser.getDefaultInstance());
     }
 
     public boolean deleteUser(String userId)
     {
-        String postAnswer= connectorCommon.executeDelete(USERS_PART, userId);
-        if (postAnswer != null)
-        {
-            LOG.debug(postAnswer);
-        }
-        XMLAnswer xa= new XMLAnswer();
-        xa.parseAnswer(postAnswer);
-        return xa.getStatusCode() == NC_OK;
+        return NextcloudResponseHelper.isStatusCodeOkay(deleteUserAsync(userId));
+    }
+
+    public CompletableFuture<XMLAnswer> deleteUserAsync(String userId)
+    {
+        return connectorCommon.executeDelete(USERS_PART, userId, XMLAnswerParser.getDefaultInstance());
     }
 
     /**
      * Return all users of this instance
      * 
      * @return 
-     * @throws java.lang.Exception 
      */
     public Collection<User> getUsers()
     {
         return getUsers(null, -1, -1);
+    }
+
+    public CompletableFuture<UsersXMLAnswer> getUsersAsync()
+    {
+        return getUsersAsync(null, -1, -1);
     }
 
     /**
@@ -96,9 +93,14 @@ public class ProvisionConnector
      * @param limit pass -1 for no limit
      * @param offset pass -1 for no offset
      * @return 
-     * @throws java.lang.Exception 
      */
     public Collection<User> getUsers(
+            String search, int limit, int offset)
+    {
+        return NextcloudResponseHelper.getAndCheckStatus(getUsersAsync(search, limit, offset)).userList;
+    }
+
+    public CompletableFuture<UsersXMLAnswer> getUsersAsync(
             String search, int limit, int offset)
     {
         List<NameValuePair> queryParams= new LinkedList<>();
@@ -114,61 +116,55 @@ public class ProvisionConnector
         {
             queryParams.add(new BasicNameValuePair("search", search));
         }
-        String queryAnswer= connectorCommon.executeGet(USERS_PART, queryParams);
-        if (queryAnswer != null)
-        {
-            LOG.debug(queryAnswer);
-        }
-        UsersXMLAnswer xa= new UsersXMLAnswer();
-        xa.parseAnswer(queryAnswer);
-        if (xa.getStatusCode() == NC_OK)
-        {
-            return xa.getUsers();
-        }
-        return null;
+        return connectorCommon.executeGet(USERS_PART, queryParams, UsersXMLAnswerParser.getInstance());
     }
-    
+
     public boolean createGroup(String groupId)
+    {
+        return NextcloudResponseHelper.isStatusCodeOkay(createGroupAsync(groupId));
+    }
+
+    public CompletableFuture<XMLAnswer> createGroupAsync(String groupId)
     {
         List<NameValuePair> postParams= new LinkedList<>();
         postParams.add(new BasicNameValuePair("groupid", groupId));
-        String postAnswer= connectorCommon.executePost(GROUPS_PART, postParams);
-        if (postAnswer != null)
-        {
-            LOG.debug("Create group answer");
-        }
-        XMLAnswer xa= new XMLAnswer();
-        xa.parseAnswer(postAnswer);
-        return xa.getStatusCode() == NC_OK;
+        return connectorCommon.executePost(GROUPS_PART, postParams, XMLAnswerParser.getDefaultInstance());
     }
 
     public boolean deleteGroup(String groupId)
     {
-        String postAnswer= connectorCommon.executeDelete(GROUPS_PART, groupId);
-        if (postAnswer != null)
-        {
-            LOG.debug(postAnswer);
-        }
-        XMLAnswer xa= new XMLAnswer();
-        xa.parseAnswer(postAnswer);
-        return xa.getStatusCode() == NC_OK;
+        return NextcloudResponseHelper.isStatusCodeOkay(deleteGroupAsync(groupId));
     }
 
-    
-    public Collection<Group> getGroups()
+    public CompletableFuture<XMLAnswer> deleteGroupAsync(String groupId)
+    {
+        return connectorCommon.executeDelete(GROUPS_PART, groupId, XMLAnswerParser.getDefaultInstance());
+    }
+
+    public List<Group> getGroups()
     {
         return getGroups(null, -1, -1);
     }
-    
+
+    public CompletableFuture<GroupsXMLAnswer> getGroupsAsync()
+    {
+        return getGroupsAsync(null, -1, -1);
+    }
+
     /**
-     * Return matching users
+     * Return matching groups
      * 
      * @param search pass null when you don't wish to filter
      * @param limit pass -1 for no limit
      * @param offset pass -1 for no offset
      * @return 
      */
-    public Collection<Group> getGroups(String search, int limit, int offset)
+    public List<Group> getGroups(String search, int limit, int offset)
+    {
+        return NextcloudResponseHelper.getAndCheckStatus(getGroupsAsync(search, limit, offset)).groupList;
+    }
+
+    public CompletableFuture<GroupsXMLAnswer> getGroupsAsync(String search, int limit, int offset)
     {
         List<NameValuePair> queryParams= new LinkedList<>();
         if (limit != -1)
@@ -184,17 +180,6 @@ public class ProvisionConnector
             queryParams.add(new BasicNameValuePair("search", search));
         }
 
-        String queryAnswer= connectorCommon.executeGet(GROUPS_PART, queryParams);
-        if (queryAnswer != null)
-        {
-            LOG.debug(queryAnswer);
-        }
-        GroupsXMLAnswer xa= new GroupsXMLAnswer();
-        xa.parseAnswer(queryAnswer);
-        if (xa.getStatusCode() == NC_OK)
-        {
-            return xa.getGroups();
-        }
-        return null;
+        return connectorCommon.executeGet(GROUPS_PART, queryParams, GroupsXMLAnswerParser.getInstance());
     }
 }

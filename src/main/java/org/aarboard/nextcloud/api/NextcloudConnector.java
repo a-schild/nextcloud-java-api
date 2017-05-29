@@ -19,71 +19,112 @@ package org.aarboard.nextcloud.api;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.aarboard.nextcloud.api.filesharing.FilesharingConnector;
 import org.aarboard.nextcloud.api.filesharing.Share;
 import org.aarboard.nextcloud.api.filesharing.SharePermissions;
 import org.aarboard.nextcloud.api.filesharing.ShareType;
+import org.aarboard.nextcloud.api.filesharing.SharesXMLAnswer;
+import org.aarboard.nextcloud.api.filesharing.SingleShareXMLAnswer;
 import org.aarboard.nextcloud.api.provisioning.Group;
+import org.aarboard.nextcloud.api.provisioning.GroupsXMLAnswer;
 import org.aarboard.nextcloud.api.provisioning.ProvisionConnector;
 import org.aarboard.nextcloud.api.provisioning.User;
+import org.aarboard.nextcloud.api.provisioning.UsersXMLAnswer;
+import org.aarboard.nextcloud.api.utils.XMLAnswer;
 import org.aarboard.nextcloud.api.webdav.Files;
 import org.aarboard.nextcloud.api.webdav.Folders;
 
 public class NextcloudConnector {
-    
+
     private final ServerConfig    _serverConfig;
-    
-    public NextcloudConnector(String serverName, boolean useHTTPS, int port, String userName, String password ) 
+    private final ProvisionConnector pc;
+    private final FilesharingConnector fc;
+    private final Folders fd;
+    private final Files fl;
+
+    public NextcloudConnector(String serverName, boolean useHTTPS, int port, String userName, String password)
     {
         _serverConfig= new ServerConfig(serverName, useHTTPS, port, userName, password);
+        pc= new ProvisionConnector(_serverConfig);
+        fc= new FilesharingConnector(_serverConfig);
+        fd= new Folders(_serverConfig);
+        fl= new Files(_serverConfig);
     }
-    
+
     public boolean createUser(String userId, String password)
     {
-        ProvisionConnector pc= new ProvisionConnector(_serverConfig);
         return pc.createUser(userId, password);
+    }
+
+    public CompletableFuture<XMLAnswer> createUserAsync(String userId, String password)
+    {
+        return pc.createUserAsync(userId, password);
     }
 
     public boolean deleteUser(String userId)
     {
-        ProvisionConnector pc= new ProvisionConnector(_serverConfig);
         return pc.deleteUser(userId);
+    }
+
+    public CompletableFuture<XMLAnswer> deleteUserAsync(String userId)
+    {
+        return pc.deleteUserAsync(userId);
     }
 
     public boolean createGroup(String groupId)
     {
-        ProvisionConnector pc= new ProvisionConnector(_serverConfig);
         return pc.createGroup(groupId);
     }
-    
+
+    public CompletableFuture<XMLAnswer> createGroupAsync(String groupId)
+    {
+        return pc.createGroupAsync(groupId);
+    }
+
     public Collection<User> getUsers()
     {
-        ProvisionConnector pc= new ProvisionConnector(_serverConfig);
         return pc.getUsers();
     }
-    
+
     public Collection<User> getUsers(
             String search, int limit, int offset)
     {
-        ProvisionConnector pc= new ProvisionConnector(_serverConfig);
         return pc.getUsers(search, limit, offset);
     }
-    
-    
+
+    public CompletableFuture<UsersXMLAnswer> getUsersAsync()
+    {
+        return pc.getUsersAsync();
+    }
+
+    public CompletableFuture<UsersXMLAnswer> getUsersAsync(
+            String search, int limit, int offset)
+    {
+        return pc.getUsersAsync(search, limit, offset);
+    }
+
     public boolean deleteGroup(String groupId)
     {
-        ProvisionConnector pc= new ProvisionConnector(_serverConfig);
         return pc.deleteGroup(groupId);
     }
 
-    
+    public CompletableFuture<XMLAnswer> deleteGroupAsync(String groupId)
+    {
+        return pc.deleteGroupAsync(groupId);
+    }
+
+    public CompletableFuture<GroupsXMLAnswer> getGroupsAsync()
+    {
+        return pc.getGroupsAsync();
+    }
+
     public Collection<Group> getGroups()
     {
-        ProvisionConnector pc= new ProvisionConnector(_serverConfig);
         return pc.getGroups();
     }
-    
+
     /**
      * Return matching users
      * 
@@ -94,34 +135,34 @@ public class NextcloudConnector {
      */
     public Collection<Group> getGroups(String search, int limit, int offset)
     {
-        ProvisionConnector pc= new ProvisionConnector(_serverConfig);
         return pc.getGroups(search, limit, offset);
+    }
+
+    public CompletableFuture<GroupsXMLAnswer> getGroupsAsync(String search, int limit, int offset)
+    {
+        return pc.getGroupsAsync(search, limit, offset);
     }
 
     public List<String> getFolders(String path)
     {
-        Folders fc= new Folders(_serverConfig);
-        return fc.getFolders(path);
+        return fd.getFolders(path);
     }
-    
+
     public boolean folderExists(String path)
     {
-        Folders fc= new Folders(_serverConfig);
-        return fc.exists(path);
+        return fd.exists(path);
     }
 
     public void createFolder(String path)
     {
-        Folders fc= new Folders(_serverConfig);
-        fc.createFolder(path);
+        fd.createFolder(path);
     }
 
     public void deleteFolder(String path)
     {
-        Folders fc= new Folders(_serverConfig);
-        fc.deleteFolder(path);
+        fd.deleteFolder(path);
     }
-    
+
     /**
      * 
      * @param path                  path to the file/folder which should be shared
@@ -131,7 +172,6 @@ public class NextcloudConnector {
      * @param password              password to protect public link Share with
      * @param permissions           1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all (default: 31, for public shares: 1)
      * @return new Share ID if success
-     * @throws Exception 
      */
     public Share doShare(
             String path,
@@ -141,26 +181,38 @@ public class NextcloudConnector {
             String password,
             SharePermissions permissions)
     {
-        FilesharingConnector fc= new FilesharingConnector(_serverConfig);
         return fc.doShare(path, shareType, shareWithUserOrGroupId, publicUpload, password, permissions);
     }
-    
+
+    public CompletableFuture<SingleShareXMLAnswer> doShareAsync(
+            String path,
+            ShareType shareType,
+            String shareWithUserOrGroupId,
+            Boolean publicUpload,
+            String password,
+            SharePermissions permissions)
+    {
+        return fc.doShareAsync(path, shareType, shareWithUserOrGroupId, publicUpload, password, permissions);
+    }
+
     public Collection<Share> getShares()
     {
-        FilesharingConnector fc= new FilesharingConnector(_serverConfig);
         return fc.getShares();
-    }    
-    
+    }
+
+    public CompletableFuture<SharesXMLAnswer> getSharesAsync()
+    {
+        return fc.getSharesAsync();
+    }
+
     /**
      * 
      * @param fileInputStream      inputstream of the file which should be uploaded
      * @param remotePath           path where the file should be uploaded to
-     * @throws Exception
      */
     public void uploadFile(InputStream fileInputStream, String remotePath)
     {
-        Files f = new Files(_serverConfig);
-        f.uploadFile(fileInputStream, remotePath);
+        fl.uploadFile(fileInputStream, remotePath);
     }
 
     /**
@@ -168,21 +220,19 @@ public class NextcloudConnector {
      * @param remotePath
      */
     public void removeFile(String path){
-    	Files f = new Files(_serverConfig);
-    	f.removeFile(path);
+        fl.removeFile(path);
     }
-    
+
     /**
      * Return if the file exists ore not
-     * 
+     *
      * @param path path to the file
      * @return boolean value whether the file exists or not
      */
     public boolean fileExists(String path){
-    	Files f = new Files(_serverConfig);
-    	return f.fileExists(path);
+        return fl.fileExists(path);
     }
-    
+
     /**
      * Return all shares of this user
      * 
@@ -190,26 +240,30 @@ public class NextcloudConnector {
      * @param reShares  returns not only the shares from the current user but all shares from the given file
      * @param subShares returns all shares within a folder, given that path defines a folder
      * @return 
-     * @throws java.lang.Exception 
      */
-    
     public Collection<Share> getShares(String path, boolean reShares, boolean subShares)
     {
-        FilesharingConnector fc= new FilesharingConnector(_serverConfig);
         return fc.getShares(path, reShares, subShares);
-    }    
-    
+    }
+
+    public CompletableFuture<SharesXMLAnswer> getSharesAsync(String path, boolean reShares, boolean subShares)
+    {
+        return fc.getSharesAsync(path, reShares, subShares);
+    }
+
     /**
      * Return share info for a single share
      * 
-     * @param shareId      id of chare (Not path of share)
+     * @param shareId      id of share (Not path of share)
      * @return 
-     * @throws java.lang.Exception 
      */
     public Share getShareInfo(int shareId)
     {
-        FilesharingConnector fc= new FilesharingConnector(_serverConfig);
         return fc.getShareInfo(shareId);
-    }    
-    
+    }
+
+    public CompletableFuture<SharesXMLAnswer> getShareInfoAsync(int shareId)
+    {
+        return fc.getShareInfoAsync(shareId);
+    }
 }
