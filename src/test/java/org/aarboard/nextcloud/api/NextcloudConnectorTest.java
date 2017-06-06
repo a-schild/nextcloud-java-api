@@ -119,6 +119,16 @@ public class NextcloudConnectorTest {
         }
     }
 
+    @Test
+    public void testEditUser() throws Exception {
+        System.out.println("editUser");
+        if (_nc != null)
+        {
+            boolean result = _nc.editUser("admin", "twitter", "test");
+            assertTrue(result);
+        }
+    }
+
     /**
      * Test of createGroup method, of class Connector.
      */

@@ -26,6 +26,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.client.utils.URIBuilder;
@@ -63,6 +64,18 @@ public class ConnectorCommon
             URI url= buildUrl(part, postParams);
 
             HttpRequestBase request = new HttpPost(url.toString());
+            return executeRequest(parser, request);
+        } catch (IOException e) {
+            throw new NextcloudApiException(e);
+        }
+    }
+
+    public <R> CompletableFuture<R> executePut(String part, List<NameValuePair> postParams, ResponseParser<R> parser)
+    {
+        try {
+            URI url= buildUrl(part, postParams);
+
+            HttpRequestBase request = new HttpPut(url.toString());
             return executeRequest(parser, request);
         } catch (IOException e) {
             throw new NextcloudApiException(e);

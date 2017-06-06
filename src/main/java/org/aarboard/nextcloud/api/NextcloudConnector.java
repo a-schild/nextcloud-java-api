@@ -115,6 +115,16 @@ public class NextcloudConnector {
         return pc.getUserAsync(userId);
     }
 
+    public boolean editUser(String userId, String key, String value)
+    {
+        return pc.editUser(userId, key, value);
+    }
+
+    public CompletableFuture<XMLAnswer> editUserAsync(String userId, String key, String value)
+    {
+        return pc.editUserAsync(userId, key, value);
+    }
+
     public boolean deleteGroup(String groupId)
     {
         return pc.deleteGroup(groupId);
