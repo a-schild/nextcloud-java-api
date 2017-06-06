@@ -67,189 +67,56 @@ public class Share
     private String url;
     private String mimetype;
 
-    public Share() {
-    }
-
-    /**
-     * @return the id
-     */
     public int getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    /**
-     * @return the shareType
-     */
     public ShareType getShareType() {
         return shareType;
     }
 
-    /**
-     * @param shareType the shareType to set
-     */
-    public void setShareType(ShareType shareType) {
-        this.shareType = shareType;
-    }
-
-    /**
-     * @return the ownerId
-     */
     public String getOwnerId() {
         return ownerId;
     }
 
-    /**
-     * @param ownerId the ownerId to set
-     */
-    public void setOwnerId(String ownerId) {
-        this.ownerId = ownerId;
-    }
-
-    /**
-     * @return the ownerDisplayName
-     */
     public String getOwnerDisplayName() {
         return ownerDisplayName;
     }
 
-    /**
-     * @param ownerDisplayName the ownerDisplayName to set
-     */
-    public void setOwnerDisplayName(String ownerDisplayName) {
-        this.ownerDisplayName = ownerDisplayName;
-    }
-
-    /**
-     * @return the sharePermissions
-     */
     public SharePermissions getSharePermissions() {
         return sharePermissions;
     }
 
-    /**
-     * @param sharePermissions the sharePermissions to set
-     */
-    public void setSharePermissions(SharePermissions sharePermissions) {
-        this.sharePermissions = sharePermissions;
-    }
-
-    /**
-     * @return the fileOwnerId
-     */
     public String getFileOwnerId() {
         return fileOwnerId;
     }
 
-    /**
-     * @param fileOwnerId the fileOwnerId to set
-     */
-    public void setFileOwnerId(String fileOwnerId) {
-        this.fileOwnerId = fileOwnerId;
-    }
-
-    /**
-     * @return the fileOwnerDisplayName
-     */
     public String getFileOwnerDisplayName() {
         return fileOwnerDisplayName;
     }
 
-    /**
-     * @param fileOwnerDisplayName the fileOwnerDisplayName to set
-     */
-    public void setFileOwnerDisplayName(String fileOwnerDisplayName) {
-        this.fileOwnerDisplayName = fileOwnerDisplayName;
-    }
-
-    /**
-     * @return the path
-     */
     public String getPath() {
         return path;
     }
 
-    /**
-     * @param path the path to set
-     */
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    /**
-     * @return the itemType
-     */
     public ItemType getItemType() {
         return itemType;
     }
 
-    /**
-     * @param itemType the itemType to set
-     */
-    public void setItemType(ItemType itemType) {
-        this.itemType = itemType;
-    }
-
-    /**
-     * @return the fileTarget
-     */
     public String getFileTarget() {
         return fileTarget;
     }
 
-    /**
-     * @param fileTarget the fileTarget to set
-     */
-    public void setFileTarget(String fileTarget) {
-        this.fileTarget = fileTarget;
-    }
-
-    /**
-     * @return the shareWithId
-     */
     public String getShareWithId() {
         return shareWithId;
     }
 
-    /**
-     * @param shareWithId the shareWithId to set
-     */
-    public void setShareWithId(String shareWithId) {
-        this.shareWithId = shareWithId;
-    }
-
-    /**
-     * @return the shareWithDisplayName
-     */
     public String getShareWithDisplayName() {
         return shareWithDisplayName;
     }
 
-    /**
-     * @param shareWithDisplayName the shareWithDisplayName to set
-     */
-    public void setShareWithDisplayName(String shareWithDisplayName) {
-        this.shareWithDisplayName = shareWithDisplayName;
-    }
-
-    /**
-    * @return the token
-    */
     public String getToken() {
         return token;
-    }
-
-    /**
-     * @param token the token to set
-     */
-    public void setToken(String token) {
-        this.token = token;
     }
 
     public Instant getShareTime() {
