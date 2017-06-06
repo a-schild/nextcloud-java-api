@@ -16,8 +16,14 @@
  */
 package org.aarboard.nextcloud.api.provisioning;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.aarboard.nextcloud.api.utils.XMLAnswer;
 
@@ -25,11 +31,21 @@ import org.aarboard.nextcloud.api.utils.XMLAnswer;
  *
  * @author a.schild
  */
-public class UsersXMLAnswer extends XMLAnswer {
-    List<User>  userList= new LinkedList<>();
+@XmlRootElement(name = "ocs")
+public class UsersXMLAnswer extends XMLAnswer
+{
+    private Data data;
 
-    public List<User> getUsers()
+    public List<String> getUsers()
     {
-        return userList;
+        return data.users;
+    }
+
+    @XmlAccessorType(XmlAccessType.FIELD)
+    private static final class Data
+    {
+        @XmlElementWrapper(name = "users")
+        @XmlElement(name = "element")
+        private List<String> users = new ArrayList<>();
     }
 }

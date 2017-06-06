@@ -25,6 +25,7 @@ import org.aarboard.nextcloud.api.ServerConfig;
 import org.aarboard.nextcloud.api.exception.MoreThanOneShareFoundException;
 import org.aarboard.nextcloud.api.utils.ConnectorCommon;
 import org.aarboard.nextcloud.api.utils.NextcloudResponseHelper;
+import org.aarboard.nextcloud.api.utils.XMLAnswerParser;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -71,7 +72,7 @@ public class FilesharingConnector
      */
     public Collection<Share> getShares(String path, boolean reShares, boolean subShares)
     {
-        return NextcloudResponseHelper.getAndCheckStatus(getSharesAsync(path,reShares,subShares)).shareList;
+        return NextcloudResponseHelper.getAndCheckStatus(getSharesAsync(path,reShares,subShares)).getShares();
     }
 
     public CompletableFuture<SharesXMLAnswer> getSharesAsync(String path, boolean reShares, boolean subShares)
@@ -89,7 +90,7 @@ public class FilesharingConnector
         {
             queryParams.add(new BasicNameValuePair("subfiles", "true"));
         }
-        return connectorCommon.executeGet(SHARES_PART, queryParams, SharesXMLAnswerParser.getInstance());
+        return connectorCommon.executeGet(SHARES_PART, queryParams, XMLAnswerParser.getInstance(SharesXMLAnswer.class));
     }
 
     /**
@@ -114,7 +115,7 @@ public class FilesharingConnector
 
     public CompletableFuture<SharesXMLAnswer> getShareInfoAsync(int shareId)
     {
-        return connectorCommon.executeGet(SHARES_PART+"/"+Integer.toString(shareId), null, SharesXMLAnswerParser.getInstance());
+        return connectorCommon.executeGet(SHARES_PART+"/"+Integer.toString(shareId), null, XMLAnswerParser.getInstance(SharesXMLAnswer.class));
     }
 
     /**
@@ -135,7 +136,7 @@ public class FilesharingConnector
             String password,
             SharePermissions permissions)
     {
-        return NextcloudResponseHelper.getAndCheckStatus(doShareAsync(path, shareType, shareWithUserOrGroupId, publicUpload, password, permissions)).share;
+        return NextcloudResponseHelper.getAndCheckStatus(doShareAsync(path, shareType, shareWithUserOrGroupId, publicUpload, password, permissions)).getShare();
     }
 
     public CompletableFuture<SingleShareXMLAnswer> doShareAsync(
@@ -163,6 +164,6 @@ public class FilesharingConnector
             postParams.add(new BasicNameValuePair("permissions", Integer.toString(permissions.getCurrentPermission())));
         }
 
-        return connectorCommon.executePost(SHARES_PART, postParams, SingleShareXMLAnswerParser.getInstance());
+        return connectorCommon.executePost(SHARES_PART, postParams, XMLAnswerParser.getInstance(SingleShareXMLAnswer.class));
     }
 }

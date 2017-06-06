@@ -19,8 +19,6 @@ package org.aarboard.nextcloud.api;
 import java.io.FileInputStream;
 import java.util.Collection;
 import java.util.List;
-import org.aarboard.nextcloud.api.provisioning.Group;
-import org.aarboard.nextcloud.api.provisioning.User;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -56,7 +54,7 @@ public class NextcloudConnectorTest {
         System.out.println("getUsers");
         if (_nc != null)
         {
-            Collection<User> result = _nc.getUsers();
+            Collection<String> result = _nc.getUsers();
             assertNotNull(result);
         }
     }
@@ -72,7 +70,7 @@ public class NextcloudConnectorTest {
             String search = null;
             int limit = -1;
             int offset = -1;
-            Collection<User> result = _nc.getUsers(search, limit, offset);
+            Collection<String> result = _nc.getUsers(search, limit, offset);
             assertNotNull(result);
         }
     }
@@ -88,7 +86,7 @@ public class NextcloudConnectorTest {
             String search = null;
             int limit = -1;
             int offset = -1;
-            Collection<Group> result = _nc.getGroups(search, limit, offset);
+            Collection<String> result = _nc.getGroups(search, limit, offset);
             assertNotNull(result);
         }
     }
@@ -101,7 +99,7 @@ public class NextcloudConnectorTest {
         System.out.println("getUsers");
         if (_nc != null)
         {
-            Collection<User> result = _nc.getUsers();
+            Collection<String> result = _nc.getUsers();
             assertNotNull(result);
         }
     }
@@ -144,7 +142,7 @@ public class NextcloudConnectorTest {
         System.out.println("getGroups");
         if (_nc != null)
         {
-            Collection<Group> result = _nc.getGroups();
+            Collection<String> result = _nc.getGroups();
             assertNotNull(result);
         }
     }

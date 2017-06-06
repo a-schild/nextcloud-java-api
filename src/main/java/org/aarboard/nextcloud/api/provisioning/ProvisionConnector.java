@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 a.schild
  *
  * This program is free software: you can redistribute it and/or modify
@@ -32,9 +32,9 @@ import org.apache.http.message.BasicNameValuePair;
 /**
  *
  * @author a.schild
- * 
+ *
  * https://docs.nextcloud.com/server/11.0/admin_manual/configuration_user/user_provisioning_api.html
- * 
+ *
  */
 public class ProvisionConnector
 {
@@ -58,7 +58,7 @@ public class ProvisionConnector
         List<NameValuePair> postParams= new LinkedList<>();
         postParams.add(new BasicNameValuePair("userid", userId));
         postParams.add(new BasicNameValuePair("password", password));
-        return connectorCommon.executePost(USERS_PART, postParams, XMLAnswerParser.getDefaultInstance());
+        return connectorCommon.executePost(USERS_PART, postParams, XMLAnswerParser.getInstance(XMLAnswer.class));
     }
 
     public boolean deleteUser(String userId)
@@ -68,15 +68,15 @@ public class ProvisionConnector
 
     public CompletableFuture<XMLAnswer> deleteUserAsync(String userId)
     {
-        return connectorCommon.executeDelete(USERS_PART, userId, XMLAnswerParser.getDefaultInstance());
+        return connectorCommon.executeDelete(USERS_PART, userId, XMLAnswerParser.getInstance(XMLAnswer.class));
     }
 
     /**
      * Return all users of this instance
-     * 
-     * @return 
+     *
+     * @return
      */
-    public Collection<User> getUsers()
+    public Collection<String> getUsers()
     {
         return getUsers(null, -1, -1);
     }
@@ -87,17 +87,17 @@ public class ProvisionConnector
     }
 
     /**
-     * Return matching users
-     * 
+     * Return matching user ids
+     *
      * @param search pass null when you don't wish to filter
      * @param limit pass -1 for no limit
      * @param offset pass -1 for no offset
-     * @return 
+     * @return
      */
-    public Collection<User> getUsers(
+    public Collection<String> getUsers(
             String search, int limit, int offset)
     {
-        return NextcloudResponseHelper.getAndCheckStatus(getUsersAsync(search, limit, offset)).userList;
+        return NextcloudResponseHelper.getAndCheckStatus(getUsersAsync(search, limit, offset)).getUsers();
     }
 
     public CompletableFuture<UsersXMLAnswer> getUsersAsync(
@@ -116,7 +116,7 @@ public class ProvisionConnector
         {
             queryParams.add(new BasicNameValuePair("search", search));
         }
-        return connectorCommon.executeGet(USERS_PART, queryParams, UsersXMLAnswerParser.getInstance());
+        return connectorCommon.executeGet(USERS_PART, queryParams, XMLAnswerParser.getInstance(UsersXMLAnswer.class));
     }
 
     public boolean createGroup(String groupId)
@@ -128,7 +128,7 @@ public class ProvisionConnector
     {
         List<NameValuePair> postParams= new LinkedList<>();
         postParams.add(new BasicNameValuePair("groupid", groupId));
-        return connectorCommon.executePost(GROUPS_PART, postParams, XMLAnswerParser.getDefaultInstance());
+        return connectorCommon.executePost(GROUPS_PART, postParams, XMLAnswerParser.getInstance(XMLAnswer.class));
     }
 
     public boolean deleteGroup(String groupId)
@@ -138,10 +138,10 @@ public class ProvisionConnector
 
     public CompletableFuture<XMLAnswer> deleteGroupAsync(String groupId)
     {
-        return connectorCommon.executeDelete(GROUPS_PART, groupId, XMLAnswerParser.getDefaultInstance());
+        return connectorCommon.executeDelete(GROUPS_PART, groupId, XMLAnswerParser.getInstance(XMLAnswer.class));
     }
 
-    public List<Group> getGroups()
+    public List<String> getGroups()
     {
         return getGroups(null, -1, -1);
     }
@@ -159,9 +159,9 @@ public class ProvisionConnector
      * @param offset pass -1 for no offset
      * @return 
      */
-    public List<Group> getGroups(String search, int limit, int offset)
+    public List<String> getGroups(String search, int limit, int offset)
     {
-        return NextcloudResponseHelper.getAndCheckStatus(getGroupsAsync(search, limit, offset)).groupList;
+        return NextcloudResponseHelper.getAndCheckStatus(getGroupsAsync(search, limit, offset)).getGroups();
     }
 
     public CompletableFuture<GroupsXMLAnswer> getGroupsAsync(String search, int limit, int offset)
@@ -180,6 +180,6 @@ public class ProvisionConnector
             queryParams.add(new BasicNameValuePair("search", search));
         }
 
-        return connectorCommon.executeGet(GROUPS_PART, queryParams, GroupsXMLAnswerParser.getInstance());
+        return connectorCommon.executeGet(GROUPS_PART, queryParams, XMLAnswerParser.getInstance(GroupsXMLAnswer.class));
     }
 }

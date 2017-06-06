@@ -16,19 +16,27 @@
  */
 package org.aarboard.nextcloud.api.filesharing;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.aarboard.nextcloud.api.utils.XMLAnswer;
 
 /**
  *
  * @author a.schild
  */
+@XmlRootElement(name = "ocs")
 public class SharesXMLAnswer extends XMLAnswer
 {
-    protected List<Share>    shareList= new LinkedList<>();
+    @XmlElementWrapper(name = "data")
+    @XmlElement(name = "element")
+    private List<Share> shares = new ArrayList<>();
 
     public List<Share> getShares() {
-        return shareList;
+        return shares;
     }
 }

@@ -16,11 +16,15 @@
  */
 package org.aarboard.nextcloud.api.filesharing;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
 import java.util.Collection;
+
 import org.aarboard.nextcloud.api.ServerConfig;
+import org.aarboard.nextcloud.api.exception.NextcloudOperationFailedException;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -87,15 +91,18 @@ public class FilesharingConnectorTest {
      */
     @Test
     public void testGetShareInfo() throws Exception {
-        System.out.println("getSharesOfPath");
+        System.out.println("testGetShareInfo");
         if (_sc != null)
         {
             FilesharingConnector instance = new FilesharingConnector(_sc);
             Share result = instance.getShareInfo(8);
             assertNotNull(result);
 
-            result = instance.getShareInfo(89989899);
-            assertNull(result);
+            try {
+            	instance.getShareInfo(89989899);
+            	fail("NextcloudOperationFailedException should be thrown!");
+            } catch(NextcloudOperationFailedException ex) {
+            }
         }
     }
     

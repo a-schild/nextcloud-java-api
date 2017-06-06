@@ -16,15 +16,20 @@
  */
 package org.aarboard.nextcloud.api.filesharing;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.aarboard.nextcloud.api.utils.XMLAnswer;
 
 /**
  *
  * @author a.schild
  */
+@XmlRootElement(name = "ocs")
 public class SingleShareXMLAnswer extends XMLAnswer
 {
-    protected Share share= null;
+	@XmlElement(name = "data")
+    private Share share= null;
 
     public Share getShare() {
         return share;

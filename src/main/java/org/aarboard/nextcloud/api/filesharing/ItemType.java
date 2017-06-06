@@ -18,14 +18,20 @@ package org.aarboard.nextcloud.api.filesharing;
 
 import java.security.InvalidParameterException;
 
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlType;
+
 /**
  *
  * @author a.schild
  */
+@XmlType
+@XmlEnum(String.class)
 public enum ItemType {
-    FOLDER("folder"),
-    FILE("file");
-    
+	@XmlEnumValue("folder") FOLDER("folder"),
+	@XmlEnumValue("file") FILE("file");
+
     private final String itemTypeStr;
 
     private ItemType(String itemTypeStr) {

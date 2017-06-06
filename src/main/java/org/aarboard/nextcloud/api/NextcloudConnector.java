@@ -27,10 +27,8 @@ import org.aarboard.nextcloud.api.filesharing.SharePermissions;
 import org.aarboard.nextcloud.api.filesharing.ShareType;
 import org.aarboard.nextcloud.api.filesharing.SharesXMLAnswer;
 import org.aarboard.nextcloud.api.filesharing.SingleShareXMLAnswer;
-import org.aarboard.nextcloud.api.provisioning.Group;
 import org.aarboard.nextcloud.api.provisioning.GroupsXMLAnswer;
 import org.aarboard.nextcloud.api.provisioning.ProvisionConnector;
-import org.aarboard.nextcloud.api.provisioning.User;
 import org.aarboard.nextcloud.api.provisioning.UsersXMLAnswer;
 import org.aarboard.nextcloud.api.utils.XMLAnswer;
 import org.aarboard.nextcloud.api.webdav.Files;
@@ -83,12 +81,12 @@ public class NextcloudConnector {
         return pc.createGroupAsync(groupId);
     }
 
-    public Collection<User> getUsers()
+    public Collection<String> getUsers()
     {
         return pc.getUsers();
     }
 
-    public Collection<User> getUsers(
+    public Collection<String> getUsers(
             String search, int limit, int offset)
     {
         return pc.getUsers(search, limit, offset);
@@ -120,20 +118,20 @@ public class NextcloudConnector {
         return pc.getGroupsAsync();
     }
 
-    public Collection<Group> getGroups()
+    public Collection<String> getGroups()
     {
         return pc.getGroups();
     }
 
     /**
-     * Return matching users
+     * Return matching group ids
      * 
      * @param search pass null when you don't wish to filter
      * @param limit pass -1 for no limit
      * @param offset pass -1 for no offset
      * @return 
      */
-    public Collection<Group> getGroups(String search, int limit, int offset)
+    public Collection<String> getGroups(String search, int limit, int offset)
     {
         return pc.getGroups(search, limit, offset);
     }

@@ -16,25 +16,56 @@
  */
 package org.aarboard.nextcloud.api.filesharing;
 
+import java.time.Instant;
+import java.time.LocalDate;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.aarboard.nextcloud.api.utils.InstantXmlAdapter;
+import org.aarboard.nextcloud.api.utils.LocalDateXmlAdapter;
+
 /**
  *
  * @author a.schild
  */
-public class Share 
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Share
 {
     private int         id;
+    @XmlElement(name = "share_type")
     private ShareType   shareType;
+    @XmlElement(name = "uid_owner")
     private String      ownerId;
+    @XmlElement(name = "displayname_owner")
     private String      ownerDisplayName;
+    @XmlElement(name = "permissions")
+    @XmlJavaTypeAdapter(SharePermissionsAdapter.class)
     private SharePermissions    sharePermissions;
+    @XmlElement(name = "uid_file_owner")
     private String      fileOwnerId;
+    @XmlElement(name = "displayname_file_owner")
     private String      fileOwnerDisplayName;
     private String      path;
+    @XmlElement(name = "item_type")
     private ItemType    itemType;
+    @XmlElement(name = "file_target")
     private String      fileTarget;
+    @XmlElement(name = "share_with")
     private String      shareWithId;
+    @XmlElement(name = "share_with_displayname")
     private String      shareWithDisplayName;
     private String      token;
+    @XmlElement(name = "stime")
+    @XmlJavaTypeAdapter(InstantXmlAdapter.class)
+    private Instant     shareTime;
+    @XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
+    private LocalDate   expiration;
+    private String url;
+    private String mimetype;
 
     public Share() {
     }
@@ -206,20 +237,49 @@ public class Share
     public void setShareWithDisplayName(String shareWithDisplayName) {
         this.shareWithDisplayName = shareWithDisplayName;
     }
-    
+
     /**
     * @return the token
     */
-	public String getToken() {
-		return token;	
-	}
-    
+    public String getToken() {
+        return token;
+    }
+
     /**
      * @param token the token to set
      */
-	public void setToken(String token) {
-		this.token = token;	
-	}
-    
-    
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public Instant getShareTime() {
+        return shareTime;
+    }
+
+    public LocalDate getExpiration() {
+        return expiration;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getMimetype() {
+        return mimetype;
+    }
+
+    private static final class SharePermissionsAdapter extends XmlAdapter<Integer, SharePermissions>
+    {
+        @Override
+        public Integer marshal(SharePermissions sharePermissions)
+        {
+            return sharePermissions.getCurrentPermission();
+        }
+
+        @Override
+        public SharePermissions unmarshal(Integer v)
+        {
+            return new SharePermissions(v);
+        }
+    }
 }
