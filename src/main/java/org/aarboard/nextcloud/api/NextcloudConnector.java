@@ -29,6 +29,8 @@ import org.aarboard.nextcloud.api.filesharing.SharesXMLAnswer;
 import org.aarboard.nextcloud.api.filesharing.SingleShareXMLAnswer;
 import org.aarboard.nextcloud.api.provisioning.GroupsXMLAnswer;
 import org.aarboard.nextcloud.api.provisioning.ProvisionConnector;
+import org.aarboard.nextcloud.api.provisioning.User;
+import org.aarboard.nextcloud.api.provisioning.UserXMLAnswer;
 import org.aarboard.nextcloud.api.provisioning.UsersXMLAnswer;
 import org.aarboard.nextcloud.api.utils.XMLAnswer;
 import org.aarboard.nextcloud.api.webdav.Files;
@@ -101,6 +103,16 @@ public class NextcloudConnector {
             String search, int limit, int offset)
     {
         return pc.getUsersAsync(search, limit, offset);
+    }
+
+    public User getUser(String userId)
+    {
+        return pc.getUser(userId);
+    }
+
+    public CompletableFuture<UserXMLAnswer> getUserAsync(String userId)
+    {
+        return pc.getUserAsync(userId);
     }
 
     public boolean deleteGroup(String groupId)

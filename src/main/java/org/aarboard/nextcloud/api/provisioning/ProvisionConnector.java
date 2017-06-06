@@ -17,6 +17,7 @@
 package org.aarboard.nextcloud.api.provisioning;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -117,6 +118,16 @@ public class ProvisionConnector
             queryParams.add(new BasicNameValuePair("search", search));
         }
         return connectorCommon.executeGet(USERS_PART, queryParams, XMLAnswerParser.getInstance(UsersXMLAnswer.class));
+    }
+
+    public User getUser(String userId)
+    {
+        return NextcloudResponseHelper.getAndWrapException(getUserAsync(userId)).getUser();
+    }
+
+    public CompletableFuture<UserXMLAnswer> getUserAsync(String userId)
+    {
+        return connectorCommon.executeGet(USERS_PART+"/"+userId, Collections.emptyList(), XMLAnswerParser.getInstance(UserXMLAnswer.class));
     }
 
     public boolean createGroup(String groupId)

@@ -19,6 +19,8 @@ package org.aarboard.nextcloud.api;
 import java.io.FileInputStream;
 import java.util.Collection;
 import java.util.List;
+
+import org.aarboard.nextcloud.api.provisioning.User;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -100,6 +102,19 @@ public class NextcloudConnectorTest {
         if (_nc != null)
         {
             Collection<String> result = _nc.getUsers();
+            assertNotNull(result);
+        }
+    }
+
+    /**
+     * Test of getUser method, of class Connector.
+     */
+    @Test
+    public void testGetUser() throws Exception {
+        System.out.println("getUser");
+        if (_nc != null)
+        {
+            User result = _nc.getUser("admin");
             assertNotNull(result);
         }
     }
