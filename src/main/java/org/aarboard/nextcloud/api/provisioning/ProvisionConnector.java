@@ -69,7 +69,7 @@ public class ProvisionConnector
 
     public CompletableFuture<XMLAnswer> deleteUserAsync(String userId)
     {
-        return connectorCommon.executeDelete(USERS_PART, userId, XMLAnswerParser.getInstance(XMLAnswer.class));
+        return connectorCommon.executeDelete(USERS_PART, userId, null, XMLAnswerParser.getInstance(XMLAnswer.class));
     }
 
     /**
@@ -140,7 +140,78 @@ public class ProvisionConnector
         List<NameValuePair> queryParams= new LinkedList<>();
         queryParams.add(new BasicNameValuePair("key", key.name().toLowerCase()));
         queryParams.add(new BasicNameValuePair("value", value));
-        return connectorCommon.executePut(USERS_PART+"/"+userId, queryParams, XMLAnswerParser.getInstance(XMLAnswer.class));
+        return connectorCommon.executePut(USERS_PART, userId, queryParams, XMLAnswerParser.getInstance(XMLAnswer.class));
+    }
+
+    public boolean enableUser(String userId)
+    {
+        return NextcloudResponseHelper.isStatusCodeOkay(enableUserAsync(userId));
+    }
+
+    public CompletableFuture<XMLAnswer> enableUserAsync(String userId)
+    {
+        List<NameValuePair> queryParams= Collections.singletonList(new BasicNameValuePair("enable", "true"));
+        return connectorCommon.executePut(USERS_PART, userId + "/enable", queryParams, XMLAnswerParser.getInstance(XMLAnswer.class));
+    }
+
+    public boolean disableUser(String userId)
+    {
+        return NextcloudResponseHelper.isStatusCodeOkay(disableUserAsync(userId));
+    }
+
+    public CompletableFuture<XMLAnswer> disableUserAsync(String userId)
+    {
+        List<NameValuePair> queryParams= Collections.singletonList(new BasicNameValuePair("disable", "true"));
+        return connectorCommon.executePut(USERS_PART, userId + "/disable", queryParams, XMLAnswerParser.getInstance(XMLAnswer.class));
+    }
+
+    public boolean addUserToGroup(String userId, String groupId)
+    {
+        return NextcloudResponseHelper.isStatusCodeOkay(addUserToGroupAsync(userId, groupId));
+    }
+
+    public CompletableFuture<XMLAnswer> addUserToGroupAsync(String userId, String groupId)
+    {
+        List<NameValuePair> queryParams= Collections.singletonList(new BasicNameValuePair("groupid", groupId));
+        return connectorCommon.executePost(USERS_PART + "/" + userId + "/groups", queryParams, XMLAnswerParser.getInstance(XMLAnswer.class));
+    }
+
+    public boolean removeUserFromGroup(String userId, String groupId)
+    {
+        return NextcloudResponseHelper.isStatusCodeOkay(removeUserFromGroupAsync(userId, groupId));
+    }
+
+    public CompletableFuture<XMLAnswer> removeUserFromGroupAsync(String userId, String groupId)
+    {
+        List<NameValuePair> queryParams= Collections.singletonList(new BasicNameValuePair("groupid", groupId));
+        return connectorCommon.executeDelete(USERS_PART, userId + "/groups", queryParams, XMLAnswerParser.getInstance(XMLAnswer.class));
+    }
+
+    public boolean promoteToSubadmin(String userId, String groupId)
+    {
+        return NextcloudResponseHelper.isStatusCodeOkay(promoteToSubadminAsync(userId, groupId));
+    }
+
+    public CompletableFuture<XMLAnswer> promoteToSubadminAsync(String userId, String groupId)
+    {
+        List<NameValuePair> queryParams= Collections.singletonList(new BasicNameValuePair("groupid", groupId));
+        return connectorCommon.executePost(USERS_PART + "/" + userId + "/subadmins", queryParams, XMLAnswerParser.getInstance(XMLAnswer.class));
+    }
+
+    public boolean demoteSubadmin(String userId, String groupId)
+    {
+        return NextcloudResponseHelper.isStatusCodeOkay(demoteSubadminAsync(userId, groupId));
+    }
+
+    public CompletableFuture<XMLAnswer> demoteSubadminAsync(String userId, String groupId)
+    {
+        List<NameValuePair> queryParams= Collections.singletonList(new BasicNameValuePair("groupid", groupId));
+        return connectorCommon.executeDelete(USERS_PART, userId + "/subadmins", queryParams, XMLAnswerParser.getInstance(XMLAnswer.class));
+    }
+
+    public CompletableFuture<XMLAnswer> welcome(String userId)
+    {
+        return connectorCommon.executePost(USERS_PART + "/" + userId + "/welcome", null, XMLAnswerParser.getInstance(XMLAnswer.class));
     }
 
     public boolean createGroup(String groupId)
@@ -162,7 +233,7 @@ public class ProvisionConnector
 
     public CompletableFuture<XMLAnswer> deleteGroupAsync(String groupId)
     {
-        return connectorCommon.executeDelete(GROUPS_PART, groupId, XMLAnswerParser.getInstance(XMLAnswer.class));
+        return connectorCommon.executeDelete(GROUPS_PART, groupId, null, XMLAnswerParser.getInstance(XMLAnswer.class));
     }
 
     public List<String> getGroups()

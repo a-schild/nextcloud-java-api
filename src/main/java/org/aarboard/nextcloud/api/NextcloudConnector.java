@@ -74,6 +74,71 @@ public class NextcloudConnector {
         return pc.deleteUserAsync(userId);
     }
 
+    public boolean enableUser(String userId)
+    {
+        return pc.enableUser(userId);
+    }
+
+    public CompletableFuture<XMLAnswer> enableUserAsync(String userId)
+    {
+        return pc.enableUserAsync(userId);
+    }
+
+    public boolean disableUser(String userId)
+    {
+        return pc.disableUser(userId);
+    }
+
+    public CompletableFuture<XMLAnswer> disableUserAsync(String userId)
+    {
+        return pc.disableUserAsync(userId);
+    }
+
+    public boolean addUserToGroup(String userId, String groupId)
+    {
+        return pc.addUserToGroup(userId, groupId);
+    }
+
+    public CompletableFuture<XMLAnswer> addUserToGroupAsync(String userId, String groupId)
+    {
+        return pc.addUserToGroupAsync(userId, groupId);
+    }
+
+    public boolean removeUserFromGroup(String userId, String groupId)
+    {
+        return pc.removeUserFromGroup(userId, groupId);
+    }
+
+    public CompletableFuture<XMLAnswer> removeUserFromGroupAsync(String userId, String groupId)
+    {
+        return pc.removeUserFromGroupAsync(userId, groupId);
+    }
+
+    public boolean promoteToSubadmin(String userId, String groupId)
+    {
+        return pc.promoteToSubadmin(userId, groupId);
+    }
+
+    public CompletableFuture<XMLAnswer> promoteToSubadminAsync(String userId, String groupId)
+    {
+        return pc.promoteToSubadminAsync(userId, groupId);
+    }
+
+    public boolean demoteSubadmin(String userId, String groupId)
+    {
+        return pc.demoteSubadmin(userId, groupId);
+    }
+
+    public CompletableFuture<XMLAnswer> demoteSubadminAsync(String userId, String groupId)
+    {
+        return pc.demoteSubadminAsync(userId, groupId);
+    }
+
+    public CompletableFuture<XMLAnswer> welcome(String userId)
+    {
+        return pc.welcome(userId);
+    }
+
     public boolean createGroup(String groupId)
     {
         return pc.createGroup(groupId);

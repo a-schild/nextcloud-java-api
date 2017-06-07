@@ -70,10 +70,10 @@ public class ConnectorCommon
         }
     }
 
-    public <R> CompletableFuture<R> executePut(String part, List<NameValuePair> postParams, ResponseParser<R> parser)
+    public <R> CompletableFuture<R> executePut(String part1, String part2, List<NameValuePair> putParams, ResponseParser<R> parser)
     {
         try {
-            URI url= buildUrl(part, postParams);
+            URI url= buildUrl(part1 + "/" + part2, putParams);
 
             HttpRequestBase request = new HttpPut(url.toString());
             return executeRequest(parser, request);
@@ -82,10 +82,10 @@ public class ConnectorCommon
         }
     }
 
-    public <R> CompletableFuture<R> executeDelete(String part1, String part2, ResponseParser<R> parser)
+    public <R> CompletableFuture<R> executeDelete(String part1, String part2, List<NameValuePair> deleteParams, ResponseParser<R> parser)
     {
         try {
-            URI url= buildUrl(part1+"/"+part2, null);
+            URI url= buildUrl(part1 + "/" + part2, deleteParams);
 
             HttpRequestBase request = new HttpDelete(url.toString());
             return executeRequest(parser, request);
