@@ -20,7 +20,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import org.aarboard.nextcloud.api.ServerConfig;
 import org.aarboard.nextcloud.api.exception.MoreThanOneShareFoundException;
@@ -178,6 +180,17 @@ public class FilesharingConnector
     public CompletableFuture<XMLAnswer> editShareAsync(int shareId, ShareData key, String value)
     {
         List<NameValuePair> queryParams= Collections.singletonList(new BasicNameValuePair(key.parameterName, value));
+        return connectorCommon.executePut(SHARES_PART, Integer.toString(shareId), queryParams, XMLAnswerParser.getInstance(XMLAnswer.class));
+    }
+
+    public boolean editShare(int shareId, Map<ShareData,String> values)
+    {
+        return NextcloudResponseHelper.isStatusCodeOkay(editShareAsync(shareId, values));
+    }
+
+    public CompletableFuture<XMLAnswer> editShareAsync(int shareId, Map<ShareData, String> values) {
+        List<NameValuePair> queryParams = values.entrySet().stream()
+                .map(e -> new BasicNameValuePair(e.getKey().parameterName, e.getValue())).collect(Collectors.toList());
         return connectorCommon.executePut(SHARES_PART, Integer.toString(shareId), queryParams, XMLAnswerParser.getInstance(XMLAnswer.class));
     }
 

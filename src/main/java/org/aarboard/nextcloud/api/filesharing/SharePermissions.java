@@ -40,13 +40,21 @@ public class SharePermissions {
         }
     }
 
-    
     private final int currentPermission;
 
     public SharePermissions(int currentPermission) {
         this.currentPermission = currentPermission;
     }
-    
+
+    public SharePermissions(SingleRight... permissions) {
+        int calculatedPermission = 0;
+        for(SingleRight permission: permissions)
+        {
+            calculatedPermission += permission.getIntValue();
+        }
+        this.currentPermission = calculatedPermission;
+    }
+
     public boolean hasAllRights()
     {
         return currentPermission == (
@@ -58,9 +66,16 @@ public class SharePermissions {
                 );
     }
 
+    public boolean hasRight(SingleRight permission) {
+        return (currentPermission & permission.intValue) != 0;
+    }
+
     public int getCurrentPermission() {
         return currentPermission;
     }
-    
-    
+
+    @Override
+    public String toString() {
+        return Integer.toString(currentPermission);
+    }
 }

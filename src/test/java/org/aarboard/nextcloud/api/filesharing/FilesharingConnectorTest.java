@@ -17,17 +17,21 @@
 package org.aarboard.nextcloud.api.filesharing;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import org.aarboard.nextcloud.api.NextcloudConnector;
 import org.aarboard.nextcloud.api.ServerConfig;
 import org.aarboard.nextcloud.api.exception.NextcloudOperationFailedException;
+import org.aarboard.nextcloud.api.filesharing.SharePermissions.SingleRight;
 import org.aarboard.nextcloud.api.provisioning.ShareData;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -98,7 +102,18 @@ public class FilesharingConnectorTest {
     }
 
     @Test
-    public void t03_testGetSharesOfPath() {
+    public void t03_testEditShare() {
+        System.out.println("editShare");
+        if (_sc != null)
+        {
+            FilesharingConnector instance = new FilesharingConnector(_sc);
+            boolean result = instance.editShare(findShare(instance).get().getId(), ShareData.EXPIREDATE, "9999-01-01");
+            assertTrue(result);
+        }
+    }
+
+    @Test
+    public void t04_testGetSharesOfPath() {
         System.out.println("getSharesOfPath");
         if (_sc != null)
         {
@@ -108,6 +123,7 @@ public class FilesharingConnectorTest {
 
             Optional<Share> share = findShare(instance);
             assertTrue(share.isPresent());
+            assertEquals(LocalDate.of(9999, 1, 1), share.get().getExpiration());
 
             result = instance.getShares(TEST_FOLDER, true, false);
             assertNotNull(result);
@@ -126,18 +142,21 @@ public class FilesharingConnectorTest {
     }
 
     @Test
-    public void t04_testEditShare() {
+    public void t05_testEditShare_Map() {
         System.out.println("editShare");
         if (_sc != null)
         {
             FilesharingConnector instance = new FilesharingConnector(_sc);
-            boolean result = instance.editShare(findShare(instance).get().getId(), ShareData.EXPIREDATE, "9999-01-01");
+            Map<ShareData, String> parameters = new HashMap<>();
+            parameters.put(ShareData.EXPIREDATE, "9999-02-02");
+            parameters.put(ShareData.PERMISSIONS, new SharePermissions(SingleRight.READ, SingleRight.UPDATE).toString());
+            boolean result = instance.editShare(findShare(instance).get().getId(), parameters);
             assertTrue(result);
         }
     }
 
     @Test
-    public void t05_testGetShareInfo() {
+    public void t06_testGetShareInfo() {
         System.out.println("getShareInfo");
         if (_sc != null)
         {
@@ -146,7 +165,12 @@ public class FilesharingConnectorTest {
             assertNotNull(result);
             assertEquals(TEST_FOLDER, result.getPath());
             assertEquals(TESTUSER, result.getShareWithId());
-            assertEquals(LocalDate.of(9999, 01, 01), result.getExpiration());
+            assertEquals(LocalDate.of(9999, 2, 2), result.getExpiration());
+            assertTrue(result.getSharePermissions().hasRight(SingleRight.READ));
+            assertTrue(result.getSharePermissions().hasRight(SingleRight.UPDATE));
+            assertFalse(result.getSharePermissions().hasRight(SingleRight.CREATE));
+            assertFalse(result.getSharePermissions().hasRight(SingleRight.DELETE));
+            assertFalse(result.getSharePermissions().hasRight(SingleRight.SHARE));
 
             try {
                 instance.getShareInfo(89989899);
@@ -157,7 +181,7 @@ public class FilesharingConnectorTest {
     }
 
     @Test
-    public void t06_testDeleteShare() {
+    public void t07_testDeleteShare() {
         System.out.println("deleteShare");
         if (_sc != null)
         {
