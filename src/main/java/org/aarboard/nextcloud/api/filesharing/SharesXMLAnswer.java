@@ -16,7 +16,6 @@
  */
 package org.aarboard.nextcloud.api.filesharing;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -34,7 +33,7 @@ public class SharesXMLAnswer extends XMLAnswer
 {
     @XmlElementWrapper(name = "data")
     @XmlElement(name = "element")
-    private List<Share> shares = new ArrayList<>();
+    private List<Share> shares;
 
     public List<Share> getShares() {
         return shares;

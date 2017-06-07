@@ -25,6 +25,7 @@ import java.util.concurrent.CompletableFuture;
 import org.aarboard.nextcloud.api.ServerConfig;
 import org.aarboard.nextcloud.api.utils.NextcloudResponseHelper;
 import org.aarboard.nextcloud.api.utils.ConnectorCommon;
+import org.aarboard.nextcloud.api.utils.ListXMLAnswer;
 import org.aarboard.nextcloud.api.utils.XMLAnswer;
 import org.aarboard.nextcloud.api.utils.XMLAnswerParser;
 import org.apache.http.NameValuePair;
@@ -165,6 +166,16 @@ public class ProvisionConnector
         return connectorCommon.executePut(USERS_PART, userId + "/disable", queryParams, XMLAnswerParser.getInstance(XMLAnswer.class));
     }
 
+    public List<String> getGroupsOfUser(String userId)
+    {
+        return NextcloudResponseHelper.getAndCheckStatus(getGroupsOfUserAsync(userId)).getGroups();
+    }
+
+    public CompletableFuture<GroupsXMLAnswer> getGroupsOfUserAsync(String userId)
+    {
+        return connectorCommon.executeGet(USERS_PART + "/" + userId + "/groups", null, XMLAnswerParser.getInstance(GroupsXMLAnswer.class));
+    }
+
     public boolean addUserToGroup(String userId, String groupId)
     {
         return NextcloudResponseHelper.isStatusCodeOkay(addUserToGroupAsync(userId, groupId));
@@ -185,6 +196,16 @@ public class ProvisionConnector
     {
         List<NameValuePair> queryParams= Collections.singletonList(new BasicNameValuePair("groupid", groupId));
         return connectorCommon.executeDelete(USERS_PART, userId + "/groups", queryParams, XMLAnswerParser.getInstance(XMLAnswer.class));
+    }
+
+    public List<String> getSubadminGroupsOfUser(String userId)
+    {
+        return NextcloudResponseHelper.getAndCheckStatus(getSubadminGroupsOfUserAsync(userId)).getResult();
+    }
+
+    public CompletableFuture<ListXMLAnswer> getSubadminGroupsOfUserAsync(String userId)
+    {
+        return connectorCommon.executeGet(USERS_PART + "/" + userId + "/subadmins", null, XMLAnswerParser.getInstance(ListXMLAnswer.class));
     }
 
     public boolean promoteToSubadmin(String userId, String groupId)
@@ -212,6 +233,26 @@ public class ProvisionConnector
     public CompletableFuture<XMLAnswer> welcome(String userId)
     {
         return connectorCommon.executePost(USERS_PART + "/" + userId + "/welcome", null, XMLAnswerParser.getInstance(XMLAnswer.class));
+    }
+
+    public List<String> getMembersOfGroup(String groupId)
+    {
+        return NextcloudResponseHelper.getAndCheckStatus(getMembersOfGroupAsync(groupId)).getUsers();
+    }
+
+    public CompletableFuture<UsersXMLAnswer> getMembersOfGroupAsync(String groupId)
+    {
+        return connectorCommon.executeGet(GROUPS_PART + "/" + groupId, null, XMLAnswerParser.getInstance(UsersXMLAnswer.class));
+    }
+
+    public List<String> getSubadminsOfGroup(String groupId)
+    {
+        return NextcloudResponseHelper.getAndCheckStatus(getSubadminsOfGroupAsync(groupId)).getResult();
+    }
+
+    public CompletableFuture<ListXMLAnswer> getSubadminsOfGroupAsync(String groupId)
+    {
+        return connectorCommon.executeGet(GROUPS_PART + "/" + groupId + "/subadmins", null, XMLAnswerParser.getInstance(ListXMLAnswer.class));
     }
 
     public boolean createGroup(String groupId)

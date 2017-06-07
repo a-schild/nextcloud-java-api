@@ -16,7 +16,6 @@
  */
 package org.aarboard.nextcloud.api.provisioning;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -46,6 +45,6 @@ public class UsersXMLAnswer extends XMLAnswer
     {
         @XmlElementWrapper(name = "users")
         @XmlElement(name = "element")
-        private List<String> users = new ArrayList<>();
+        private List<String> users;
     }
 }

@@ -33,6 +33,7 @@ import org.aarboard.nextcloud.api.provisioning.User;
 import org.aarboard.nextcloud.api.provisioning.UserData;
 import org.aarboard.nextcloud.api.provisioning.UserXMLAnswer;
 import org.aarboard.nextcloud.api.provisioning.UsersXMLAnswer;
+import org.aarboard.nextcloud.api.utils.ListXMLAnswer;
 import org.aarboard.nextcloud.api.utils.XMLAnswer;
 import org.aarboard.nextcloud.api.webdav.Files;
 import org.aarboard.nextcloud.api.webdav.Folders;
@@ -94,6 +95,14 @@ public class NextcloudConnector {
         return pc.disableUserAsync(userId);
     }
 
+    public List<String> getGroupsOfUser(String userId) {
+    	return pc.getGroupsOfUser(userId);
+    }
+
+    public CompletableFuture<GroupsXMLAnswer> getGroupsOfUserAsync(String userId) {
+    	return pc.getGroupsOfUserAsync(userId);
+    }
+
     public boolean addUserToGroup(String userId, String groupId)
     {
         return pc.addUserToGroup(userId, groupId);
@@ -112,6 +121,14 @@ public class NextcloudConnector {
     public CompletableFuture<XMLAnswer> removeUserFromGroupAsync(String userId, String groupId)
     {
         return pc.removeUserFromGroupAsync(userId, groupId);
+    }
+
+    public List<String> getSubadminGroupsOfUser(String userId) {
+    	return pc.getSubadminGroupsOfUser(userId);
+    }
+
+    public CompletableFuture<ListXMLAnswer> getSubadminGroupsOfUserAsync(String userId) {
+    	return pc.getSubadminGroupsOfUserAsync(userId);
     }
 
     public boolean promoteToSubadmin(String userId, String groupId)
@@ -137,6 +154,22 @@ public class NextcloudConnector {
     public CompletableFuture<XMLAnswer> welcome(String userId)
     {
         return pc.welcome(userId);
+    }
+
+    public List<String> getMembersOfGroup(String userId) {
+    	return pc.getMembersOfGroup(userId);
+    }
+
+    public CompletableFuture<UsersXMLAnswer> getMembersOfGroupAsync(String userId) {
+    	return pc.getMembersOfGroupAsync(userId);
+    }
+
+    public List<String> getSubadminsOfGroup(String userId) {
+    	return pc.getSubadminsOfGroup(userId);
+    }
+
+    public CompletableFuture<ListXMLAnswer> getSubadminsOfGroupAsync(String userId) {
+    	return pc.getSubadminsOfGroupAsync(userId);
     }
 
     public boolean createGroup(String groupId)

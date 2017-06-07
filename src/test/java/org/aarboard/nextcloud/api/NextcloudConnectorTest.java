@@ -186,7 +186,29 @@ public class NextcloudConnectorTest {
     }
 
     @Test
-    public void t12_testPromoteToSubadmin() {
+    public void t12_testGetGroupsOfUser() {
+        System.out.println("getGroupsOfUser");
+        if (_nc != null)
+        {
+            List<String> result = _nc.getGroupsOfUser(TESTUSER);
+            assertNotNull(result);
+            assertTrue(result.contains(TESTGROUP));
+        }
+    }
+
+    @Test
+    public void t13_testGetMembersOfGroup() {
+        System.out.println("getMembersOfGroup");
+        if (_nc != null)
+        {
+            List<String> result = _nc.getMembersOfGroup(TESTGROUP);
+            assertNotNull(result);
+            assertTrue(result.contains(TESTUSER));
+        }
+    }
+
+    @Test
+    public void t14_testPromoteToSubadmin() {
         System.out.println("promoteToSubadmin");
         if (_nc != null)
         {
@@ -196,7 +218,29 @@ public class NextcloudConnectorTest {
     }
 
     @Test
-    public void t13_testDemoteSubadmin() {
+    public void t15_testGetSubadminGroupsOfUser() {
+        System.out.println("getSubadminGroupsOfUser");
+        if (_nc != null)
+        {
+            List<String> result = _nc.getSubadminGroupsOfUser(TESTUSER);
+            assertNotNull(result);
+            assertTrue(result.contains(TESTGROUP));
+        }
+    }
+
+    @Test
+    public void t16_testGetSubadminsOfGroup() {
+        System.out.println("getSubadminsOfGroup");
+        if (_nc != null)
+        {
+            List<String> result = _nc.getSubadminsOfGroup(TESTGROUP);
+            assertNotNull(result);
+            assertTrue(result.contains(TESTUSER));
+        }
+    }
+
+    @Test
+    public void t17_testDemoteSubadmin() {
         System.out.println("demoteSubadmin");
         if (_nc != null)
         {
@@ -206,7 +250,7 @@ public class NextcloudConnectorTest {
     }
 
     @Test
-    public void t14_testRemoveUserFromGroup() {
+    public void t18_testRemoveUserFromGroup() {
         System.out.println("removeUserFromGroup");
         if (_nc != null)
         {
@@ -216,7 +260,7 @@ public class NextcloudConnectorTest {
     }
 
     @Test
-    public void t15_testDeleteUser() {
+    public void t19_testDeleteUser() {
         System.out.println("deleteUser");
         if (_nc != null)
         {
@@ -226,7 +270,7 @@ public class NextcloudConnectorTest {
     }
 
     @Test
-    public void t16_testDeleteGroup() {
+    public void t20_testDeleteGroup() {
         System.out.println("deleteGroup");
         if (_nc != null)
         {
@@ -237,7 +281,7 @@ public class NextcloudConnectorTest {
     }
 
     @Test
-    public void t17_testCreateFolder() {
+    public void t21_testCreateFolder() {
         System.out.println("createFolder");
         if (_nc != null)
         {
@@ -246,7 +290,7 @@ public class NextcloudConnectorTest {
     }
 
     @Test
-    public void t18_testGetFolders() {
+    public void t22_testGetFolders() {
         System.out.println("getFolders");
         if (_nc != null)
         {
@@ -258,7 +302,7 @@ public class NextcloudConnectorTest {
     }
 
     @Test
-    public void t19_testFolderExists() {
+    public void t23_testFolderExists() {
         System.out.println("folderExists");
         if (_nc != null)
         {
@@ -271,7 +315,7 @@ public class NextcloudConnectorTest {
     }
 
     @Test
-    public void t20_testDeleteFolder() {
+    public void t24_testDeleteFolder() {
         System.out.println("deleteFolder");
         if (_nc != null)
         {
@@ -280,7 +324,7 @@ public class NextcloudConnectorTest {
     }
 
     @Test
-    public void t21_testUploadFile() {
+    public void t25_testUploadFile() {
         System.out.println("uploadFile");
         if (_nc != null)
         {
@@ -290,7 +334,7 @@ public class NextcloudConnectorTest {
     }
 
     @Test
-    public void t22_testFileExists() {
+    public void t26_testFileExists() {
         System.out.println("fileExists");
         if (_nc != null)
         {
@@ -303,7 +347,7 @@ public class NextcloudConnectorTest {
     }
 
     @Test
-    public void t23_testRemoveFile() {
+    public void t27_testRemoveFile() {
         System.out.println("removeFile");
         if (_nc != null)
         {

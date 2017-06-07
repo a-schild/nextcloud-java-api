@@ -16,7 +16,6 @@
  */
 package org.aarboard.nextcloud.api.provisioning;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -46,6 +45,6 @@ public class GroupsXMLAnswer extends XMLAnswer
     {
         @XmlElementWrapper(name = "groups")
         @XmlElement(name = "element")
-        private List<String> groups = new ArrayList<>();
+        private List<String> groups;
     }
 }
