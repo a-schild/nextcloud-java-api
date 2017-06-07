@@ -17,12 +17,14 @@
 package org.aarboard.nextcloud.api.filesharing;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.aarboard.nextcloud.api.ServerConfig;
 import org.aarboard.nextcloud.api.exception.MoreThanOneShareFoundException;
+import org.aarboard.nextcloud.api.provisioning.ShareData;
 import org.aarboard.nextcloud.api.utils.ConnectorCommon;
 import org.aarboard.nextcloud.api.utils.NextcloudResponseHelper;
 import org.aarboard.nextcloud.api.utils.XMLAnswer;
@@ -166,6 +168,17 @@ public class FilesharingConnector
         }
 
         return connectorCommon.executePost(SHARES_PART, postParams, XMLAnswerParser.getInstance(SingleShareXMLAnswer.class));
+    }
+
+    public boolean editShare(int shareId, ShareData key, String value)
+    {
+        return NextcloudResponseHelper.isStatusCodeOkay(editShareAsync(shareId, key, value));
+    }
+
+    public CompletableFuture<XMLAnswer> editShareAsync(int shareId, ShareData key, String value)
+    {
+        List<NameValuePair> queryParams= Collections.singletonList(new BasicNameValuePair(key.parameterName, value));
+        return connectorCommon.executePut(SHARES_PART, Integer.toString(shareId), queryParams, XMLAnswerParser.getInstance(XMLAnswer.class));
     }
 
     public boolean deleteShare(int shareId)
