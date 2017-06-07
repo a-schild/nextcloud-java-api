@@ -130,15 +130,15 @@ public class ProvisionConnector
         return connectorCommon.executeGet(USERS_PART+"/"+userId, Collections.emptyList(), XMLAnswerParser.getInstance(UserXMLAnswer.class));
     }
 
-    public boolean editUser(String userId, String key, String value)
+    public boolean editUser(String userId, UserData key, String value)
     {
         return NextcloudResponseHelper.isStatusCodeOkay(editUserAsync(userId, key, value));
     }
 
-    public CompletableFuture<XMLAnswer> editUserAsync(String userId, String key, String value)
+    public CompletableFuture<XMLAnswer> editUserAsync(String userId, UserData key, String value)
     {
         List<NameValuePair> queryParams= new LinkedList<>();
-        queryParams.add(new BasicNameValuePair("key", key));
+        queryParams.add(new BasicNameValuePair("key", key.name().toLowerCase()));
         queryParams.add(new BasicNameValuePair("value", value));
         return connectorCommon.executePut(USERS_PART+"/"+userId, queryParams, XMLAnswerParser.getInstance(XMLAnswer.class));
     }

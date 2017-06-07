@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.aarboard.nextcloud.api.provisioning.User;
+import org.aarboard.nextcloud.api.provisioning.UserData;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -124,7 +125,7 @@ public class NextcloudConnectorTest {
         System.out.println("editUser");
         if (_nc != null)
         {
-            boolean result = _nc.editUser("admin", "twitter", "test");
+            boolean result = _nc.editUser("admin", UserData.TWITTER, "test");
             assertTrue(result);
         }
     }

@@ -30,6 +30,7 @@ import org.aarboard.nextcloud.api.filesharing.SingleShareXMLAnswer;
 import org.aarboard.nextcloud.api.provisioning.GroupsXMLAnswer;
 import org.aarboard.nextcloud.api.provisioning.ProvisionConnector;
 import org.aarboard.nextcloud.api.provisioning.User;
+import org.aarboard.nextcloud.api.provisioning.UserData;
 import org.aarboard.nextcloud.api.provisioning.UserXMLAnswer;
 import org.aarboard.nextcloud.api.provisioning.UsersXMLAnswer;
 import org.aarboard.nextcloud.api.utils.XMLAnswer;
@@ -115,12 +116,12 @@ public class NextcloudConnector {
         return pc.getUserAsync(userId);
     }
 
-    public boolean editUser(String userId, String key, String value)
+    public boolean editUser(String userId, UserData key, String value)
     {
         return pc.editUser(userId, key, value);
     }
 
-    public CompletableFuture<XMLAnswer> editUserAsync(String userId, String key, String value)
+    public CompletableFuture<XMLAnswer> editUserAsync(String userId, UserData key, String value)
     {
         return pc.editUserAsync(userId, key, value);
     }
