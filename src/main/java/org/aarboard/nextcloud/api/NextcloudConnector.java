@@ -19,6 +19,7 @@ package org.aarboard.nextcloud.api;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.aarboard.nextcloud.api.filesharing.FilesharingConnector;
@@ -29,6 +30,7 @@ import org.aarboard.nextcloud.api.filesharing.SharesXMLAnswer;
 import org.aarboard.nextcloud.api.filesharing.SingleShareXMLAnswer;
 import org.aarboard.nextcloud.api.provisioning.GroupsXMLAnswer;
 import org.aarboard.nextcloud.api.provisioning.ProvisionConnector;
+import org.aarboard.nextcloud.api.provisioning.ShareData;
 import org.aarboard.nextcloud.api.provisioning.User;
 import org.aarboard.nextcloud.api.provisioning.UserData;
 import org.aarboard.nextcloud.api.provisioning.UserXMLAnswer;
@@ -96,11 +98,11 @@ public class NextcloudConnector {
     }
 
     public List<String> getGroupsOfUser(String userId) {
-    	return pc.getGroupsOfUser(userId);
+        return pc.getGroupsOfUser(userId);
     }
 
     public CompletableFuture<GroupsXMLAnswer> getGroupsOfUserAsync(String userId) {
-    	return pc.getGroupsOfUserAsync(userId);
+        return pc.getGroupsOfUserAsync(userId);
     }
 
     public boolean addUserToGroup(String userId, String groupId)
@@ -124,11 +126,11 @@ public class NextcloudConnector {
     }
 
     public List<String> getSubadminGroupsOfUser(String userId) {
-    	return pc.getSubadminGroupsOfUser(userId);
+        return pc.getSubadminGroupsOfUser(userId);
     }
 
     public CompletableFuture<ListXMLAnswer> getSubadminGroupsOfUserAsync(String userId) {
-    	return pc.getSubadminGroupsOfUserAsync(userId);
+        return pc.getSubadminGroupsOfUserAsync(userId);
     }
 
     public boolean promoteToSubadmin(String userId, String groupId)
@@ -157,23 +159,23 @@ public class NextcloudConnector {
     }
 
     public CompletableFuture<XMLAnswer> sendWelcomeMailAsync(String userId) {
-    	return pc.sendWelcomeMailAsync(userId);
+        return pc.sendWelcomeMailAsync(userId);
     }
 
     public List<String> getMembersOfGroup(String userId) {
-    	return pc.getMembersOfGroup(userId);
+        return pc.getMembersOfGroup(userId);
     }
 
     public CompletableFuture<UsersXMLAnswer> getMembersOfGroupAsync(String userId) {
-    	return pc.getMembersOfGroupAsync(userId);
+        return pc.getMembersOfGroupAsync(userId);
     }
 
     public List<String> getSubadminsOfGroup(String userId) {
-    	return pc.getSubadminsOfGroup(userId);
+        return pc.getSubadminsOfGroup(userId);
     }
 
     public CompletableFuture<ListXMLAnswer> getSubadminsOfGroupAsync(String userId) {
-    	return pc.getSubadminsOfGroupAsync(userId);
+        return pc.getSubadminsOfGroupAsync(userId);
     }
 
     public boolean createGroup(String groupId)
@@ -398,5 +400,25 @@ public class NextcloudConnector {
     public CompletableFuture<SharesXMLAnswer> getShareInfoAsync(int shareId)
     {
         return fc.getShareInfoAsync(shareId);
+    }
+
+    public boolean editShare(int shareId, ShareData key, String value)
+    {
+        return fc.editShare(shareId, key, value);
+    }
+
+    public CompletableFuture<XMLAnswer> editShareAsync(int shareId, ShareData key, String value)
+    {
+        return fc.editShareAsync(shareId, key, value);
+    }
+
+    public boolean editShare(int shareId, Map<ShareData, String> values)
+    {
+        return fc.editShare(shareId, values);
+    }
+
+    public CompletableFuture<XMLAnswer> editShareAsync(int shareId, Map<ShareData, String> values)
+    {
+        return fc.editShareAsync(shareId, values);
     }
 }
