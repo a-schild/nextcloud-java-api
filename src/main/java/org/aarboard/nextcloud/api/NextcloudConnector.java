@@ -151,9 +151,13 @@ public class NextcloudConnector {
         return pc.demoteSubadminAsync(userId, groupId);
     }
 
-    public CompletableFuture<XMLAnswer> welcome(String userId)
+    public boolean sendWelcomeMail(String userId)
     {
-        return pc.welcome(userId);
+        return pc.sendWelcomeMail(userId);
+    }
+
+    public CompletableFuture<XMLAnswer> sendWelcomeMailAsync(String userId) {
+    	return pc.sendWelcomeMailAsync(userId);
     }
 
     public List<String> getMembersOfGroup(String userId) {

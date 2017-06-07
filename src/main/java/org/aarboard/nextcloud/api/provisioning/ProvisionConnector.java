@@ -151,8 +151,7 @@ public class ProvisionConnector
 
     public CompletableFuture<XMLAnswer> enableUserAsync(String userId)
     {
-        List<NameValuePair> queryParams= Collections.singletonList(new BasicNameValuePair("enable", "true"));
-        return connectorCommon.executePut(USERS_PART, userId + "/enable", queryParams, XMLAnswerParser.getInstance(XMLAnswer.class));
+        return connectorCommon.executePut(USERS_PART, userId + "/enable", null, XMLAnswerParser.getInstance(XMLAnswer.class));
     }
 
     public boolean disableUser(String userId)
@@ -162,8 +161,7 @@ public class ProvisionConnector
 
     public CompletableFuture<XMLAnswer> disableUserAsync(String userId)
     {
-        List<NameValuePair> queryParams= Collections.singletonList(new BasicNameValuePair("disable", "true"));
-        return connectorCommon.executePut(USERS_PART, userId + "/disable", queryParams, XMLAnswerParser.getInstance(XMLAnswer.class));
+        return connectorCommon.executePut(USERS_PART, userId + "/disable", null, XMLAnswerParser.getInstance(XMLAnswer.class));
     }
 
     public List<String> getGroupsOfUser(String userId)
@@ -230,7 +228,12 @@ public class ProvisionConnector
         return connectorCommon.executeDelete(USERS_PART, userId + "/subadmins", queryParams, XMLAnswerParser.getInstance(XMLAnswer.class));
     }
 
-    public CompletableFuture<XMLAnswer> welcome(String userId)
+    public boolean sendWelcomeMail(String userId)
+    {
+        return NextcloudResponseHelper.isStatusCodeOkay(sendWelcomeMailAsync(userId));
+    }
+
+    public CompletableFuture<XMLAnswer> sendWelcomeMailAsync(String userId)
     {
         return connectorCommon.executePost(USERS_PART + "/" + userId + "/welcome", null, XMLAnswerParser.getInstance(XMLAnswer.class));
     }
