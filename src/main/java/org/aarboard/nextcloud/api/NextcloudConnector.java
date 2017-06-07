@@ -318,6 +318,16 @@ public class NextcloudConnector {
         return fc.doShareAsync(path, shareType, shareWithUserOrGroupId, publicUpload, password, permissions);
     }
 
+    public boolean deleteShare(int shareId)
+    {
+        return fc.deleteShare(shareId);
+    }
+
+    public CompletableFuture<XMLAnswer> deleteShareAsync(int shareId)
+    {
+        return fc.deleteShareAsync(shareId);
+    }
+
     public Collection<Share> getShares()
     {
         return fc.getShares();

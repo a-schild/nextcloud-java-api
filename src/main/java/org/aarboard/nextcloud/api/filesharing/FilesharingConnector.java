@@ -25,6 +25,7 @@ import org.aarboard.nextcloud.api.ServerConfig;
 import org.aarboard.nextcloud.api.exception.MoreThanOneShareFoundException;
 import org.aarboard.nextcloud.api.utils.ConnectorCommon;
 import org.aarboard.nextcloud.api.utils.NextcloudResponseHelper;
+import org.aarboard.nextcloud.api.utils.XMLAnswer;
 import org.aarboard.nextcloud.api.utils.XMLAnswerParser;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -96,7 +97,7 @@ public class FilesharingConnector
     /**
      * Return share info for a single share
      * 
-     * @param shareId      id of chare (Not path of share)
+     * @param shareId      id of share (Not path of share)
      * @return 
      */
     public Share getShareInfo(int shareId)
@@ -165,5 +166,15 @@ public class FilesharingConnector
         }
 
         return connectorCommon.executePost(SHARES_PART, postParams, XMLAnswerParser.getInstance(SingleShareXMLAnswer.class));
+    }
+
+    public boolean deleteShare(int shareId)
+    {
+        return NextcloudResponseHelper.isStatusCodeOkay(deleteShareAsync(shareId));
+    }
+
+    public CompletableFuture<XMLAnswer> deleteShareAsync(int shareId)
+    {
+        return connectorCommon.executeDelete(SHARES_PART, Integer.toString(shareId), null, XMLAnswerParser.getInstance(XMLAnswer.class));
     }
 }
