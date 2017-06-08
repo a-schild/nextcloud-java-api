@@ -530,21 +530,43 @@ public class NextcloudConnector {
         return pc.getGroupsAsync(search, limit, offset);
     }
 
+    /**
+     * Get all subfolders of the specified path
+     *
+     * @param path path of the folder
+     * @return found subfolders
+     */
     public List<String> getFolders(String path)
     {
         return fd.getFolders(path);
     }
 
+    /**
+     * Checks if the folder at the specified path exists
+     *
+     * @param path path of the folder
+     * @return true if the folder exists
+     */
     public boolean folderExists(String path)
     {
         return fd.exists(path);
     }
 
+    /**
+     * Creates a folder at the specified path
+     *
+     * @param path path of the folder
+     */
     public void createFolder(String path)
     {
         fd.createFolder(path);
     }
 
+    /**
+     * Deletes the folder at the specified path
+     *
+     * @param path path of the folder
+     */
     public void deleteFolder(String path)
     {
         fd.deleteFolder(path);
@@ -636,26 +658,26 @@ public class NextcloudConnector {
         return fc.getSharesAsync();
     }
 
-    /**
-     * 
-     * @param fileInputStream      inputstream of the file which should be uploaded
-     * @param remotePath           path where the file should be uploaded to
-     */
-    public void uploadFile(InputStream fileInputStream, String remotePath)
+    /** Uploads a file at the specified path with the data from the InputStream
+    *
+    * @param inputStream          InputStream of the file which should be uploaded
+    * @param remotePath           path where the file should be uploaded to
+    */
+    public void uploadFile(InputStream inputStream, String remotePath)
     {
-        fl.uploadFile(fileInputStream, remotePath);
+        fl.uploadFile(inputStream, remotePath);
     }
 
     /**
-     * 
-     * @param remotePath
+     * method to remove files
+     * @param path path of the file which should be removed
      */
     public void removeFile(String path){
         fl.removeFile(path);
     }
 
     /**
-     * Return if the file exists ore not
+     * Return if the file exists or not
      *
      * @param path path to the file
      * @return boolean value whether the file exists or not
