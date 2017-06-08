@@ -11,8 +11,6 @@ import java.util.concurrent.CompletableFuture;
 
 import org.aarboard.nextcloud.api.ServerConfig;
 import org.aarboard.nextcloud.api.exception.NextcloudApiException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -28,6 +26,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.client.utils.URIBuilder;
@@ -41,8 +40,6 @@ import org.apache.http.impl.nio.client.HttpAsyncClients;
 
 public class ConnectorCommon
 {
-    private final static Log LOG = LogFactory.getLog(ConnectorCommon.class);
-
     private final ServerConfig serverConfig;
 
     public ConnectorCommon(ServerConfig serverConfig) {
@@ -73,10 +70,22 @@ public class ConnectorCommon
         }
     }
 
-    public <R> CompletableFuture<R> executeDelete(String part1, String part2, ResponseParser<R> parser)
+    public <R> CompletableFuture<R> executePut(String part1, String part2, List<NameValuePair> putParams, ResponseParser<R> parser)
     {
         try {
-            URI url= buildUrl(part1+"/"+part2, null);
+            URI url= buildUrl(part1 + "/" + part2, putParams);
+
+            HttpRequestBase request = new HttpPut(url.toString());
+            return executeRequest(parser, request);
+        } catch (IOException e) {
+            throw new NextcloudApiException(e);
+        }
+    }
+
+    public <R> CompletableFuture<R> executeDelete(String part1, String part2, List<NameValuePair> deleteParams, ResponseParser<R> parser)
+    {
+        try {
+            URI url= buildUrl(part1 + "/" + part2, deleteParams);
 
             HttpRequestBase request = new HttpDelete(url.toString());
             return executeRequest(parser, request);
@@ -169,12 +178,9 @@ public class ConnectorCommon
                     Reader reader = new InputStreamReader(entity.getContent(), charset);
                     return parser.parseResponse(reader);
                 }
-                else
-                {
-                    LOG.warn("Request failed "+statusLine.getReasonPhrase()+" "+statusLine.getStatusCode());
-                }
+                throw new NextcloudApiException("Empty response received");
             }
-            return null;
+            throw new NextcloudApiException(String.format("Request failed with %d %s", statusLine.getStatusCode(), statusLine.getReasonPhrase()));
         }
 
         @Override

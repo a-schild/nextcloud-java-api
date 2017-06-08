@@ -16,28 +16,70 @@
  */
 package org.aarboard.nextcloud.api.provisioning;
 
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+
 /**
  *
  * @author a.schild
  */
-public class User 
+@XmlAccessorType(XmlAccessType.FIELD)
+public class User
 {
-    private String userId;
+    private String id;
+    private boolean enabled;
+    private String email;
+    private String displayname;
+    private String phone;
+    private String address;
+    private String website;
+    private String twitter;
+    private Quota quota;
+    @XmlElementWrapper(name = "groups")
+    @XmlElement(name = "element")
+    private List<String> groups;
 
-    public User() {
+    public String getId() {
+        return id;
     }
 
-    public User(String userId) {
-        this.userId = userId;
+    public boolean isEnabled() {
+        return enabled;
     }
 
-    
-    public String getUserId() {
-        return userId;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public String getDisplayname() {
+        return displayname;
     }
-    
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public String getTwitter() {
+        return twitter;
+    }
+
+    public Quota getQuota() {
+        return quota;
+    }
+
+    public List<String> getGroups() {
+        return groups;
+    }
 }

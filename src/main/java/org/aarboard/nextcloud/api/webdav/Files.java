@@ -44,14 +44,13 @@ public class Files {
 			throw new NextcloudApiException(e);
 		}
 	}
-	
-    /**
-     * 
-     * @param fileInputStream      inputstream of the file which should be uploaded
+
+    /** Uploads a file at the specified path with the data from the InputStream
+     *
+     * @param inputStream          InputStream of the file which should be uploaded
      * @param remotePath           path where the file should be uploaded to
-     * @throws Exception
      */
-    public void uploadFile(InputStream fileInputStream, String remotePath)
+    public void uploadFile(InputStream inputStream, String remotePath)
     {
     	String path = (_serverConfig.isUseHTTPS() ? "https" : "http") + "://" + _serverConfig.getServerName() + "/" + WEB_DAV_BASE_PATH + remotePath;
 		
@@ -61,7 +60,7 @@ public class Files {
         sardine.enablePreemptiveAuthentication(_serverConfig.getServerName());
 
         try {
-            sardine.put(path, fileInputStream);
+            sardine.put(path, inputStream);
         } catch (IOException e) {
             throw new NextcloudApiException(e);
         }
@@ -69,7 +68,7 @@ public class Files {
 	
 	/**
 	 * method to remove files
-	 * @param rootPath rootPath of the file which should be removed
+	 * @param rootPath path of the file which should be removed
 	 */
 	public void removeFile(String rootPath) {
 		String path = (_serverConfig.isUseHTTPS() ? "https" : "http") + "://" + _serverConfig.getServerName() + "/" + WEB_DAV_BASE_PATH + rootPath;
@@ -84,6 +83,4 @@ public class Files {
 			throw new NextcloudApiException(e);
 		}
 	}
-	
-	
 }

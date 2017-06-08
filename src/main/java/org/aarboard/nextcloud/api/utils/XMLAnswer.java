@@ -16,72 +16,64 @@
  */
 package org.aarboard.nextcloud.api.utils;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  *
  * @author a.schild
  */
+@XmlRootElement(name="ocs")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class XMLAnswer {
-    private String status= null;
-    private int statusCode= -1;
-    private String message= null;
-    private int totalItems= -1;
-    private int itemsPerPage= -1;
-
-    public XMLAnswer() {
-    }
+	private Meta meta;
 
     /**
      * @return the status
      */
     public String getStatus() {
-        return status;
+        return meta.status;
     }
 
     /**
      * @return the statusCode
      */
     public int getStatusCode() {
-        return statusCode;
+        return meta.statusCode;
     }
 
     /**
      * @return the message
      */
     public String getMessage() {
-        return message;
+        return meta.message;
     }
 
     /**
      * @return the totalItems
      */
     public int getTotalItems() {
-        return totalItems;
+        return meta.totalItems;
     }
 
     /**
      * @return the itemsPerPage
      */
     public int getItemsPerPage() {
-        return itemsPerPage;
+        return meta.itemsPerPage;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public void setStatusCode(int statusCode) {
-        this.statusCode = statusCode;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public void setTotalItems(int totalItems) {
-        this.totalItems = totalItems;
-    }
-
-    public void setItemsPerPage(int itemsPerPage) {
-        this.itemsPerPage = itemsPerPage;
+    @XmlAccessorType(XmlAccessType.FIELD)
+	private static final class Meta {
+        private String status= null;
+        @XmlElement(name="statuscode")
+        private int statusCode= -1;
+        private String message= null;
+        @XmlElement(name="totalitems")
+        private int totalItems= -1;
+        @XmlElement(name="itemsperpage")
+        private int itemsPerPage= -1;
     }
 }

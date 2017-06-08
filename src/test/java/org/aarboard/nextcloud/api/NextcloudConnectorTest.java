@@ -16,238 +16,342 @@
  */
 package org.aarboard.nextcloud.api;
 
-import java.io.FileInputStream;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
-import org.aarboard.nextcloud.api.provisioning.Group;
+
 import org.aarboard.nextcloud.api.provisioning.User;
+import org.aarboard.nextcloud.api.provisioning.UserData;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.runners.MethodSorters;
 
 /**
  *
  * @author a.schild
  */
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class NextcloudConnectorTest {
-    
-    private String serverName= null;
-    private String userName= null;
-    private String password= null;
-    
+    private static final String TESTUSER = "testuser";
+    private static final String TESTGROUP = "testgroup";
+    private static final String TEST_FOLDER = "new-test-folder";
+    private static final String TESTFILE = "test.txt";
+
+    private String serverName = null;
+    private String userName = null;
+    private String password = null;
+
     private NextcloudConnector _nc;
-    
+
     public NextcloudConnectorTest() {
     }
-    
+
     @Before
     public void setUp() {
         if (serverName != null)
         {
-            _nc= new NextcloudConnector(serverName, true, 0, userName, password);
+            _nc = new NextcloudConnector(serverName, true, 0, userName, password);
         }
     }
 
-    /**
-     * Test of getUsers method, of class Connector.
-     */
     @Test
-    public void testGetUsers() throws Exception {
+    public void t01_testCreateUser() {
+        System.out.println("createUser");
+        if (_nc != null)
+        {
+            boolean result = _nc.createUser(TESTUSER, "aBcDeFg123456");
+            assertTrue(result);
+        }
+    }
+
+    @Test
+    public void t02_testGetUsers() {
         System.out.println("getUsers");
         if (_nc != null)
         {
-            Collection<User> result = _nc.getUsers();
+            Collection<String> result = _nc.getUsers();
             assertNotNull(result);
+            assertTrue(result.contains(TESTUSER));
         }
     }
 
-    /**
-     * Test of getUsers method, of class Connector.
-     */
     @Test
-    public void testGetUsers_3args() throws Exception {
+    public void t03_testGetUsers_3args() {
         System.out.println("getUsers");
         if (_nc != null)
         {
-            String search = null;
-            int limit = -1;
+            String search = TESTUSER;
+            int limit = 1;
             int offset = -1;
-            Collection<User> result = _nc.getUsers(search, limit, offset);
+            Collection<String> result = _nc.getUsers(search, limit, offset);
             assertNotNull(result);
-        }
-    }
-    
-    /**
-     * Test of getUsers method, of class Connector.
-     */
-    @Test
-    public void testGetGroups_3args() throws Exception {
-        System.out.println("getGroups");
-        if (_nc != null)
-        {
-            String search = null;
-            int limit = -1;
-            int offset = -1;
-            Collection<Group> result = _nc.getGroups(search, limit, offset);
-            assertNotNull(result);
+            assertTrue(result.contains(TESTUSER));
         }
     }
 
-    /**
-     * Test of getUsers method, of class Connector.
-     */
     @Test
-    public void testGetUsers_0args() throws Exception {
-        System.out.println("getUsers");
+    public void t04_testEditUser() {
+        System.out.println("editUser");
         if (_nc != null)
         {
-            Collection<User> result = _nc.getUsers();
-            assertNotNull(result);
+            boolean result = _nc.editUser(TESTUSER, UserData.TWITTER, "test");
+            assertTrue(result);
         }
     }
 
-    /**
-     * Test of createGroup method, of class Connector.
-     */
     @Test
-    public void testCreateGroup() throws Exception {
+    public void t05_testDisableUser() {
+        System.out.println("disableUser");
+        if (_nc != null)
+        {
+            boolean result = _nc.disableUser(TESTUSER);
+            assertTrue(result);
+        }
+    }
+
+    @Test
+    public void t06_testGetUser() {
+        System.out.println("getUser");
+        if (_nc != null)
+        {
+            User result = _nc.getUser(TESTUSER);
+            assertNotNull(result);
+            assertEquals(TESTUSER, result.getId());
+            assertEquals("test", result.getTwitter());
+            assertFalse(result.isEnabled());
+        }
+    }
+
+    @Test
+    public void t07_testEnableUser() {
+        System.out.println("enableUser");
+        if (_nc != null)
+        {
+            boolean result = _nc.enableUser(TESTUSER);
+            assertTrue(result);
+        }
+    }
+
+    @Test
+    public void t08_testCreateGroup() {
         System.out.println("createGroup");
         if (_nc != null)
         {
-            String groupId = "nextG1";
-            boolean expResult = true;
+            String groupId = TESTGROUP;
             boolean result = _nc.createGroup(groupId);
-            assertEquals(expResult, result);
+            assertTrue(result);
         }
     }
 
-    /**
-     * Test of createGroup method, of class Connector.
-     */
     @Test
-    public void testDeleteGroup() throws Exception {
-        System.out.println("deleteGroup");
-        if (_nc != null)
-        {
-            String groupId = "nextG1";
-            boolean expResult = true;
-            boolean result = _nc.deleteGroup(groupId);
-            assertEquals(expResult, result);
-        }
-    }
-    
-    /**
-     * Test of getGroups method, of class Connector.
-     */
-    @Test
-    public void testGetGroups_0args() throws Exception {
+    public void t09_testGetGroups_0args() {
         System.out.println("getGroups");
         if (_nc != null)
         {
-            Collection<Group> result = _nc.getGroups();
+            Collection<String> result = _nc.getGroups();
             assertNotNull(result);
+            assertTrue(result.contains(TESTGROUP));
         }
     }
-    
-    /**
-     * Test of getFolders method, of class Folders.
-     */
+
     @Test
-    public void testGetFolders() throws Exception {
+    public void t10_testGetGroups_3args() {
+        System.out.println("getGroups");
+        if (_nc != null)
+        {
+            String search = TESTGROUP;
+            int limit = 1;
+            int offset = -1;
+            Collection<String> result = _nc.getGroups(search, limit, offset);
+            assertNotNull(result);
+            assertTrue(result.contains(TESTGROUP));
+        }
+    }
+
+    @Test
+    public void t11_testAddUserToGroup() {
+        System.out.println("addUserToGroup");
+        if (_nc != null)
+        {
+            boolean result = _nc.addUserToGroup(TESTUSER, TESTGROUP);
+            assertTrue(result);
+        }
+    }
+
+    @Test
+    public void t12_testGetGroupsOfUser() {
+        System.out.println("getGroupsOfUser");
+        if (_nc != null)
+        {
+            List<String> result = _nc.getGroupsOfUser(TESTUSER);
+            assertNotNull(result);
+            assertTrue(result.contains(TESTGROUP));
+        }
+    }
+
+    @Test
+    public void t13_testGetMembersOfGroup() {
+        System.out.println("getMembersOfGroup");
+        if (_nc != null)
+        {
+            List<String> result = _nc.getMembersOfGroup(TESTGROUP);
+            assertNotNull(result);
+            assertTrue(result.contains(TESTUSER));
+        }
+    }
+
+    @Test
+    public void t14_testPromoteToSubadmin() {
+        System.out.println("promoteToSubadmin");
+        if (_nc != null)
+        {
+            boolean result = _nc.promoteToSubadmin(TESTUSER, TESTGROUP);
+            assertTrue(result);
+        }
+    }
+
+    @Test
+    public void t15_testGetSubadminGroupsOfUser() {
+        System.out.println("getSubadminGroupsOfUser");
+        if (_nc != null)
+        {
+            List<String> result = _nc.getSubadminGroupsOfUser(TESTUSER);
+            assertNotNull(result);
+            assertTrue(result.contains(TESTGROUP));
+        }
+    }
+
+    @Test
+    public void t16_testGetSubadminsOfGroup() {
+        System.out.println("getSubadminsOfGroup");
+        if (_nc != null)
+        {
+            List<String> result = _nc.getSubadminsOfGroup(TESTGROUP);
+            assertNotNull(result);
+            assertTrue(result.contains(TESTUSER));
+        }
+    }
+
+    @Test
+    public void t17_testDemoteSubadmin() {
+        System.out.println("demoteSubadmin");
+        if (_nc != null)
+        {
+            boolean result = _nc.demoteSubadmin(TESTUSER, TESTGROUP);
+            assertTrue(result);
+        }
+    }
+
+    @Test
+    public void t18_testRemoveUserFromGroup() {
+        System.out.println("removeUserFromGroup");
+        if (_nc != null)
+        {
+            boolean result = _nc.removeUserFromGroup(TESTUSER, TESTGROUP);
+            assertTrue(result);
+        }
+    }
+
+    @Test
+    public void t19_testDeleteUser() {
+        System.out.println("deleteUser");
+        if (_nc != null)
+        {
+            boolean result = _nc.deleteUser(TESTUSER);
+            assertTrue(result);
+        }
+    }
+
+    @Test
+    public void t20_testDeleteGroup() {
+        System.out.println("deleteGroup");
+        if (_nc != null)
+        {
+            String groupId = TESTGROUP;
+            boolean result = _nc.deleteGroup(groupId);
+            assertTrue(result);
+        }
+    }
+
+    @Test
+    public void t21_testCreateFolder() {
+        System.out.println("createFolder");
+        if (_nc != null)
+        {
+            _nc.createFolder(TEST_FOLDER);
+        }
+    }
+
+    @Test
+    public void t22_testGetFolders() {
         System.out.println("getFolders");
         if (_nc != null)
         {
             String rootPath = "";
             List<String> result = _nc.getFolders(rootPath);
             assertNotNull(result);
+            assertTrue(result.contains(TEST_FOLDER));
         }
     }
 
-    /**
-     * Test of exists method, of class Folders.
-     */
     @Test
-    public void testExists() throws Exception {
-        System.out.println("exists");
+    public void t23_testFolderExists() {
+        System.out.println("folderExists");
         if (_nc != null)
         {
-            String rootPath = "clientsync";
-            boolean expResult = true;
-            boolean result = _nc.folderExists(rootPath);
-            assertEquals(expResult, result);
+            boolean result = _nc.folderExists(TEST_FOLDER);
+            assertTrue(result);
 
-
-            rootPath = "clientsync-no-exist";
-            expResult = false;
-            result = _nc.folderExists(rootPath);
-            assertEquals(expResult, result);
+            result = _nc.folderExists("non-existing-folder");
+            assertFalse(result);
         }
     }
 
-    /**
-     * Test of createFolder method, of class Folders.
-     */
     @Test
-    public void testCreateFolder() throws Exception {
-        System.out.println("createFolder");
+    public void t24_testDeleteFolder() {
+        System.out.println("deleteFolder");
         if (_nc != null)
         {
-            String rootPath = "new-test-folder";
-            _nc.createFolder(rootPath);
-            _nc.deleteFolder(rootPath);
+            _nc.deleteFolder(TEST_FOLDER);
         }
     }
-    
-    
-    /**
-     * Test of fileExists method, of class Files.
-     */
+
     @Test
-    public void testFileExists() throws Exception {
+    public void t25_testUploadFile() {
+        System.out.println("uploadFile");
+        if (_nc != null)
+        {
+            InputStream inputStream = new ByteArrayInputStream("Test".getBytes());
+            _nc.uploadFile(inputStream, TESTFILE);
+        }
+    }
+
+    @Test
+    public void t26_testFileExists() {
         System.out.println("fileExists");
         if (_nc != null)
         {
-            String rootPath = "test.txt";
-            boolean expResult = true;
-            boolean result = _nc.fileExists(rootPath);
-            assertEquals(expResult, result);
+            boolean result = _nc.fileExists(TESTFILE);
+            assertTrue(result);
 
-
-            rootPath = "clientsync-no-exist";
-            expResult = false;
-            result = _nc.fileExists(rootPath);
-            assertEquals(expResult, result);
+            result = _nc.fileExists("non-existing-file");
+            assertFalse(result);
         }
     }
-    
-    /**
-     * Test of uploadFile method, of class Files
-     */
+
     @Test
-    public void testUploadFile() throws Exception {
-    	System.out.println("uploadFile");
-    	if(_nc != null)
-    	{
-    		String pathTo = null;
-    		String fileName = "test.txt";
-			FileInputStream fileInputStream = new FileInputStream(pathTo + fileName);
-			String remotePath = fileName; 
-			_nc.uploadFile(fileInputStream, remotePath);
-    	}
+    public void t27_testRemoveFile() {
+        System.out.println("removeFile");
+        if (_nc != null)
+        {
+            _nc.removeFile(TESTFILE);
+        }
     }
-    
-    /**
-     * Test of removeFile method, of class Files
-     */
-    @Test
-    public void testRemoveFile() throws Exception {
-    	System.out.println("uploadFile");
-    	if(_nc != null)
-    	{
-    		String fileName = "test.txt";
-			String remotePath = fileName; 
-			_nc.removeFile(remotePath);
-    	}
-    }
-    
 }

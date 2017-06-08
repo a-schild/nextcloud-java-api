@@ -31,7 +31,7 @@ import org.aarboard.nextcloud.api.exception.NextcloudApiException;
  * @author a.schild
  */
 public class Folders {
-    
+
     private final String WEB_DAV_BASE_PATH= "remote.php/webdav/";
 
     private final ServerConfig  _serverConfig;
@@ -40,11 +40,16 @@ public class Folders {
         this._serverConfig = _serverConfig;
     }
 
-    
+    /**
+     * Get all subfolders of the specified path
+     *
+     * @param rootPath path of the folder
+     * @return found subfolders
+     */
     public List<String> getFolders(String rootPath)
     {
         String path=  (_serverConfig.isUseHTTPS() ? "https" : "http") +"://"+_serverConfig.getServerName()+"/"+WEB_DAV_BASE_PATH+rootPath ;
-        
+
         List<String> retVal= new LinkedList<>();
         Sardine sardine = SardineFactory.begin();
         sardine.setCredentials(_serverConfig.getUserName(), _serverConfig.getPassword());
@@ -60,11 +65,17 @@ public class Folders {
         }
         return retVal;
     }
-    
+
+    /**
+     * Checks if the folder at the specified path exists
+     *
+     * @param rootPath path of the folder
+     * @return true if the folder exists
+     */
     public boolean exists(String rootPath)
     {
         String path=  (_serverConfig.isUseHTTPS() ? "https" : "http") +"://"+_serverConfig.getServerName()+"/"+WEB_DAV_BASE_PATH+rootPath ;
-        
+
         Sardine sardine = SardineFactory.begin();
         sardine.setCredentials(_serverConfig.getUserName(), _serverConfig.getPassword());
         try {
@@ -74,10 +85,15 @@ public class Folders {
         }
     }
 
+    /**
+     * Creates a folder at the specified path
+     *
+     * @param rootPath path of the folder
+     */
     public void createFolder(String rootPath)
     {
         String path=  (_serverConfig.isUseHTTPS() ? "https" : "http") +"://"+_serverConfig.getServerName()+"/"+WEB_DAV_BASE_PATH+rootPath ;
-        
+
         Sardine sardine = SardineFactory.begin();
         sardine.setCredentials(_serverConfig.getUserName(), _serverConfig.getPassword());
         try {
@@ -87,10 +103,15 @@ public class Folders {
         }
     }
 
+    /**
+     * Deletes the folder at the specified path
+     *
+     * @param rootPath path of the folder
+     */
     public void deleteFolder(String rootPath)
     {
         String path=  (_serverConfig.isUseHTTPS() ? "https" : "http") +"://"+_serverConfig.getServerName()+"/"+WEB_DAV_BASE_PATH+rootPath ;
-        
+
         Sardine sardine = SardineFactory.begin();
         sardine.setCredentials(_serverConfig.getUserName(), _serverConfig.getPassword());
         try {
@@ -100,4 +121,3 @@ public class Folders {
         }
     }
 }
-

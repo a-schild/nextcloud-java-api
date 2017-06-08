@@ -16,8 +16,13 @@
  */
 package org.aarboard.nextcloud.api.provisioning;
 
-import java.util.LinkedList;
 import java.util.List;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.aarboard.nextcloud.api.utils.XMLAnswer;
 
@@ -25,11 +30,21 @@ import org.aarboard.nextcloud.api.utils.XMLAnswer;
  *
  * @author a.schild
  */
-public class GroupsXMLAnswer extends XMLAnswer {
-    List<Group>  groupList= new LinkedList<>();
+@XmlRootElement(name = "ocs")
+public class GroupsXMLAnswer extends XMLAnswer
+{
+    private Data data;
 
-    public List<Group> getGroups()
+    public List<String> getGroups()
     {
-        return groupList;
+        return data.groups;
+    }
+
+    @XmlAccessorType(XmlAccessType.FIELD)
+    private static final class Data
+    {
+        @XmlElementWrapper(name = "groups")
+        @XmlElement(name = "element")
+        private List<String> groups;
     }
 }

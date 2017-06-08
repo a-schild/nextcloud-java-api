@@ -18,17 +18,23 @@ package org.aarboard.nextcloud.api.filesharing;
 
 import java.security.InvalidParameterException;
 
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlType;
+
 /**
  * https://docs.nextcloud.com/server/11/developer_manual/core/ocs-share-api.html
  * 
  * @author a.schild
  */
+@XmlType
+@XmlEnum(Integer.class)
 public enum ShareType {
 
-    USER(0),
-    GROUP(1),
-    PUBLIC_LINK(3),
-    FEDERATED_CLOUD_SHARE(6);
+    @XmlEnumValue("0") USER(0),
+    @XmlEnumValue("1") GROUP(1),
+    @XmlEnumValue("3") PUBLIC_LINK(3),
+    @XmlEnumValue("6") FEDERATED_CLOUD_SHARE(6);
 
     private final int intValue;
     

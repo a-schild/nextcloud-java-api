@@ -19,7 +19,7 @@ public class NextcloudResponseHelper
         {
             return xmlanswer;
         }
-        throw new NextcloudOperationFailedException(xmlanswer.getStatusCode(), xmlanswer.getStatus());
+        throw new NextcloudOperationFailedException(xmlanswer.getStatusCode(), xmlanswer.getMessage());
     }
 
     public static <A extends XMLAnswer> boolean isStatusCodeOkay(CompletableFuture<A> answer)
