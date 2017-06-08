@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 a.schild
  *
  * This program is free software: you can redistribute it and/or modify
@@ -57,212 +57,474 @@ public class NextcloudConnector {
         fl= new Files(_serverConfig);
     }
 
+    /**
+     * Creates a user
+     *
+     * @param userId unique identifier of the user
+     * @param password password needs to meet nextcloud criteria or operation will fail
+     * @return true if the operation succeeded
+     */
     public boolean createUser(String userId, String password)
     {
         return pc.createUser(userId, password);
     }
 
+    /**
+     * Creates a user asynchronously
+     *
+     * @param userId unique identifier of the user
+     * @param password password needs to meet nextcloud criteria or operation will fail
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<XMLAnswer> createUserAsync(String userId, String password)
     {
         return pc.createUserAsync(userId, password);
     }
 
+    /**
+     * Deletes a user
+     *
+     * @param userId unique identifier of the user
+     * @return true if the operation succeeded
+     */
     public boolean deleteUser(String userId)
     {
         return pc.deleteUser(userId);
     }
 
+    /**
+     * Deletes a user asynchronously
+     *
+     * @param userId unique identifier of the user
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<XMLAnswer> deleteUserAsync(String userId)
     {
         return pc.deleteUserAsync(userId);
     }
 
+    /**
+     * Enables a user
+     *
+     * @param userId unique identifier of the user
+     * @return true if the operation succeeded
+     */
     public boolean enableUser(String userId)
     {
         return pc.enableUser(userId);
     }
 
+    /**
+     * Enables a user asynchronously
+     *
+     * @param userId unique identifier of the user
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<XMLAnswer> enableUserAsync(String userId)
     {
         return pc.enableUserAsync(userId);
     }
 
+    /**
+     * Disables a user
+     *
+     * @param userId unique identifier of the user
+     * @return true if the operation succeeded
+     */
     public boolean disableUser(String userId)
     {
         return pc.disableUser(userId);
     }
 
+    /**
+     * Disables a user asynchronously
+     *
+     * @param userId unique identifier of the user
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<XMLAnswer> disableUserAsync(String userId)
     {
         return pc.disableUserAsync(userId);
     }
 
+    /**
+     * Gets all groups of a user
+     *
+     * @param userId unique identifier of the user
+     * @return matched group IDs
+     */
     public List<String> getGroupsOfUser(String userId) {
         return pc.getGroupsOfUser(userId);
     }
 
+    /**
+     * Gets all groups of a user asynchronously
+     *
+     * @param userId unique identifier of the user
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<GroupsXMLAnswer> getGroupsOfUserAsync(String userId) {
         return pc.getGroupsOfUserAsync(userId);
     }
 
+    /**
+     * Adds a user to a group
+     *
+     * @param userId unique identifier of the user
+     * @param groupId unique identifier of the group
+     * @return true if the operation succeeded
+     */
     public boolean addUserToGroup(String userId, String groupId)
     {
         return pc.addUserToGroup(userId, groupId);
     }
 
+    /**
+     * Adds a user to a group asynchronously
+     *
+     * @param userId unique identifier of the user
+     * @param groupId unique identifier of the group
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<XMLAnswer> addUserToGroupAsync(String userId, String groupId)
     {
         return pc.addUserToGroupAsync(userId, groupId);
     }
 
+    /**
+     * Removes a user from a group
+     *
+     * @param userId unique identifier of the user
+     * @param groupId unique identifier of the group
+     * @return true if the operation succeeded
+     */
     public boolean removeUserFromGroup(String userId, String groupId)
     {
         return pc.removeUserFromGroup(userId, groupId);
     }
 
+    /**
+     * Removes a user from a group asynchronously
+     *
+     * @param userId unique identifier of the user
+     * @param groupId unique identifier of the group
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<XMLAnswer> removeUserFromGroupAsync(String userId, String groupId)
     {
         return pc.removeUserFromGroupAsync(userId, groupId);
     }
 
+    /**
+     * Gets all groups this user is a subadministrator of
+     *
+     * @param userId unique identifier of the user
+     * @return matched group IDs
+     */
     public List<String> getSubadminGroupsOfUser(String userId) {
         return pc.getSubadminGroupsOfUser(userId);
     }
 
+    /**
+     * Gets all groups this user is a subadministrator of asynchronously
+     *
+     * @param userId unique identifier of the user
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<ListXMLAnswer> getSubadminGroupsOfUserAsync(String userId) {
         return pc.getSubadminGroupsOfUserAsync(userId);
     }
 
+    /**
+     * Promotes a user to a subadministrator of a group
+     *
+     * @param userId unique identifier of the user
+     * @param groupId unique identifier of the group
+     * @return true if the operation succeeded
+     */
     public boolean promoteToSubadmin(String userId, String groupId)
     {
         return pc.promoteToSubadmin(userId, groupId);
     }
 
+    /**
+     * Promotes a user to a subadministrator of a group asynchronously
+     *
+     * @param userId unique identifier of the user
+     * @param groupId unique identifier of the group
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<XMLAnswer> promoteToSubadminAsync(String userId, String groupId)
     {
         return pc.promoteToSubadminAsync(userId, groupId);
     }
 
+    /**
+     * Remove subadministrator rights of a user for a group
+     *
+     * @param userId unique identifier of the user
+     * @param groupId unique identifier of the group
+     * @return true if the operation succeeded
+     */
     public boolean demoteSubadmin(String userId, String groupId)
     {
         return pc.demoteSubadmin(userId, groupId);
     }
 
+    /**
+     * Remove subadministrator rights of a user for a group asynchronously
+     *
+     * @param userId unique identifier of the user
+     * @param groupId unique identifier of the group
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<XMLAnswer> demoteSubadminAsync(String userId, String groupId)
     {
         return pc.demoteSubadminAsync(userId, groupId);
     }
 
+    /**
+     * Sends the welcome email to a user
+     *
+     * @param userId unique identifier of the user
+     * @return true if the operation succeeded
+     */
     public boolean sendWelcomeMail(String userId)
     {
         return pc.sendWelcomeMail(userId);
     }
 
+    /**
+     * Sends the welcome email to a user asynchronously
+     *
+     * @param userId unique identifier of the user
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<XMLAnswer> sendWelcomeMailAsync(String userId) {
         return pc.sendWelcomeMailAsync(userId);
     }
 
-    public List<String> getMembersOfGroup(String userId) {
-        return pc.getMembersOfGroup(userId);
+    /**
+     * Gets all members of a group
+     *
+     * @param groupId unique identifier of the user
+     * @return user IDs of members
+     */
+    public List<String> getMembersOfGroup(String groupId) {
+        return pc.getMembersOfGroup(groupId);
     }
 
-    public CompletableFuture<UsersXMLAnswer> getMembersOfGroupAsync(String userId) {
-        return pc.getMembersOfGroupAsync(userId);
+    /**
+     * Gets all members of a group asynchronously
+     *
+     * @param groupId unique identifier of the user
+     * @return a CompletableFuture containing the result of the operation
+     */
+    public CompletableFuture<UsersXMLAnswer> getMembersOfGroupAsync(String groupId) {
+        return pc.getMembersOfGroupAsync(groupId);
     }
 
-    public List<String> getSubadminsOfGroup(String userId) {
-        return pc.getSubadminsOfGroup(userId);
+    /**
+     * Gets all subadministrators of a group
+     *
+     * @param groupId unique identifier of the group
+     * @return user IDs of subadministrators
+     */
+    public List<String> getSubadminsOfGroup(String groupId) {
+        return pc.getSubadminsOfGroup(groupId);
     }
 
-    public CompletableFuture<ListXMLAnswer> getSubadminsOfGroupAsync(String userId) {
-        return pc.getSubadminsOfGroupAsync(userId);
+    /**
+     * Gets all subadministrators of a group asynchronously
+     *
+     * @param groupId unique identifier of the group
+     * @return a CompletableFuture containing the result of the operation
+     */
+    public CompletableFuture<ListXMLAnswer> getSubadminsOfGroupAsync(String groupId) {
+        return pc.getSubadminsOfGroupAsync(groupId);
     }
 
+    /**
+     * Creates a group
+     *
+     * @param groupId unique identifier of the group
+     * @return true if the operation succeeded
+     */
     public boolean createGroup(String groupId)
     {
         return pc.createGroup(groupId);
     }
 
+    /**
+     * Creates a group asynchronously
+     *
+     * @param groupId unique identifier of the group
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<XMLAnswer> createGroupAsync(String groupId)
     {
         return pc.createGroupAsync(groupId);
     }
 
-    public Collection<String> getUsers()
+    /**
+     * Gets all user IDs of this instance
+     *
+     * @return all user IDs
+     */
+    public List<String> getUsers()
     {
         return pc.getUsers();
     }
 
-    public Collection<String> getUsers(
+    /**
+     * Get all matching user IDs
+     *
+     * @param search pass null when you don't wish to filter
+     * @param limit pass -1 for no limit
+     * @param offset pass -1 for no offset
+     * @return matched user IDs
+     */
+    public List<String> getUsers(
             String search, int limit, int offset)
     {
         return pc.getUsers(search, limit, offset);
     }
 
+    /**
+     * Gets all user IDs of this instance asynchronously
+     *
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<UsersXMLAnswer> getUsersAsync()
     {
         return pc.getUsersAsync();
     }
 
+    /**
+     * Get all matching user IDs asynchronously
+     *
+     * @param search pass null when you don't wish to filter
+     * @param limit pass -1 for no limit
+     * @param offset pass -1 for no offset
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<UsersXMLAnswer> getUsersAsync(
             String search, int limit, int offset)
     {
         return pc.getUsersAsync(search, limit, offset);
     }
 
+    /**
+     * Gets all available information of one user
+     *
+     * @param userId unique identifier of the user
+     * @return user object containing all information
+     */
     public User getUser(String userId)
     {
         return pc.getUser(userId);
     }
 
+    /**
+     * Gets all available information of one user asynchronously
+     *
+     * @param userId unique identifier of the user
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<UserXMLAnswer> getUserAsync(String userId)
     {
         return pc.getUserAsync(userId);
     }
 
+    /**
+     * Changes a single attribute of a user
+     *
+     * @param userId unique identifier of the user
+     * @param key the attribute to change
+     * @param value the value to set
+     * @return true if the operation succeeded
+     */
     public boolean editUser(String userId, UserData key, String value)
     {
         return pc.editUser(userId, key, value);
     }
 
+    /**
+     * Changes a single attribute of a user asynchronously
+     *
+     * @param userId unique identifier of the user
+     * @param key the attribute to change
+     * @param value the value to set
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<XMLAnswer> editUserAsync(String userId, UserData key, String value)
     {
         return pc.editUserAsync(userId, key, value);
     }
 
+    /**
+     * Deletes a group
+     *
+     * @param groupId unique identifier of the group
+     * @return true if the operation succeeded
+     */
     public boolean deleteGroup(String groupId)
     {
         return pc.deleteGroup(groupId);
     }
 
+    /**
+     * Deletes a group asynchronously
+     *
+     * @param groupId unique identifier of the group
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<XMLAnswer> deleteGroupAsync(String groupId)
     {
         return pc.deleteGroupAsync(groupId);
     }
 
+    /**
+     * Get all group IDs of this instance asynchronously
+     *
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<GroupsXMLAnswer> getGroupsAsync()
     {
         return pc.getGroupsAsync();
     }
 
-    public Collection<String> getGroups()
+    /**
+     * Get all group IDs of this instance
+     *
+     * @return all group IDs
+     */
+    public List<String> getGroups()
     {
         return pc.getGroups();
     }
 
     /**
-     * Return matching group ids
-     * 
+     * Get all matching group IDs
+     *
      * @param search pass null when you don't wish to filter
      * @param limit pass -1 for no limit
      * @param offset pass -1 for no offset
-     * @return 
+     * @return matching group IDs
      */
-    public Collection<String> getGroups(String search, int limit, int offset)
+    public List<String> getGroups(String search, int limit, int offset)
     {
         return pc.getGroups(search, limit, offset);
     }
 
+    /**
+     * Get all matching group IDs asynchronously
+     *
+     * @param search pass null when you don't wish to filter
+     * @param limit pass -1 for no limit
+     * @param offset pass -1 for no offset
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<GroupsXMLAnswer> getGroupsAsync(String search, int limit, int offset)
     {
         return pc.getGroupsAsync(search, limit, offset);
