@@ -551,14 +551,15 @@ public class NextcloudConnector {
     }
 
     /**
-     * 
+     * Shares the specified path with the provided parameters
+     *
      * @param path                  path to the file/folder which should be shared
      * @param shareType             0 = user; 1 = group; 3 = public link; 6 = federated cloud share
      * @param shareWithUserOrGroupId user / group id with which the file should be shared
      * @param publicUpload          allow public upload to a public shared folder (true/false)
      * @param password              password to protect public link Share with
      * @param permissions           1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all (default: 31, for public shares: 1)
-     * @return new Share ID if success
+     * @return created share on success
      */
     public Share doShare(
             String path,
@@ -571,6 +572,17 @@ public class NextcloudConnector {
         return fc.doShare(path, shareType, shareWithUserOrGroupId, publicUpload, password, permissions);
     }
 
+    /**
+    * Shares the specified path with the provided parameters asynchronously
+    *
+    * @param path                  path to the file/folder which should be shared
+    * @param shareType             0 = user; 1 = group; 3 = public link; 6 = federated cloud share
+    * @param shareWithUserOrGroupId user / group id with which the file should be shared
+    * @param publicUpload          allow public upload to a public shared folder (true/false)
+    * @param password              password to protect public link Share with
+    * @param permissions           1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all (default: 31, for public shares: 1)
+    * @return a CompletableFuture containing the result of the operation
+    */
     public CompletableFuture<SingleShareXMLAnswer> doShareAsync(
             String path,
             ShareType shareType,
@@ -582,21 +594,43 @@ public class NextcloudConnector {
         return fc.doShareAsync(path, shareType, shareWithUserOrGroupId, publicUpload, password, permissions);
     }
 
+    /**
+     * Deletes a share
+     *
+     * @param shareId unique identifier of the share
+     * @return true if the operation succeeded
+     */
     public boolean deleteShare(int shareId)
     {
         return fc.deleteShare(shareId);
     }
 
+    /**
+     * Deletes a share asynchronously
+     *
+     * @param shareId unique identifier of the share
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<XMLAnswer> deleteShareAsync(int shareId)
     {
         return fc.deleteShareAsync(shareId);
     }
 
-    public Collection<Share> getShares()
+    /**
+     * Get all shares of this user
+     *
+     * @return all shares
+     */
+    public List<Share> getShares()
     {
         return fc.getShares();
     }
 
+    /**
+     * Get all shares of this user asynchronously
+     *
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<SharesXMLAnswer> getSharesAsync()
     {
         return fc.getSharesAsync();
@@ -631,54 +665,98 @@ public class NextcloudConnector {
     }
 
     /**
-     * Return all shares of this user
-     * 
+     * Gets all shares from a given file/folder
+     *
      * @param path      path to file/folder
      * @param reShares  returns not only the shares from the current user but all shares from the given file
      * @param subShares returns all shares within a folder, given that path defines a folder
-     * @return 
+     * @return matching shares
      */
     public Collection<Share> getShares(String path, boolean reShares, boolean subShares)
     {
         return fc.getShares(path, reShares, subShares);
     }
 
+    /**
+     * Gets all shares from a given file/folder asynchronously
+     *
+     * @param path      path to file/folder
+     * @param reShares  returns not only the shares from the current user but all shares from the given file
+     * @param subShares returns all shares within a folder, given that path defines a folder
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<SharesXMLAnswer> getSharesAsync(String path, boolean reShares, boolean subShares)
     {
         return fc.getSharesAsync(path, reShares, subShares);
     }
 
     /**
-     * Return share info for a single share
-     * 
+     * Get share info for a single share
+     *
      * @param shareId      id of share (Not path of share)
-     * @return 
+     * @return the share if it has been found, otherwise null
      */
     public Share getShareInfo(int shareId)
     {
         return fc.getShareInfo(shareId);
     }
 
+    /**
+     * Get share info for a single share asynchronously
+     *
+     * @param shareId      id of share (Not path of share)
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<SharesXMLAnswer> getShareInfoAsync(int shareId)
     {
         return fc.getShareInfoAsync(shareId);
     }
 
+    /**
+     * Changes a single attribute of a share
+     *
+     * @param shareId unique identifier of the share
+     * @param key the attribute to change
+     * @param value the value to set
+     * @return true if the operation succeeded
+     */
     public boolean editShare(int shareId, ShareData key, String value)
     {
         return fc.editShare(shareId, key, value);
     }
 
+    /**
+     * Changes a single attribute of a share asynchronously
+     *
+     * @param shareId unique identifier of the share
+     * @param key the attribute to change
+     * @param value the value to set
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<XMLAnswer> editShareAsync(int shareId, ShareData key, String value)
     {
         return fc.editShareAsync(shareId, key, value);
     }
 
+    /**
+     * Changes multiple attributes of a share at once
+     *
+     * @param shareId unique identifier of the share
+     * @param values a Map containing the attributes to set
+     * @return true if the operation succeeded
+     */
     public boolean editShare(int shareId, Map<ShareData, String> values)
     {
         return fc.editShare(shareId, values);
     }
 
+    /**
+     * Changes multiple attributes of a share at once asynchronously
+     *
+     * @param shareId unique identifier of the share
+     * @param values a Map containing the attributes to set
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<XMLAnswer> editShareAsync(int shareId, Map<ShareData, String> values)
     {
         return fc.editShareAsync(shareId, values);

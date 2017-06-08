@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 a.schild
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,6 @@
  */
 package org.aarboard.nextcloud.api.filesharing;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,9 +36,9 @@ import org.apache.http.message.BasicNameValuePair;
 /**
  *
  * @author a.schild
- * 
+ *
  * https://docs.nextcloud.com/server/11/developer_manual/core/ocs-share-api.html
- * 
+ *
  */
 public class FilesharingConnector
 {
@@ -53,33 +52,46 @@ public class FilesharingConnector
     }
 
     /**
-     * Return all shares of this user
-     * 
-     * @return 
+     * Get all shares of this user
+     *
+     * @return all shares
      */
-    public Collection<Share> getShares()
+    public List<Share> getShares()
     {
         return getShares(null, false, false);
     }
 
+    /**
+     * Get all shares of this user asynchronously
+     *
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<SharesXMLAnswer> getSharesAsync()
     {
         return getSharesAsync(null, false, false);
     }
 
     /**
-     * Return all shares from a given file/folder
-     * 
+     * Gets all shares from a given file/folder
+     *
      * @param path      path to file/folder
      * @param reShares  returns not only the shares from the current user but all shares from the given file
      * @param subShares returns all shares within a folder, given that path defines a folder
-     * @return 
+     * @return matching shares
      */
-    public Collection<Share> getShares(String path, boolean reShares, boolean subShares)
+    public List<Share> getShares(String path, boolean reShares, boolean subShares)
     {
         return NextcloudResponseHelper.getAndCheckStatus(getSharesAsync(path,reShares,subShares)).getShares();
     }
 
+    /**
+     * Gets all shares from a given file/folder asynchronously
+     *
+     * @param path      path to file/folder
+     * @param reShares  returns not only the shares from the current user but all shares from the given file
+     * @param subShares returns all shares within a folder, given that path defines a folder
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<SharesXMLAnswer> getSharesAsync(String path, boolean reShares, boolean subShares)
     {
         List<NameValuePair> queryParams= new LinkedList<>();
@@ -99,10 +111,10 @@ public class FilesharingConnector
     }
 
     /**
-     * Return share info for a single share
-     * 
+     * Get share info for a single share
+     *
      * @param shareId      id of share (Not path of share)
-     * @return 
+     * @return the share if it has been found, otherwise null
      */
     public Share getShareInfo(int shareId)
     {
@@ -118,20 +130,27 @@ public class FilesharingConnector
         throw new MoreThanOneShareFoundException(shareId);
     }
 
+    /**
+     * Get share info for a single share asynchronously
+     *
+     * @param shareId      id of share (Not path of share)
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<SharesXMLAnswer> getShareInfoAsync(int shareId)
     {
         return connectorCommon.executeGet(SHARES_PART+"/"+Integer.toString(shareId), null, XMLAnswerParser.getInstance(SharesXMLAnswer.class));
     }
 
     /**
-     * 
+     * Shares the specified path with the provided parameters
+     *
      * @param path                  path to the file/folder which should be shared
      * @param shareType             0 = user; 1 = group; 3 = public link; 6 = federated cloud share
      * @param shareWithUserOrGroupId user / group id with which the file should be shared
      * @param publicUpload          allow public upload to a public shared folder (true/false)
      * @param password              password to protect public link Share with
      * @param permissions           1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all (default: 31, for public shares: 1)
-     * @return new Share ID if success
+     * @return created share on success
      */
     public Share doShare(
             String path,
@@ -144,6 +163,17 @@ public class FilesharingConnector
         return NextcloudResponseHelper.getAndCheckStatus(doShareAsync(path, shareType, shareWithUserOrGroupId, publicUpload, password, permissions)).getShare();
     }
 
+    /**
+    * Shares the specified path with the provided parameters asynchronously
+    *
+    * @param path                  path to the file/folder which should be shared
+    * @param shareType             0 = user; 1 = group; 3 = public link; 6 = federated cloud share
+    * @param shareWithUserOrGroupId user / group id with which the file should be shared
+    * @param publicUpload          allow public upload to a public shared folder (true/false)
+    * @param password              password to protect public link Share with
+    * @param permissions           1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all (default: 31, for public shares: 1)
+    * @return a CompletableFuture containing the result of the operation
+    */
     public CompletableFuture<SingleShareXMLAnswer> doShareAsync(
             String path,
             ShareType shareType,
@@ -172,33 +202,75 @@ public class FilesharingConnector
         return connectorCommon.executePost(SHARES_PART, postParams, XMLAnswerParser.getInstance(SingleShareXMLAnswer.class));
     }
 
+    /**
+     * Changes a single attribute of a share
+     *
+     * @param shareId unique identifier of the share
+     * @param key the attribute to change
+     * @param value the value to set
+     * @return true if the operation succeeded
+     */
     public boolean editShare(int shareId, ShareData key, String value)
     {
         return NextcloudResponseHelper.isStatusCodeOkay(editShareAsync(shareId, key, value));
     }
 
+    /**
+     * Changes a single attribute of a share asynchronously
+     *
+     * @param shareId unique identifier of the share
+     * @param key the attribute to change
+     * @param value the value to set
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<XMLAnswer> editShareAsync(int shareId, ShareData key, String value)
     {
         List<NameValuePair> queryParams= Collections.singletonList(new BasicNameValuePair(key.parameterName, value));
         return connectorCommon.executePut(SHARES_PART, Integer.toString(shareId), queryParams, XMLAnswerParser.getInstance(XMLAnswer.class));
     }
 
+    /**
+     * Changes multiple attributes of a share at once
+     *
+     * @param shareId unique identifier of the share
+     * @param values a Map containing the attributes to set
+     * @return true if the operation succeeded
+     */
     public boolean editShare(int shareId, Map<ShareData,String> values)
     {
         return NextcloudResponseHelper.isStatusCodeOkay(editShareAsync(shareId, values));
     }
 
+    /**
+     * Changes multiple attributes of a share at once asynchronously
+     *
+     * @param shareId unique identifier of the share
+     * @param values a Map containing the attributes to set
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<XMLAnswer> editShareAsync(int shareId, Map<ShareData, String> values) {
         List<NameValuePair> queryParams = values.entrySet().stream()
                 .map(e -> new BasicNameValuePair(e.getKey().parameterName, e.getValue())).collect(Collectors.toList());
         return connectorCommon.executePut(SHARES_PART, Integer.toString(shareId), queryParams, XMLAnswerParser.getInstance(XMLAnswer.class));
     }
 
+    /**
+     * Deletes a share
+     *
+     * @param shareId unique identifier of the share
+     * @return true if the operation succeeded
+     */
     public boolean deleteShare(int shareId)
     {
         return NextcloudResponseHelper.isStatusCodeOkay(deleteShareAsync(shareId));
     }
 
+    /**
+     * Deletes a share asynchronously
+     *
+     * @param shareId unique identifier of the share
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<XMLAnswer> deleteShareAsync(int shareId)
     {
         return connectorCommon.executeDelete(SHARES_PART, Integer.toString(shareId), null, XMLAnswerParser.getInstance(XMLAnswer.class));
