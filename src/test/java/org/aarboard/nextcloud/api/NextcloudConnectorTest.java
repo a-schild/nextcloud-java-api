@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 a.schild
  *
  * This program is free software: you can redistribute it and/or modify
@@ -352,6 +352,46 @@ public class NextcloudConnectorTest {
         if (_nc != null)
         {
             _nc.removeFile(TESTFILE);
+        }
+    }
+
+    @Test
+    public void t28_testList() {
+        System.out.println("list");
+
+        if (_nc != null)
+        {
+            //prepare
+            _nc.createFolder(TEST_FOLDER);
+
+            String rootPath = "";
+            List<String> result = _nc.listFolderContent(rootPath);
+
+            //cleanup
+            _nc.deleteFolder(TEST_FOLDER);
+
+            assertNotNull(result);
+            assertTrue(result.contains(TEST_FOLDER));
+        }
+    }
+
+    @Test
+    public void t29_testListRecursive() {
+        System.out.println("list recursive");
+        if (_nc != null)
+        {
+            //prepare
+            _nc.createFolder(TEST_FOLDER);
+            _nc.createFolder(TEST_FOLDER+"/"+TEST_FOLDER+"_sub");
+
+            String rootPath = "";
+            List<String> result = _nc.listFolderContent(rootPath, 2);
+
+            //cleanup
+            _nc.deleteFolder(TEST_FOLDER);
+
+            assertNotNull(result);
+            assertTrue(result.contains(TEST_FOLDER+"_sub"));
         }
     }
 }
