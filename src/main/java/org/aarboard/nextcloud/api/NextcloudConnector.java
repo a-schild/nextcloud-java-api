@@ -535,10 +535,35 @@ public class NextcloudConnector {
      *
      * @param path path of the folder
      * @return found subfolders
+     * @deprecated The methods naming is somehow misleading, as it lists all resources (subfolders and files) within the given {@code rootPath}. Please use {@link #listFolderContent(String)} instead.
      */
+    @Deprecated
     public List<String> getFolders(String path)
     {
         return fd.getFolders(path);
+    }
+
+    /**
+     * Get all subfolders of the specified path
+     *
+     * @param path path of the folder
+     * @return found subfolders
+     */
+    public List<String> listFolderContent(String path)
+    {
+        return fd.listFolderContent(path);
+    }
+
+    /**
+     * List all file names and subfolders of the specified path traversing into subfolders to the given depth.
+     *
+     * @param path path of the folder
+     * @param depth depth of recursion while listing folder contents
+     * @return found file names and subfolders
+     */
+    public List<String> listFolderContent(String path, int depth)
+    {
+        return fd.listFolderContent(path, depth);
     }
 
     /**
@@ -595,16 +620,16 @@ public class NextcloudConnector {
     }
 
     /**
-    * Shares the specified path with the provided parameters asynchronously
-    *
-    * @param path                  path to the file/folder which should be shared
-    * @param shareType             0 = user; 1 = group; 3 = public link; 6 = federated cloud share
-    * @param shareWithUserOrGroupId user / group id with which the file should be shared
-    * @param publicUpload          allow public upload to a public shared folder (true/false)
-    * @param password              password to protect public link Share with
-    * @param permissions           1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all (default: 31, for public shares: 1)
-    * @return a CompletableFuture containing the result of the operation
-    */
+     * Shares the specified path with the provided parameters asynchronously
+     *
+     * @param path                  path to the file/folder which should be shared
+     * @param shareType             0 = user; 1 = group; 3 = public link; 6 = federated cloud share
+     * @param shareWithUserOrGroupId user / group id with which the file should be shared
+     * @param publicUpload          allow public upload to a public shared folder (true/false)
+     * @param password              password to protect public link Share with
+     * @param permissions           1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all (default: 31, for public shares: 1)
+     * @return a CompletableFuture containing the result of the operation
+     */
     public CompletableFuture<SingleShareXMLAnswer> doShareAsync(
             String path,
             ShareType shareType,
@@ -659,10 +684,10 @@ public class NextcloudConnector {
     }
 
     /** Uploads a file at the specified path with the data from the InputStream
-    *
-    * @param inputStream          InputStream of the file which should be uploaded
-    * @param remotePath           path where the file should be uploaded to
-    */
+     *
+     * @param inputStream          InputStream of the file which should be uploaded
+     * @param remotePath           path where the file should be uploaded to
+     */
     public void uploadFile(InputStream inputStream, String remotePath)
     {
         fl.uploadFile(inputStream, remotePath);
