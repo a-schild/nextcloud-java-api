@@ -147,4 +147,67 @@ public class Folders {
             throw new NextcloudApiException(e);
         }
     }
+
+    /**
+     * Downloads the folder at the specified remotepath to the rootdownloadirpath
+     *
+     * @param remotepath the path in the nextcloud server with respect to the specific folder
+     * @param rootdownloadirpath the local path in the system where the folder needs be saved
+     * @return
+     * @throws IOException
+     */
+    public void downloadFolder(String remotepath,String rootdownloadirpath) throws IOException {
+        int depth=1;
+        String rootpath = (_serverConfig.isUseHTTPS()  ? "https" : "http") +"://"+_serverConfig.getServerName()+"/"+WEB_DAV_BASE_PATH;
+        String[] segments = remotepath.split("/");
+        String foldername = segments[segments.length - 1];
+        String newdownloadir = rootdownloadirpath + "/" + foldername;
+        System.out.println(newdownloadir);
+        File nefile1 = new File(newdownloadir);
+        if(!nefile1.exists()) {
+            nefile1.mkdir();
+        }
+        String rootpathnew= rootpath+remotepath ;
+        int count = 0;
+        String filepath;
+        List<String> retVal= new LinkedList<>();
+        List<DavResource> resources;
+        Sardine sardine = SardineFactory.begin();
+        sardine.setCredentials(_serverConfig.getUserName(), _serverConfig.getPassword());
+        try {
+            resources = sardine.list(rootpathnew, depth);
+        } catch (IOException e) {
+            throw new NextcloudApiException(e);
+        }
+
+        for (DavResource res : resources)
+        {
+            System.out.println(res.getName());
+            //Skip the Documents folder which is listed as default as first by the sardine output
+            if(count != 0) {
+                if(res.isDirectory()) {
+                    String filename = res.getName();
+                    String pathtosend = remotepath + "/" + filename;
+                    downloadFolder(pathtosend,newdownloadir);
+                }
+                else {
+                    String filename = res.getName();
+                        filepath = rootpathnew + "/" + filename;
+                        retVal.add(res.getName());
+                        InputStream in = null;
+                        if (sardine.exists(filepath)) {
+                            in = sardine.get(filepath);
+                            byte[] buffer = new byte[in.available()];
+                            in.read(buffer);
+                            File targetFile = new File(newdownloadir + "/" + filename);
+                            OutputStream outStream = new FileOutputStream(targetFile);
+                            outStream.write(buffer);
+                            in.close();
+                            outStream.close();
+                        }
+                }
+            }
+            count ++;
+        }
+    }
 }
