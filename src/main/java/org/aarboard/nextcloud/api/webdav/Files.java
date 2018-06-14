@@ -83,4 +83,50 @@ public class Files {
 			throw new NextcloudApiException(e);
 		}
 	}
+
+	/**
+	 *Downloads the file at the specified remotepath to the download directory, and returns true if the download is successful
+	 *
+	 * @param remotepath Remotepath where the file is saved in the nextcloud server
+	 * @param downloadirpath Path where the file is downloaded, it would be created if it doesn't exist.
+	 * @return boolean
+	 * @throws IOException
+	 */
+
+	public boolean downloadFile(String remotepath, String downloadirpath) throws IOException {
+		boolean status=false;
+		String path = (_serverConfig.isUseHTTPS() ? "https" : "http") + "://" + _serverConfig.getServerName() + "/" + WEB_DAV_BASE_PATH + remotepath;
+		Sardine sardine = SardineFactory.begin();
+		sardine.setCredentials(_serverConfig.getUserName(), _serverConfig.getPassword());
+		sardine.enablePreemptiveAuthentication(_serverConfig.getServerName());
+
+		File downloadFilepath = new File(downloadirpath);
+		if(!downloadFilepath.exists()) {
+			downloadFilepath.mkdir();
+		}
+
+		if(fileExists(remotepath)) {
+			//Extract the Filename from the path
+			String[] segments = path.split("/");
+			String filename = segments[segments.length - 1];
+			downloadirpath = downloadirpath + "/" + filename;
+		}
+		InputStream in = null;
+		try {
+			in = sardine.get(path);
+			byte[] buffer = new byte[in.available()];
+			in.read(buffer);
+			File targetFile = new File(downloadirpath);
+			OutputStream outStream = new FileOutputStream(targetFile);
+			outStream.write(buffer);
+			status = true;
+		} catch (IOException e) {
+			throw new NextcloudApiException(e);
+		} finally {
+			sardine.shutdown();
+			in.close();
+			return status;
+		}
+	}
+
 }
