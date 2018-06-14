@@ -808,4 +808,28 @@ public class NextcloudConnector {
     {
         return fc.editShareAsync(shareId, values);
     }
+
+        /**
+     * Download the file from the remotepath to the download path specified in the
+     *
+     * @param remotepath Remotepath of the file to be downloaded from the nextcloud server
+     * @param downloadpath Local path where the file has to be downloaded in the local machine
+     * @return boolean
+     */
+    public boolean downloadFile(String remotepath, String downloadpath) throws IOException
+    {
+        return fl.downloadFile(remotepath, downloadpath);
+    }
+
+    /**
+     *
+     * @param remotepath Remotepath of the folder to be downloaded from the nextcloud server
+     * @param downloadpath Local path where the folder has to be downloaded in the local machine
+     * @throws IOException
+     */
+    public void downloadFolder(String remotepath, String downloadpath) throws IOException
+    {
+         fd.downloadFolder(remotepath, downloadpath);
+    }
+
 }
