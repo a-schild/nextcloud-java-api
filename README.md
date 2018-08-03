@@ -22,7 +22,7 @@ Java api library to access nextcloud features from java applications
 - Now you can use the methods exposed to access your nextcloud instance
 
 # Changelog
-- 2018-08-03 Release 11.0.1, Reworked file/folder handling
+- 2018-08-03 Release 11.0.2, Reworked file/folder handling
 - 2018-07-25 Release 11.0.1
 - 2018-07-25 Added to maven central to simplify usage
 - 2018-06-14 Method added to download files
