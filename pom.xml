@@ -3,13 +3,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.aarboard.nextcloud</groupId>
     <artifactId>nextcloud-api</artifactId>
-    <version>11.0.2</version>
+    <version>11.0.3-SNAPSHOT</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <httpasyncclient.version>4.1.3</httpasyncclient.version>
+        <httpasyncclient.version>4.1.4</httpasyncclient.version>
         <commons-logging-api.version>1.1</commons-logging-api.version>
         <sardine.version>5.8</sardine.version>
         <netbeans.hint.license>gpl30</netbeans.hint.license>
