@@ -69,7 +69,7 @@ public class Files extends AWebdavHandler{
      * @param downloadDirPath Path where the file is downloaded, it would be
      * created if it doesn't exist.
      * @return boolean
-     * @throws IOException
+     * @throws IOException  In case of IO errors
      */
     public boolean downloadFile(String remotePath, String downloadDirPath) throws IOException {
         boolean status = false;

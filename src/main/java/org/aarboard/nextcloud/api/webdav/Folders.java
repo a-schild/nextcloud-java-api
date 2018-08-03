@@ -25,7 +25,6 @@ import org.aarboard.nextcloud.api.exception.NextcloudApiException;
 
 import com.github.sardine.DavResource;
 import com.github.sardine.Sardine;
-import com.github.sardine.SardineFactory;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -164,7 +163,7 @@ public class Folders extends AWebdavHandler{
      *
      * @param remotePath the path in the nextcloud server with respect to the specific folder
      * @param rootDownloadDirPath the local path in the system where the folder needs be saved
-     * @throws IOException
+     * @throws IOException  In case of IO errors
      */
     public void downloadFolder(String remotePath, String rootDownloadDirPath) throws IOException {
         int depth=1;

@@ -816,7 +816,7 @@ public class NextcloudConnector {
      * @param remotepath Remotepath of the file to be downloaded from the nextcloud server
      * @param downloadpath Local path where the file has to be downloaded in the local machine
      * @return boolean
-     * @throws java.io.IOException
+     * @throws java.io.IOException In case of IO errors
      */
     public boolean downloadFile(String remotepath, String downloadpath) throws IOException
     {
@@ -827,7 +827,7 @@ public class NextcloudConnector {
      *
      * @param remotepath Remotepath of the folder to be downloaded from the nextcloud server
      * @param downloadpath Local path where the folder has to be downloaded in the local machine
-     * @throws IOException
+     * @throws IOException  In case of IO errors
      */
     public void downloadFolder(String remotepath, String downloadpath) throws IOException
     {
