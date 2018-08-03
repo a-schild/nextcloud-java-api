@@ -16,6 +16,7 @@
  */
 package org.aarboard.nextcloud.api;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
@@ -815,6 +816,7 @@ public class NextcloudConnector {
      * @param remotepath Remotepath of the file to be downloaded from the nextcloud server
      * @param downloadpath Local path where the file has to be downloaded in the local machine
      * @return boolean
+     * @throws java.io.IOException
      */
     public boolean downloadFile(String remotepath, String downloadpath) throws IOException
     {

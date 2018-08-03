@@ -7,126 +7,117 @@ import org.aarboard.nextcloud.api.ServerConfig;
 import org.aarboard.nextcloud.api.exception.NextcloudApiException;
 
 import com.github.sardine.Sardine;
-import com.github.sardine.SardineFactory;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 
 /**
- * 
+ *
  * @author tott
  *
  */
-public class Files {
+public class Files extends AWebdavHandler{
 
-	private static final String WEB_DAV_BASE_PATH = "remote.php/webdav/";
-	
-	private final ServerConfig _serverConfig;
-	
-	public Files(ServerConfig _serverConfig) {
-		this._serverConfig = _serverConfig;
-	}
-	
-	/**
-	 * method to check if a file already exists
-	 * 
-	 * @param rootPath path of the file
-	 * @return boolean value if the given file exists or not
-	 */
-	public boolean fileExists(String rootPath){
-		String path = (_serverConfig.isUseHTTPS() ? "https" : "http") + "://" + _serverConfig.getServerName() + "/" + WEB_DAV_BASE_PATH + rootPath;
-		
-		Sardine sardine = SardineFactory.begin();
-		
-		sardine.setCredentials(_serverConfig.getUserName(), _serverConfig.getPassword());
-		sardine.enablePreemptiveAuthentication(_serverConfig.getServerName());
-		
-		try {
-			return sardine.exists(path);
-		} catch (IOException e) {
-			throw new NextcloudApiException(e);
-		}
-	}
+    public Files(ServerConfig serverConfig) {
+        super(serverConfig);
+    }
 
-    /** Uploads a file at the specified path with the data from the InputStream
+    /**
+     * method to check if a file already exists
      *
-     * @param inputStream          InputStream of the file which should be uploaded
-     * @param remotePath           path where the file should be uploaded to
+     * @param remotePath path of the file
+     * @return boolean value if the given file exists or not
      */
-    public void uploadFile(InputStream inputStream, String remotePath)
-    {
-    	String path = (_serverConfig.isUseHTTPS() ? "https" : "http") + "://" + _serverConfig.getServerName() + "/" + WEB_DAV_BASE_PATH + remotePath;
-		
-		Sardine sardine = SardineFactory.begin();
-		
-        sardine.setCredentials(_serverConfig.getUserName(), _serverConfig.getPassword());
-        sardine.enablePreemptiveAuthentication(_serverConfig.getServerName());
+    public boolean fileExists(String remotePath) {
+        return pathExists(remotePath);
+    }
 
-        try {
+    /**
+     * Uploads a file at the specified path with the data from the InputStream
+     *
+     * @param inputStream InputStream of the file which should be uploaded
+     * @param remotePath path where the file should be uploaded to
+     */
+    public void uploadFile(InputStream inputStream, String remotePath) {
+        String path = buildWebdavPath(remotePath);
+        Sardine sardine = buildAuthSardine();
+
+        try
+        {
             sardine.put(path, inputStream);
-        } catch (IOException e) {
+        } catch (IOException e)
+        {
             throw new NextcloudApiException(e);
         }
     }
-	
-	/**
-	 * method to remove files
-	 * @param rootPath path of the file which should be removed
-	 */
-	public void removeFile(String rootPath) {
-		String path = (_serverConfig.isUseHTTPS() ? "https" : "http") + "://" + _serverConfig.getServerName() + "/" + WEB_DAV_BASE_PATH + rootPath;
-		
-		Sardine sardine = SardineFactory.begin();
-		
-		sardine.setCredentials(_serverConfig.getUserName(), _serverConfig.getPassword());
-        sardine.enablePreemptiveAuthentication(_serverConfig.getServerName());
-		try {
-			sardine.delete(path);
-		} catch ( IOException e ) {
-			throw new NextcloudApiException(e);
-		}
-	}
 
-	/**
-	 *Downloads the file at the specified remotepath to the download directory, and returns true if the download is successful
-	 *
-	 * @param remotepath Remotepath where the file is saved in the nextcloud server
-	 * @param downloadirpath Path where the file is downloaded, it would be created if it doesn't exist.
-	 * @return boolean
-	 * @throws IOException
-	 */
+    /**
+     * method to remove files
+     *
+     * @param remotePath path of the file which should be removed
+     */
+    public void removeFile(String remotePath) {
+        deletePath(remotePath);
+    }
 
-	public boolean downloadFile(String remotepath, String downloadirpath) throws IOException {
-		boolean status=false;
-		String path = (_serverConfig.isUseHTTPS() ? "https" : "http") + "://" + _serverConfig.getServerName() + "/" + WEB_DAV_BASE_PATH + remotepath;
-		Sardine sardine = SardineFactory.begin();
-		sardine.setCredentials(_serverConfig.getUserName(), _serverConfig.getPassword());
-		sardine.enablePreemptiveAuthentication(_serverConfig.getServerName());
+    /**
+     * Downloads the file at the specified remotepath to the download directory,
+     * and returns true if the download is successful
+     *
+     * @param remotePath Remotepath where the file is saved in the nextcloud
+     * server
+     * @param downloadDirPath Path where the file is downloaded, it would be
+     * created if it doesn't exist.
+     * @return boolean
+     * @throws IOException
+     */
+    public boolean downloadFile(String remotePath, String downloadDirPath) throws IOException {
+        boolean status = false;
+        String path = buildWebdavPath(remotePath);
+        Sardine sardine = buildAuthSardine();
 
-		File downloadFilepath = new File(downloadirpath);
-		if(!downloadFilepath.exists()) {
-			downloadFilepath.mkdir();
-		}
+        File downloadFilepath = new File(downloadDirPath);
+        if (!downloadFilepath.exists())
+        {
+            downloadFilepath.mkdir();
+        }
 
-		if(fileExists(remotepath)) {
-			//Extract the Filename from the path
-			String[] segments = path.split("/");
-			String filename = segments[segments.length - 1];
-			downloadirpath = downloadirpath + "/" + filename;
-		}
-		InputStream in = null;
-		try {
-			in = sardine.get(path);
-			byte[] buffer = new byte[in.available()];
-			in.read(buffer);
-			File targetFile = new File(downloadirpath);
-			OutputStream outStream = new FileOutputStream(targetFile);
-			outStream.write(buffer);
-			status = true;
-		} catch (IOException e) {
-			throw new NextcloudApiException(e);
-		} finally {
-			sardine.shutdown();
-			in.close();
-			return status;
-		}
-	}
+        if (fileExists(remotePath))
+        {
+            //Extract the Filename from the path
+            String[] segments = path.split("/");
+            String filename = segments[segments.length - 1];
+            downloadDirPath = downloadDirPath + "/" + filename;
+        }
+        InputStream in = null;
+        try
+        {
+            in = sardine.get(path);
+            byte[] buffer = new byte[AWebdavHandler.FILE_BUFFER_SIZE];
+            int bytesRead;
+            File targetFile = new File(downloadDirPath);
+            try (OutputStream outStream = new FileOutputStream(targetFile))
+            {
+                while ((bytesRead = in.read(buffer)) != -1)
+                {
+                    outStream.write(buffer, 0, bytesRead);
+                }
+                outStream.flush();
+                outStream.close();
+            }
+            status = true;
+        } catch (IOException e)
+        {
+            throw new NextcloudApiException(e);
+        } finally
+        {
+            sardine.shutdown();
+            if (in != null)
+            {
+                in.close();
+            }
+        }
+        return status;
+    }
 
 }

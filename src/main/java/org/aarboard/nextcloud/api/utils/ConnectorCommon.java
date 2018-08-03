@@ -122,7 +122,7 @@ public class ConnectorCommon
         HttpClientContext context = prepareContext();
 
         CompletableFuture<R> futureResponse = new CompletableFuture<>();
-        HttpAsyncClientSingleton.httpclient.execute(request, context, new ResponseCallback<R>(parser, futureResponse));
+        HttpAsyncClientSingleton.HTTPC_CLIENT.execute(request, context, new ResponseCallback<>(parser, futureResponse));
         return futureResponse;
     }
 
@@ -198,13 +198,13 @@ public class ConnectorCommon
 
     private static class HttpAsyncClientSingleton
     {
-        private static final CloseableHttpAsyncClient httpclient = HttpAsyncClients.createDefault();
+        private static final CloseableHttpAsyncClient HTTPC_CLIENT = HttpAsyncClients.createDefault();
 
         private HttpAsyncClientSingleton() {
         }
 
         static {
-            httpclient.start();
+            HTTPC_CLIENT.start();
         }
     }
 
