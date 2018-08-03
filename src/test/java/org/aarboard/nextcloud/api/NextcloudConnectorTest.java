@@ -44,9 +44,9 @@ public class NextcloudConnectorTest {
     private static final String TEST_FOLDER = "new-test-folder";
     private static final String TESTFILE = "test.txt";
 
-    private String serverName = null;
-    private String userName = null;
-    private String password = null;
+    private final String serverName = null;
+    private final String userName = null;
+    private final String password = null;
 
     private NextcloudConnector _nc;
 

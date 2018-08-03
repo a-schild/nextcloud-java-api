@@ -48,9 +48,9 @@ public class FilesharingConnectorTest {
     private static final String TEST_FOLDER = "/sharing-test-folder";
     private static final String TESTUSER = "sharing-testuser";
 
-    private static String serverName = null;
-    private static String userName = null;
-    private static String password = null;
+    private static final String serverName = null;
+    private static final String userName = null;
+    private static final String password = null;
 
     private static ServerConfig _sc = null;
     private static NextcloudConnector _nc = null;
