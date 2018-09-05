@@ -44,17 +44,18 @@ public class NextcloudConnectorTest {
     private static final String TEST_FOLDER = "new-test-folder";
     private static final String TESTFILE = "test.txt";
 
-    private final String serverName = null;
-    private final String userName = null;
-    private final String password = null;
+    private static String serverName = null;
+    private static String userName = null;
+    private static String password = null;
 
     private NextcloudConnector _nc;
 
-    public NextcloudConnectorTest() {
-    }
-
     @Before
     public void setUp() {
+        TestHelper th= new TestHelper();
+        serverName= th.getServerName();
+        userName= th.getUserName();
+        password= th.getPassword();
         if (serverName != null)
         {
             _nc = new NextcloudConnector(serverName, true, 0, userName, password);

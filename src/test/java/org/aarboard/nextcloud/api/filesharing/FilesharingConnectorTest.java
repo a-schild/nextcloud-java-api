@@ -30,6 +30,7 @@ import java.util.Optional;
 
 import org.aarboard.nextcloud.api.NextcloudConnector;
 import org.aarboard.nextcloud.api.ServerConfig;
+import org.aarboard.nextcloud.api.TestHelper;
 import org.aarboard.nextcloud.api.exception.NextcloudOperationFailedException;
 import org.aarboard.nextcloud.api.filesharing.SharePermissions.SingleRight;
 import org.aarboard.nextcloud.api.provisioning.ShareData;
@@ -48,18 +49,19 @@ public class FilesharingConnectorTest {
     private static final String TEST_FOLDER = "/sharing-test-folder";
     private static final String TESTUSER = "sharing-testuser";
 
-    private static final String serverName = null;
-    private static final String userName = null;
-    private static final String password = null;
+    private static String serverName = null;
+    private static String userName = null;
+    private static String password = null;
 
     private static ServerConfig _sc = null;
     private static NextcloudConnector _nc = null;
 
-    public FilesharingConnectorTest() {
-    }
-
     @BeforeClass
     public static void setUp() {
+        TestHelper th= new TestHelper();
+        serverName= th.getServerName();
+        userName= th.getUserName();
+        password= th.getPassword();
         if (serverName != null)
         {
             _sc= new ServerConfig(serverName, true, 443, userName, password);

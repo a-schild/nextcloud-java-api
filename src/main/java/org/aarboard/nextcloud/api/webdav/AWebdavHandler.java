@@ -23,6 +23,7 @@ import org.aarboard.nextcloud.api.ServerConfig;
 import org.aarboard.nextcloud.api.exception.NextcloudApiException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.client.utils.URIBuilder;
 
 /**
  *
@@ -48,8 +49,11 @@ public abstract class AWebdavHandler {
      */
     protected String buildWebdavPath(String remotePath)
     {
-        return (_serverConfig.isUseHTTPS() ? "https" : "http") + "://" +
-                _serverConfig.getServerName() + "/" + WEB_DAV_BASE_PATH + remotePath;
+        URIBuilder uB= new URIBuilder()
+        .setScheme(_serverConfig.isUseHTTPS() ? "https" : "http")
+        .setHost(_serverConfig.getServerName())
+        .setPath( WEB_DAV_BASE_PATH + remotePath);
+        return uB.toString();
     }
     
     /**
