@@ -145,7 +145,7 @@ public class FilesharingConnector
      * Shares the specified path with the provided parameters
      *
      * @param path                  path to the file/folder which should be shared
-     * @param shareType             0 = user; 1 = group; 3 = public link; 6 = federated cloud share
+     * @param shareType             0 = user; 1 = group; 3 = public link; 4 = email; 6 = federated cloud share
      * @param shareWithUserOrGroupIdOrEmail user / group id / email with which the file should be shared
      * @param publicUpload          allow public upload to a public shared folder (true/false)
      * @param password              password to protect public link Share with
