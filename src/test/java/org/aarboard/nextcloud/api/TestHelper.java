@@ -16,10 +16,13 @@
  */
 package org.aarboard.nextcloud.api;
 
+import org.junit.Ignore;
+
 /**
  *
  * @author a.schild
  */
+@Ignore
 public class TestHelper {
     private String serverName= null;
     private String userName= null;
