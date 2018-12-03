@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.aarboard.nextcloud.api.provisioning.User;
 import org.aarboard.nextcloud.api.provisioning.UserData;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -43,12 +44,14 @@ public class NextcloudConnectorTest {
     private static final String TESTGROUP = "testgroup";
     private static final String TEST_FOLDER = "new-test-folder";
     private static final String TESTFILE = "test.txt";
+    private static final String TESTFILE2 = "test2.txt";
+    private static final String TESTFILE3 = "test3-äöüÖÄÜ and with plus + sign \u32A2.txt";
 
     private static String serverName = null;
     private static String userName = null;
     private static String password = null;
 
-    private NextcloudConnector _nc;
+    private static NextcloudConnector _nc;
 
     @Before
     public void setUp() {
@@ -62,6 +65,37 @@ public class NextcloudConnectorTest {
         }
     }
 
+    @AfterClass
+    public static void tearDown() {
+        if (serverName != null)
+        {
+            try
+            {
+                _nc.removeFile(TESTFILE);
+            }
+            catch (Exception ex)
+            {
+                // Catch any errors
+            }
+            try
+            {
+                _nc.removeFile(TESTFILE2);
+            }
+            catch (Exception ex)
+            {
+                // Catch any errors
+            }
+            try
+            {
+                _nc.removeFile(TESTFILE3);
+            }
+            catch (Exception ex)
+            {
+                // Catch any errors
+            }
+        }
+    }
+    
     @Test
     public void t01_testCreateUser() {
         System.out.println("createUser");
@@ -286,6 +320,12 @@ public class NextcloudConnectorTest {
         System.out.println("createFolder");
         if (_nc != null)
         {
+
+            boolean result = _nc.folderExists(TEST_FOLDER);
+            if (result)
+            {
+                _nc.deleteFolder(TEST_FOLDER);
+            }
             _nc.createFolder(TEST_FOLDER);
         }
     }
@@ -335,6 +375,27 @@ public class NextcloudConnectorTest {
     }
 
     @Test
+    public void t25_2_testUploadFile() {
+        System.out.println("uploadFile 0Bytes");
+        if (_nc != null)
+        {
+            InputStream inputStream = new ByteArrayInputStream("".getBytes());
+            _nc.uploadFile(inputStream, TESTFILE2);
+        }
+    }
+
+    @Test
+    public void t25_3_testUploadFile() {
+        System.out.println("uploadFile umlauts");
+        if (_nc != null)
+        {
+            InputStream inputStream = new ByteArrayInputStream("".getBytes());
+            _nc.uploadFile(inputStream, TESTFILE3);
+        }
+    }
+
+    
+    @Test
     public void t26_testFileExists() {
         System.out.println("fileExists");
         if (_nc != null)
@@ -347,6 +408,16 @@ public class NextcloudConnectorTest {
         }
     }
 
+    @Test
+    public void t26_2_testFileExists2() {
+        System.out.println("fileExists2");
+        if (_nc != null)
+        {
+            boolean result = _nc.fileExists(TESTFILE3);
+            assertTrue(result);
+        }
+    }
+    
     @Test
     public void t27_testRemoveFile() {
         System.out.println("removeFile");
@@ -386,7 +457,7 @@ public class NextcloudConnectorTest {
             _nc.createFolder(TEST_FOLDER+"/"+TEST_FOLDER+"_sub");
 
             String rootPath = "";
-            List<String> result = _nc.listFolderContent(rootPath, 2);
+            List<String> result = _nc.listFolderContent(TEST_FOLDER, -1);
 
             //cleanup
             _nc.deleteFolder(TEST_FOLDER);

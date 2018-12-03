@@ -556,10 +556,13 @@ public class NextcloudConnector {
     }
 
     /**
-     * List all file names and subfolders of the specified path traversing into subfolders to the given depth.
+     * List all file names and subfolders of the specified path traversing
+     * into subfolders to the given depth.
      *
      * @param path path of the folder
      * @param depth depth of recursion while listing folder contents
+     *              (use 0 for single resource, 1 for directory listing,
+     *               -1 for infinite recursion)
      * @return found file names and subfolders
      */
     public List<String> listFolderContent(String path, int depth)

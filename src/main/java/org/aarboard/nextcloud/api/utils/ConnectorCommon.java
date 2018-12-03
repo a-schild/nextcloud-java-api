@@ -115,6 +115,7 @@ public class ConnectorCommon
     private <R> CompletableFuture<R> executeRequest(final ResponseParser<R> parser, HttpRequestBase request)
             throws IOException, ClientProtocolException
     {
+        // https://docs.nextcloud.com/server/14/developer_manual/core/ocs-share-api.html
         request.addHeader("OCS-APIRequest", "true");
         request.addHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setProtocolVersion(HttpVersion.HTTP_1_1);
