@@ -23,6 +23,8 @@ Java api library to access nextcloud features from java applications
 
 # Changelog
 - 2018-12-03
+  - Prepare for next dev cycle 11.0.4-SNAPSHOT
+- 2018-12-03
   - Release 11.0.3
   - Upgrade httpasyncclient to 4.1.4
   - Correctly encode URL's in Files and Folder connector
