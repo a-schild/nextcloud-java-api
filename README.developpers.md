@@ -16,6 +16,7 @@ You can specify them in your settings.xml file in this way:
             </activation>
             <properties>
                 <nextcloud.api.test.servername>test.nextcloud.org</nextcloud.api.test.servername>
+                <nextcloud.api.test.serverport>444</nextcloud.api.test.serverport>
                 <nextcloud.api.test.username>admin</nextcloud.api.test.username>
                 <nextcloud.api.test.password>adminp@ssw0rd</nextcloud.api.test.password>
             </properties>
