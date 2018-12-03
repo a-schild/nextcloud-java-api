@@ -28,7 +28,8 @@ public class ServerConfig {
     private boolean useHTTPS;
     private int port;
 
-    public ServerConfig(String serverName, boolean useHTTPS, int port, String userName, String password) {
+    public ServerConfig(String serverName, boolean useHTTPS, int port, 
+            String userName, String password) {
         this.userName = userName;
         this.password = password;
         this.serverName = serverName;

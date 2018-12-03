@@ -8,22 +8,25 @@ Java api library to access nextcloud features from java applications
 - Management of groups
 - Folder management (Without access control)
 - List shares and create new file shares (No way to delete/update shares atm.)
-- Tested agains nextCloud 11.0.2 server version, but should also work with older nextCloud and ownCloud systems
+- Tested agains nextCloud 14.0.4 server version, but should also work with older nextCloud and ownCloud systems
 
 # Usage
 - Add this dependency to your pom.xml file
 ```
 <groupId>org.aarboard.nextcloud</groupId>
     <artifactId>nextcloud-api</artifactId>
-<version>11.0.2</version>
+<version>11.0.3</version>
 ```
 
 - Create a NextcloudConnector instance and provide your server settings and authentification
 - Now you can use the methods exposed to access your nextcloud instance
 
 # Changelog
-- 2018-xx-xx Upgrade httpasyncclient to 4.1.4
+- 2018-12-03 Release 11.0.3
+             Upgrade httpasyncclient to 4.1.4
              Correctly encode URL's in Files and Folder connector
+             Use port specs in sharing connector
+             Added E-Mail share type
 - 2018-08-03 Release 11.0.2
              Reworked file/folder handling
 - 2018-07-25 Release 11.0.1

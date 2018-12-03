@@ -50,6 +50,7 @@ public class NextcloudConnectorTest {
     private static String serverName = null;
     private static String userName = null;
     private static String password = null;
+    private static int    serverPort= 443;
 
     private static NextcloudConnector _nc;
 
@@ -59,9 +60,10 @@ public class NextcloudConnectorTest {
         serverName= th.getServerName();
         userName= th.getUserName();
         password= th.getPassword();
+        serverPort= th.getServerPort();
         if (serverName != null)
         {
-            _nc = new NextcloudConnector(serverName, true, 0, userName, password);
+            _nc = new NextcloudConnector(serverName, true, serverPort, userName, password);
         }
     }
 

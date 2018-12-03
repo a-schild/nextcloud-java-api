@@ -24,11 +24,21 @@ public class TestHelper {
     private String serverName= null;
     private String userName= null;
     private String password= null;
+    private int     serverPort= 443;
 
     public TestHelper() {
         serverName= System.getProperty("nextcloud.api.test.servername");
         userName= System.getProperty("nextcloud.api.test.username");
         password= System.getProperty("nextcloud.api.test.password");
+        String sPort= System.getProperty("nextcloud.api.test.serverport");
+        if (sPort == null || sPort.isEmpty())
+        {
+            serverPort= 443;
+        }
+        else
+        {
+            serverPort= Integer.getInteger(sPort);
+        }
     }
 
     /**
@@ -50,6 +60,13 @@ public class TestHelper {
      */
     public String getPassword() {
         return password;
+    }
+
+    /**
+     * @return the serverPort
+     */
+    public int getServerPort() {
+        return serverPort;
     }
     
 }
