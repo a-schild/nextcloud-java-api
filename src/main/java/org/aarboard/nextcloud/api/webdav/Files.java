@@ -10,6 +10,7 @@ import com.github.sardine.Sardine;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import org.aarboard.nextcloud.api.utils.WebdavInputStream;
 
 /**
  *
@@ -120,4 +121,28 @@ public class Files extends AWebdavHandler{
         return status;
     }
 
+    /**
+     * Downloads the file at the specified remotepath as an InputStream,
+     *
+     * @param remotePath Remotepath where the file is saved in the nextcloud
+     * server
+     * @return InputStream
+     * @throws IOException  In case of IO errors
+     */
+    public InputStream downloadFile(String remotePath) throws IOException {
+        String path = buildWebdavPath(remotePath);
+        Sardine sardine = buildAuthSardine();
+
+        WebdavInputStream in = null;
+        try
+        {
+            in = new WebdavInputStream(sardine, sardine.get(path));
+        } catch (IOException e)
+        {
+            sardine.shutdown();
+            throw new NextcloudApiException(e);
+        }
+        return in;
+    }
+    
 }

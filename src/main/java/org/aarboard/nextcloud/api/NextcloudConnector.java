@@ -813,7 +813,7 @@ public class NextcloudConnector {
         return fc.editShareAsync(shareId, values);
     }
 
-        /**
+    /**
      * Download the file from the remotepath to the download path specified in the
      *
      * @param remotepath Remotepath of the file to be downloaded from the nextcloud server
@@ -824,6 +824,18 @@ public class NextcloudConnector {
     public boolean downloadFile(String remotepath, String downloadpath) throws IOException
     {
         return fl.downloadFile(remotepath, downloadpath);
+    }
+
+    /**
+     * Download the file from the remotepath to an InputStream
+     *
+     * @param remotepath Remotepath of the file to be downloaded from the nextcloud server
+     * @return InputStream
+     * @throws java.io.IOException In case of IO errors
+     */
+    public InputStream downloadFile(String remotepath) throws IOException
+    {
+        return fl.downloadFile(remotepath);
     }
 
     /**
