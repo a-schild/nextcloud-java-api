@@ -23,6 +23,8 @@ Java api library to access nextcloud features from java applications
 
 # Changelog
 - 2018-12-03
+  - downloadFile now can return an InputStream
+  - Bump version to 11.0.1-SNAPSHOT to match semantic versioning
   - Prepare for next dev cycle 11.0.4-SNAPSHOT
 - 2018-12-03
   - Release 11.0.3
