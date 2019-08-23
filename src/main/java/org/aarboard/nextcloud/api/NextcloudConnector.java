@@ -49,6 +49,14 @@ public class NextcloudConnector {
     private final Folders fd;
     private final Files fl;
 
+    /**
+     * 
+     * @param serverName    Name or IP of server of your nextcloud instance
+     * @param useHTTPS      Set true when https should be used
+     * @param port          Use 443 for https and 80 for non-https in most cases
+     * @param userName      User for login
+     * @param password      Password for login
+     */
     public NextcloudConnector(String serverName, boolean useHTTPS, int port, String userName, String password)
     {
         _serverConfig= new ServerConfig(serverName, useHTTPS, port, userName, password);
@@ -830,7 +838,7 @@ public class NextcloudConnector {
      * Download the file from the remotepath to an InputStream
      *
      * @param remotepath Remotepath of the file to be downloaded from the nextcloud server
-     * @return InputStream
+     * @return InputStream (Don't forget to close the InputStream once you are done with it)
      * @throws java.io.IOException In case of IO errors
      */
     public InputStream downloadFile(String remotepath) throws IOException
