@@ -1,16 +1,15 @@
 package org.aarboard.nextcloud.api.webdav;
 
-import java.io.IOException;
-import java.io.InputStream;
-
-import org.aarboard.nextcloud.api.ServerConfig;
-import org.aarboard.nextcloud.api.exception.NextcloudApiException;
 
 import com.github.sardine.Sardine;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import org.aarboard.nextcloud.api.utils.WebdavInputStream;
+import org.aarboard.nextcloud.api.ServerConfig;
+import org.aarboard.nextcloud.api.exception.NextcloudApiException;
 
 /**
  *

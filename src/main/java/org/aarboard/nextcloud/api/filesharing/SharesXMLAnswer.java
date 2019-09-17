@@ -17,11 +17,9 @@
 package org.aarboard.nextcloud.api.filesharing;
 
 import java.util.List;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-
 import org.aarboard.nextcloud.api.utils.XMLAnswer;
 
 /**

@@ -21,17 +21,17 @@ import com.github.sardine.SardineFactory;
 import java.io.IOException;
 import org.aarboard.nextcloud.api.ServerConfig;
 import org.aarboard.nextcloud.api.exception.NextcloudApiException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.utils.URIBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author a.schild
  */
 public abstract class AWebdavHandler {
-    private static final Log LOG = LogFactory.getLog(AWebdavHandler.class);
-    
+    private static final Logger LOG = LoggerFactory.getLogger(AWebdavHandler.class);
+
     public static final int  FILE_BUFFER_SIZE= 4096;
     private static final String WEB_DAV_BASE_PATH = "remote.php/webdav/";
     

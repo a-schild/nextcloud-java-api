@@ -16,12 +16,6 @@
  */
 package org.aarboard.nextcloud.api.webdav;
 
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.aarboard.nextcloud.api.ServerConfig;
-import org.aarboard.nextcloud.api.exception.NextcloudApiException;
 
 import com.github.sardine.DavResource;
 import com.github.sardine.Sardine;
@@ -29,8 +23,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+import org.aarboard.nextcloud.api.ServerConfig;
+import org.aarboard.nextcloud.api.exception.NextcloudApiException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -38,7 +37,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class Folders extends AWebdavHandler{
 
-    private static final Log LOG = LogFactory.getLog(Folders.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Folders.class);
 
     public Folders(ServerConfig serverConfig) {
         super(serverConfig);

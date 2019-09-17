@@ -107,6 +107,4 @@ public class ServerConfig {
         this.port = port;
     }
 
-    
-    
 }

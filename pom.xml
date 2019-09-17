@@ -9,9 +9,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <httpcore.version>4.4.12</httpcore.version>
         <httpasyncclient.version>4.1.4</httpasyncclient.version>
-        <commons-logging-api.version>1.1</commons-logging-api.version>
-        <sardine.version>5.8</sardine.version>
+        <httpclient.version>4.5.10</httpclient.version>
+        <slf4j-api.version>1.7.27</slf4j-api.version>
+        <slf4j-simple.version>1.7.27</slf4j-simple.version>
+        <sardine.version>5.9</sardine.version>
         <commons-io.version>2.6</commons-io.version>
         <netbeans.hint.license>gpl30</netbeans.hint.license>
     </properties>
@@ -35,6 +38,13 @@
   
   
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpcore -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>${httpcore.version}</version>
+        </dependency>
+        
         <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -42,11 +52,26 @@
             <version>${httpasyncclient.version}</version>
         </dependency>
       
-        <!-- https://mvnrepository.com/artifact/commons-logging/commons-logging-api -->
+        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
         <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging-api</artifactId>
-            <version>${commons-logging-api.version}</version>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpclient.version}</version>
+        </dependency>
+      
+        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j-api.version}</version>
+        </dependency>
+        
+        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j-simple.version}</version>
+            <scope>test</scope>
         </dependency>
         
         <dependency>

@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-
 import org.aarboard.nextcloud.api.filesharing.FilesharingConnector;
 import org.aarboard.nextcloud.api.filesharing.Share;
 import org.aarboard.nextcloud.api.filesharing.SharePermissions;

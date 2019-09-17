@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-
 import org.aarboard.nextcloud.api.ServerConfig;
 import org.aarboard.nextcloud.api.exception.MoreThanOneShareFoundException;
 import org.aarboard.nextcloud.api.provisioning.ShareData;

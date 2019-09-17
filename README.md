@@ -8,20 +8,25 @@ Java api library to access nextcloud features from java applications
 - Management of groups
 - Folder management (Without access control)
 - List shares and create new file shares (No way to delete/update shares atm.)
-- Tested agains nextCloud 14.0.4 server version, but should also work with older nextCloud and ownCloud systems
+- Tested agains nextCloud 16.0.4 server version, but should also work with older nextCloud and ownCloud systems
 
 # Usage
 - Add this dependency to your pom.xml file
 ```
 <groupId>org.aarboard.nextcloud</groupId>
     <artifactId>nextcloud-api</artifactId>
-<version>11.0.3</version>
+<version>11.1.0</version>
 ```
 
 - Create a NextcloudConnector instance and provide your server settings and authentification
 - Now you can use the methods exposed to access your nextcloud instance
 
 # Changelog
+- 2019-09-07
+  - Switch to slf4j as logging framework
+  - fix to also use port in sardine connector
+  - Upgraded to sardine 5.9
+  - Added explicit dependencies to http core and http client libraries
 - 2018-12-03
   - downloadFile now can return an InputStream
   - Bump version to 11.1.0-SNAPSHOT to match semantic versioning

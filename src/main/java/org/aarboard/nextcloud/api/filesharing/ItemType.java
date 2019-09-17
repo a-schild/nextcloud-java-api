@@ -17,7 +17,6 @@
 package org.aarboard.nextcloud.api.filesharing;
 
 import java.security.InvalidParameterException;
-
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlType;

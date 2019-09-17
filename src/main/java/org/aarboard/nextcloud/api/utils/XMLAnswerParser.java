@@ -4,11 +4,9 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-
 import org.aarboard.nextcloud.api.exception.NextcloudApiException;
 import org.aarboard.nextcloud.api.utils.ConnectorCommon.ResponseParser;
 

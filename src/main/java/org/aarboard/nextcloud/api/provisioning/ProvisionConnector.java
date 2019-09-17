@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-
 import org.aarboard.nextcloud.api.ServerConfig;
 import org.aarboard.nextcloud.api.utils.NextcloudResponseHelper;
 import org.aarboard.nextcloud.api.utils.ConnectorCommon;
