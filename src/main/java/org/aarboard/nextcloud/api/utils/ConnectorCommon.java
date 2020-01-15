@@ -248,7 +248,8 @@ public class ConnectorCommon
      * @throws IOException
      */
 	public static void shutdown() throws IOException{
-		HttpAsyncClientSingleton.getInstance(null).close();
-		
+		if(HttpAsyncClientSingleton.HTTPC_CLIENT != null) {
+			HttpAsyncClientSingleton.getInstance(null).close();
+		}		
 	}
 }
