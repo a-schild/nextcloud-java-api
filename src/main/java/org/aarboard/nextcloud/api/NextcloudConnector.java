@@ -64,6 +64,16 @@ public class NextcloudConnector {
         fd= new Folders(_serverConfig);
         fl= new Files(_serverConfig);
     }
+    
+	/**
+	 * Trust all HTTPS certificates presented by the server. This is e.g. used to work against a
+	 * Nextcloud instance with a self-signed certificate.
+	 * 
+	 * @param trustAllCertificates
+	 */
+	public void trustAllCertificates(boolean trustAllCertificates){
+		_serverConfig.setTrustAllCertificates(trustAllCertificates);
+	}
 
     /**
      * Creates a user

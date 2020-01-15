@@ -27,6 +27,7 @@ public class ServerConfig {
     private String serverName;
     private boolean useHTTPS;
     private int port;
+    private boolean trustAllCertificates;
 
     public ServerConfig(String serverName, boolean useHTTPS, int port, 
             String userName, String password) {
@@ -35,6 +36,7 @@ public class ServerConfig {
         this.serverName = serverName;
         this.useHTTPS = useHTTPS;
         this.port = port;
+        this.trustAllCertificates = false;
     }
 
     /**
@@ -106,5 +108,21 @@ public class ServerConfig {
     public void setPort(int port) {
         this.port = port;
     }
-
+    
+	/**
+	 * @param if the client should accept any HTTPS certificate (e.g. to work against a self-signed
+	 *            certificate)
+	 */
+	public void setTrustAllCertificates(boolean trustAllCertificates){
+		this.trustAllCertificates = trustAllCertificates;
+	}
+	
+	/**
+	 * @return if the client should accept any HTTPS certificate (e.g. to work against a self-signed
+	 *         certificate)
+	 */
+	public boolean isTrustAllCertificates(){
+		return trustAllCertificates;
+	}
+    
 }
