@@ -242,4 +242,13 @@ public class ConnectorCommon
     {
         public R parseResponse(Reader reader);
     }
+
+    /**
+     * Close the http client. Required for clean shutdown.
+     * @throws IOException
+     */
+	public static void shutdown() throws IOException{
+		HttpAsyncClientSingleton.getInstance(null).close();
+		
+	}
 }

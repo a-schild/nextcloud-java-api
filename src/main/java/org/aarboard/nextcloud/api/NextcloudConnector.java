@@ -35,6 +35,7 @@ import org.aarboard.nextcloud.api.provisioning.User;
 import org.aarboard.nextcloud.api.provisioning.UserData;
 import org.aarboard.nextcloud.api.provisioning.UserXMLAnswer;
 import org.aarboard.nextcloud.api.provisioning.UsersXMLAnswer;
+import org.aarboard.nextcloud.api.utils.ConnectorCommon;
 import org.aarboard.nextcloud.api.utils.ListXMLAnswer;
 import org.aarboard.nextcloud.api.utils.XMLAnswer;
 import org.aarboard.nextcloud.api.webdav.Files;
@@ -64,7 +65,15 @@ public class NextcloudConnector {
         fd= new Folders(_serverConfig);
         fl= new Files(_serverConfig);
     }
-    
+
+	/**
+	 * Close the HTTP client. Perform this to cleanly shut down this application.
+	 * @throws IOException 
+	 */
+	public void shutdown() throws IOException{
+		ConnectorCommon.shutdown();
+	}
+	
 	/**
 	 * Trust all HTTPS certificates presented by the server. This is e.g. used to work against a
 	 * Nextcloud instance with a self-signed certificate.
@@ -865,5 +874,7 @@ public class NextcloudConnector {
     {
          fd.downloadFolder(remotepath, downloadpath);
     }
+
+
 
 }
