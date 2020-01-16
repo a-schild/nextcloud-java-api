@@ -82,7 +82,6 @@ public class NextcloudConnector {
 			if(!_serviceUrl.getPath().isEmpty()) {
 				_serverConfig.setSubpathPrefix(_serviceUrl.getPath());
 			}
-			cc = new ConfigConnector(_serverConfig);
 			pc = new ProvisionConnector(_serverConfig);
 			fc = new FilesharingConnector(_serverConfig);
 			fd = new Folders(_serverConfig);
