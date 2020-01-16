@@ -18,6 +18,8 @@ package org.aarboard.nextcloud.api;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +67,30 @@ public class NextcloudConnector {
         fd= new Folders(_serverConfig);
         fl= new Files(_serverConfig);
     }
+    
+    /**
+     * @param serviceUrl 	url of the nextcloud instance, e.g. https://nextcloud.instance.com:8443/cloud
+     * @param userName 		User for login
+     * @param password 		Password for login
+     */
+	public NextcloudConnector(String serviceUrl, String userName, String password){
+		try {
+			URL _serviceUrl = new URL(serviceUrl);
+			boolean useHTTPS = serviceUrl.startsWith("https");
+			_serverConfig = new ServerConfig(_serviceUrl.getHost(), useHTTPS, _serviceUrl.getPort(),
+				userName, password);
+			if(!_serviceUrl.getPath().isEmpty()) {
+				_serverConfig.setSubpathPrefix(_serviceUrl.getPath());
+			}
+			cc = new ConfigConnector(_serverConfig);
+			pc = new ProvisionConnector(_serverConfig);
+			fc = new FilesharingConnector(_serverConfig);
+			fd = new Folders(_serverConfig);
+			fl = new Files(_serverConfig);
+		} catch (MalformedURLException e) {
+			throw new IllegalArgumentException(e);
+		}
+	}
 
 	/**
 	 * Close the HTTP client. Perform this to cleanly shut down this application.
@@ -82,6 +108,16 @@ public class NextcloudConnector {
 	 */
 	public void trustAllCertificates(boolean trustAllCertificates){
 		_serverConfig.setTrustAllCertificates(trustAllCertificates);
+	}
+	
+	/**
+	 * Subpath prefix to the Nextcloud service (if applicable). This is the case if the Nextcloud
+	 * installation is hosted within a subdirectory.
+	 * 
+	 * @param subpathPrefix
+	 */
+	public void setSubpathPrefix(String subpathPrefix){
+		_serverConfig.setSubpathPrefix(subpathPrefix);
 	}
 
     /**

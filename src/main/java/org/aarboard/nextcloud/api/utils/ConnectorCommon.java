@@ -104,6 +104,10 @@ public class ConnectorCommon
 
     private URI buildUrl(String subPath, List<NameValuePair> queryParams)
     {
+    	if(serverConfig.getSubpathPrefix()!=null) {
+    		subPath = serverConfig.getSubpathPrefix()+"/"+subPath;
+    	}
+    	
         URIBuilder uB= new URIBuilder()
         .setScheme(serverConfig.isUseHTTPS() ? "https" : "http")
         .setHost(serverConfig.getServerName())
