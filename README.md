@@ -1,6 +1,9 @@
 # nextcloud-java-api
 Java api library to access nextcloud features from java applications
 
+![Sonatype Nexus (Releases)](https://img.shields.io/nexus/r/org.aarboard.nextcloud/nextcloud-api?label=release&nexusVersion=2&server=https%3A%2F%2Foss.sonatype.org%2F)
+![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/org.aarboard.nextcloud/nextcloud-api?label=snapshot&server=https%3A%2F%2Foss.sonatype.org%2F)
+
 # What is the nextcloud api library?
 > Use nextcloud features from inside your java application
 
@@ -8,13 +11,13 @@ Java api library to access nextcloud features from java applications
 - Management of groups
 - Folder management (Without access control)
 - List shares and create new file shares (No way to delete/update shares atm.)
-- Tested agains nextCloud 16.0.4 server version, but should also work with older nextCloud and ownCloud systems
+- Tested against nextCloud 16.0.4 server version, but should also work with older nextCloud and ownCloud systems
 
 # Usage
 - Add this dependency to your pom.xml file
 ```
 <groupId>org.aarboard.nextcloud</groupId>
-    <artifactId>nextcloud-api</artifactId>
+<artifactId>nextcloud-api</artifactId>
 <version>11.1.0</version>
 ```
 

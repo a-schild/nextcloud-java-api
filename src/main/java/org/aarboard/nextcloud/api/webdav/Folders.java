@@ -71,7 +71,7 @@ public class Folders extends AWebdavHandler{
     }
 
     /**
-     * List all file names and subfolders of the specified path traversing 
+     * List all file names and subfolders of the specified path traversing
      * into subfolders to the given depth.
      *
      * @param remotePath path of the folder
@@ -80,9 +80,23 @@ public class Folders extends AWebdavHandler{
      */
     public List<String> listFolderContent(String remotePath, int depth)
     {
-        String path=  buildWebdavPath(remotePath );
+        return listFolderContent(remotePath, depth, false);
+    }
 
-        List<String> retVal= new LinkedList<>();
+    /**
+     * List all file names and subfolders of the specified path traversing 
+     * into subfolders to the given depth.
+     *
+     * @param remotePath path of the folder
+     * @param depth depth of recursion while listing folder contents
+     * @param excludeFolderNames excludes the folder names from the list
+     * @return found file names and subfolders
+     */
+    public List<String> listFolderContent(String remotePath, int depth, boolean excludeFolderNames)
+    {
+        String path = buildWebdavPath(remotePath);
+
+        List<String> retVal = new LinkedList<>();
         Sardine sardine = buildAuthSardine();
         List<DavResource> resources;
         try {
@@ -103,7 +117,14 @@ public class Folders extends AWebdavHandler{
         }
         for (DavResource res : resources)
         {
-            retVal.add(res.getName());
+            if (excludeFolderNames) {
+                if (!res.isDirectory()) {
+                    retVal.add(res.getName());
+                }
+            }
+            else {
+                retVal.add(res.getName());
+            }
         }
         return retVal;
     }
