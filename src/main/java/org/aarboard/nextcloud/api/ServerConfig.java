@@ -110,8 +110,9 @@ public class ServerConfig {
     }
     
 	/**
-	 * @param if the client should accept any HTTPS certificate (e.g. to work against a self-signed
-	 *            certificate)
+	 * @param trustAllCertificates if the client should accept any 
+         *          HTTPScertificate (e.g. to work against a self-signed
+         * 	    certificate)
 	 */
 	public void setTrustAllCertificates(boolean trustAllCertificates){
 		this.trustAllCertificates = trustAllCertificates;
