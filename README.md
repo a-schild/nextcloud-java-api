@@ -25,6 +25,11 @@ Java api library to access nextcloud features from java applications
 - Now you can use the methods exposed to access your nextcloud instance
 
 # Changelog
+- 2020-02-24
+  - Added option to only return files in folder listings (Thanks to SimonIT)
+  - Upgraded slf4j to 1.7.30, httpclient to 4.5.11, httpcore to 4.4.13
+  - Integrated pull request from col-panic for clean shutdown and directory install support
+  - Release 11.1.0
 - 2019-09-07
   - Switch to slf4j as logging framework
   - fix to also use port in sardine connector
