@@ -25,6 +25,7 @@ public class ServerConfig {
     private String userName;
     private String password;
     private String serverName;
+    private String subpathPrefix;
     private boolean useHTTPS;
     private int port;
     private boolean trustAllCertificates;
@@ -34,6 +35,7 @@ public class ServerConfig {
         this.userName = userName;
         this.password = password;
         this.serverName = serverName;
+        this.subpathPrefix = null;
         this.useHTTPS = useHTTPS;
         this.port = port;
         this.trustAllCertificates = false;
@@ -74,12 +76,27 @@ public class ServerConfig {
         return serverName;
     }
 
-    /**
-     * @param serverName the serverName to set
-     */
-    public void setServerName(String serverName) {
-        this.serverName = serverName;
-    }
+	/**
+	 * @param serverName
+	 *            the serverName to set, defaults to <code>null</code>
+	 */
+	public void setServerName(String serverName){
+		this.serverName = serverName;
+	}
+	
+	/**
+	 * @return the configured subpath prefix
+	 */
+	public String getSubpathPrefix(){
+		return subpathPrefix;
+	}
+    
+	/**
+	 * @param subpathPrefix to apply
+	 */
+	public void setSubpathPrefix(String subpathPrefix){
+		this.subpathPrefix = subpathPrefix;
+	}
 
     /**
      * @return the useHTTPS

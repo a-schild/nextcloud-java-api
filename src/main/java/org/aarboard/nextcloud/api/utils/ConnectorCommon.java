@@ -104,6 +104,10 @@ public class ConnectorCommon
 
     private URI buildUrl(String subPath, List<NameValuePair> queryParams)
     {
+    	if(serverConfig.getSubpathPrefix()!=null) {
+    		subPath = serverConfig.getSubpathPrefix()+"/"+subPath;
+    	}
+    	
         URIBuilder uB= new URIBuilder()
         .setScheme(serverConfig.isUseHTTPS() ? "https" : "http")
         .setHost(serverConfig.getServerName())
@@ -242,4 +246,14 @@ public class ConnectorCommon
     {
         public R parseResponse(Reader reader);
     }
+
+    /**
+     * Close the http client. Required for clean shutdown.
+     * @throws IOException
+     */
+	public static void shutdown() throws IOException{
+		if(HttpAsyncClientSingleton.HTTPC_CLIENT != null) {
+			HttpAsyncClientSingleton.getInstance(null).close();
+		}		
+	}
 }

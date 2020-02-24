@@ -18,6 +18,8 @@ package org.aarboard.nextcloud.api;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +37,7 @@ import org.aarboard.nextcloud.api.provisioning.User;
 import org.aarboard.nextcloud.api.provisioning.UserData;
 import org.aarboard.nextcloud.api.provisioning.UserXMLAnswer;
 import org.aarboard.nextcloud.api.provisioning.UsersXMLAnswer;
+import org.aarboard.nextcloud.api.utils.ConnectorCommon;
 import org.aarboard.nextcloud.api.utils.ListXMLAnswer;
 import org.aarboard.nextcloud.api.utils.XMLAnswer;
 import org.aarboard.nextcloud.api.webdav.Files;
@@ -65,6 +68,37 @@ public class NextcloudConnector {
         fl= new Files(_serverConfig);
     }
     
+    /**
+     * @param serviceUrl 	url of the nextcloud instance, e.g. https://nextcloud.instance.com:8443/cloud
+     * @param userName 		User for login
+     * @param password 		Password for login
+     */
+	public NextcloudConnector(String serviceUrl, String userName, String password){
+		try {
+			URL _serviceUrl = new URL(serviceUrl);
+			boolean useHTTPS = serviceUrl.startsWith("https");
+			_serverConfig = new ServerConfig(_serviceUrl.getHost(), useHTTPS, _serviceUrl.getPort(),
+				userName, password);
+			if(!_serviceUrl.getPath().isEmpty()) {
+				_serverConfig.setSubpathPrefix(_serviceUrl.getPath());
+			}
+			pc = new ProvisionConnector(_serverConfig);
+			fc = new FilesharingConnector(_serverConfig);
+			fd = new Folders(_serverConfig);
+			fl = new Files(_serverConfig);
+		} catch (MalformedURLException e) {
+			throw new IllegalArgumentException(e);
+		}
+	}
+
+	/**
+	 * Close the HTTP client. Perform this to cleanly shut down this application.
+	 * @throws IOException 
+	 */
+	public void shutdown() throws IOException{
+		ConnectorCommon.shutdown();
+	}
+	
 	/**
 	 * Trust all HTTPS certificates presented by the server. This is e.g. used to work against a
 	 * Nextcloud instance with a self-signed certificate.
@@ -73,6 +107,16 @@ public class NextcloudConnector {
 	 */
 	public void trustAllCertificates(boolean trustAllCertificates){
 		_serverConfig.setTrustAllCertificates(trustAllCertificates);
+	}
+	
+	/**
+	 * Subpath prefix to the Nextcloud service (if applicable). This is the case if the Nextcloud
+	 * installation is hosted within a subdirectory.
+	 * 
+	 * @param subpathPrefix
+	 */
+	public void setSubpathPrefix(String subpathPrefix){
+		_serverConfig.setSubpathPrefix(subpathPrefix);
 	}
 
     /**
@@ -881,5 +925,7 @@ public class NextcloudConnector {
     {
          fd.downloadFolder(remotepath, downloadpath);
     }
+
+
 
 }
