@@ -253,6 +253,10 @@
                     <value>${nextcloud.api.test.servername}</value>
                   </property>
                   <property>
+                    <name>nextcloud.api.test.serverport</name>
+                    <value>${nextcloud.api.test.serverport}</value>
+                  </property>
+                  <property>
                     <name>nextcloud.api.test.username</name>
                     <value>${nextcloud.api.test.username}</value>
                   </property>

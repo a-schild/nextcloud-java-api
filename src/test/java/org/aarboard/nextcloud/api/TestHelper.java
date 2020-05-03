@@ -40,7 +40,7 @@ public class TestHelper {
         }
         else
         {
-            serverPort= Integer.getInteger(sPort);
+            serverPort= Integer.parseInt(sPort);
         }
     }
 
@@ -71,5 +71,4 @@ public class TestHelper {
     public int getServerPort() {
         return serverPort;
     }
-    
 }
