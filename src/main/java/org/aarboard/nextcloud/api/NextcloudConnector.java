@@ -774,6 +774,17 @@ public class NextcloudConnector {
         fl.uploadFile(inputStream, remotePath);
     }
 
+    /** Uploads a file at the specified path with the data from the InputStream and continueHeader
+     *
+     * @param inputStream          InputStream of the file which should be uploaded
+     * @param remotePath           path where the file should be uploaded to
+     * @param continueHeader       to receive a possible error by the server before any data is sent
+     */
+    public void uploadFile(InputStream inputStream, String remotePath, boolean continueHeader)
+    {
+        fl.uploadFile(inputStream, remotePath, continueHeader);
+    }
+
     /**
      * method to remove files
      * @param path path of the file which should be removed

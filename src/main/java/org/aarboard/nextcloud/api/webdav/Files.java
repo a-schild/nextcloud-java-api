@@ -52,6 +52,27 @@ public class Files extends AWebdavHandler{
     }
 
     /**
+     * Uploads a file at the specified path with the data from the InputStream
+     * with an additional continue header
+     *
+     * @param inputStream InputStream of the file which should be uploaded
+     * @param remotePath path where the file should be uploaded to
+     * @param continueHeader Continue header is added to receive a possible error by the server before any data is sent.
+     */
+    public void uploadFile(InputStream inputStream, String remotePath, boolean continueHeader) {
+        String path = buildWebdavPath(remotePath);
+        Sardine sardine = buildAuthSardine();
+
+        try
+        {
+            sardine.put(path, inputStream, null, continueHeader);
+        } catch (IOException e)
+        {
+            throw new NextcloudApiException(e);
+        }
+    }
+
+    /**
      * method to remove files
      *
      * @param remotePath path of the file which should be removed
