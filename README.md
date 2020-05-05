@@ -18,13 +18,17 @@ Java api library to access nextcloud features from java applications
 ```
 <groupId>org.aarboard.nextcloud</groupId>
 <artifactId>nextcloud-api</artifactId>
-<version>11.1.0</version>
+<version>11.2.0</version>
 ```
 
 - Create a NextcloudConnector instance and provide your server settings and authentification
 - Now you can use the methods exposed to access your nextcloud instance
 
 # Changelog
+- 2020-05-05
+  - Added option to return full path to files in folder listings (Thanks to thepivo)
+  - Added option to use the continue header in file uploads/puts (Thanks to TobiWineKenobi)
+  - Version bump to 11.2.0 because of added api methods
 - 2020-02-24
   - Added option to only return files in folder listings (Thanks to SimonIT)
   - Upgraded slf4j to 1.7.30, httpclient to 4.5.11, httpcore to 4.4.13

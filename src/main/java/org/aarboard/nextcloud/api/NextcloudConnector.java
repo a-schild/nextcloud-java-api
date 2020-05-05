@@ -953,7 +953,4 @@ public class NextcloudConnector {
     {
          fd.downloadFolder(remotepath, downloadpath);
     }
-
-
-
 }

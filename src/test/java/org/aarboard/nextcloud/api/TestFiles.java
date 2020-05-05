@@ -37,6 +37,7 @@ public class TestFiles extends ATestClass {
     private final static String TEST1_FILE_CONTENT= "Content of Test 1 file";
     private final static String TEST2_FILE_CONTENT= "";
     private final static String TEST3_FILE_CONTENT= "Content of Test 3 file";
+    private final static String TEST4_FILE_CONTENT= "";
     
     @Test
     public void t25_testUploadFile() {
@@ -68,6 +69,16 @@ public class TestFiles extends ATestClass {
         }
     }
 
+    @Test
+    public void t25_4_testUploadFile() {
+        System.out.println("uploadFile 0Bytes ("+TESTFILE4+")");
+        if (_nc != null)
+        {
+            InputStream inputStream = new ByteArrayInputStream(TEST4_FILE_CONTENT.getBytes());
+            _nc.uploadFile(inputStream, TESTFILE4, true);
+        }
+    }
+
     
     @Test
     public void t26_testFileExists() {
@@ -88,6 +99,16 @@ public class TestFiles extends ATestClass {
         if (_nc != null)
         {
             boolean result = _nc.fileExists(TESTFILE3);
+            assertTrue(result);
+        }
+    }
+
+    @Test
+    public void t26_2_testFileExists4() {
+        System.out.println("fileExists4 ("+TESTFILE4+")");
+        if (_nc != null)
+        {
+            boolean result = _nc.fileExists(TESTFILE4);
             assertTrue(result);
         }
     }
@@ -130,6 +151,27 @@ public class TestFiles extends ATestClass {
     }
 
     @Test
+    public void t29_3_testDowloadFile4() throws IOException {
+        System.out.println("downloadFile  as File ("+TESTFILE4+")");
+        if (_nc != null)
+        {
+            File of= new File(System.getProperty("java.io.tmpdir")+File.separator+TESTFILE4);
+            if (_nc.downloadFile(TESTFILE4, of.getParent()))
+            {
+                assertTrue("Downloaded content size does not match", of.length() == 0);
+            }
+            else
+            {
+                assertTrue("Downloaded file failed", false);
+            }
+            if (of.exists())
+            {
+                of.delete();
+            }
+        }
+    }
+
+    @Test
     public void t99_testRemoveFile() {
         System.out.println("removeFile 99 ("+TESTFILE1+")");
         if (_nc != null)
@@ -138,4 +180,30 @@ public class TestFiles extends ATestClass {
         }
     }
 
+    @Test
+    public void t99_2_testRemoveFile() {
+        System.out.println("removeFile 99 2("+TESTFILE2+")");
+        if (_nc != null)
+        {
+            _nc.removeFile(TESTFILE2);
+        }
+    }
+    
+    @Test
+    public void t99_3_testRemoveFile() {
+        System.out.println("removeFile 99 3("+TESTFILE3+")");
+        if (_nc != null)
+        {
+            _nc.removeFile(TESTFILE3);
+        }
+    }
+    
+    @Test
+    public void t99_4_testRemoveFile() {
+        System.out.println("removeFile 99 4 ("+TESTFILE4+")");
+        if (_nc != null)
+        {
+            _nc.removeFile(TESTFILE4);
+        }
+    }
 }

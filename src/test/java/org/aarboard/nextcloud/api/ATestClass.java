@@ -27,9 +27,10 @@ public class ATestClass {
     public static final String TESTUSER = "testuser";
     public static final String TESTGROUP = "testgroup";
     public static final String TEST_FOLDER = "new-test-folder";
-    public static final String TESTFILE1 = "test.txt";
+    public static final String TESTFILE1 = "test1.txt";
     public static final String TESTFILE2 = "test2.txt";
     public static final String TESTFILE3 = "test3-äöüÖÄÜ and with plus + sign \u32A2.txt";
+    public static final String TESTFILE4 = "test4.txt";
 
     public static String serverName = null;
     public static String userName = null;
