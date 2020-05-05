@@ -47,7 +47,7 @@ public class ATestClass {
         serverPort= th.getServerPort();
         if (serverName != null)
         {
-            _nc = new NextcloudConnector(serverName, true, serverPort, userName, password);
+            _nc = new NextcloudConnector(serverName, serverPort == 443, serverPort, userName, password);
         }
     }
 

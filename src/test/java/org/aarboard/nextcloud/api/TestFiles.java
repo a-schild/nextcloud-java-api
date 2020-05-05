@@ -113,7 +113,7 @@ public class TestFiles extends ATestClass {
         System.out.println("downloadFile umlauts as File ("+TESTFILE1+")");
         if (_nc != null)
         {
-            File of= new File(System.getProperty("java.io.tmpdir")+TESTFILE1);
+            File of= new File(System.getProperty("java.io.tmpdir")+File.separator+TESTFILE1);
             if (_nc.downloadFile(TESTFILE1, of.getParent()))
             {
                 assertTrue("Downloaded content size does not match", of.length() == TEST1_FILE_CONTENT.length());

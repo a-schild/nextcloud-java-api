@@ -69,8 +69,8 @@ public class FilesharingConnectorTest {
         serverPort= th.getServerPort();
         if (serverName != null)
         {
-            _sc= new ServerConfig(serverName, true, serverPort, userName, password);
-            _nc = new NextcloudConnector(serverName, true, serverPort, userName, password);
+            _sc= new ServerConfig(serverName, serverPort == 443, serverPort, userName, password);
+            _nc = new NextcloudConnector(serverName, serverPort == 443, serverPort, userName, password);
             _nc.createFolder(TEST_FOLDER);
             _nc.createFolder(TEST_FOLDER2);
             _nc.createFolder(TEST_FOLDER3);
