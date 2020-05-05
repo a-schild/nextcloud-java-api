@@ -122,4 +122,24 @@ public class TestFolders extends ATestClass {
             assertTrue(result.contains(TEST_FOLDER+"_sub"));
         }
     }
+
+    @Test
+    public void t30_testListRecursiveFullPath() {
+        System.out.println("list recursive");
+        if (_nc != null)
+        {
+            //prepare
+            _nc.createFolder(TEST_FOLDER);
+            _nc.createFolder(TEST_FOLDER+"/"+TEST_FOLDER+"_sub/");
+
+            String rootPath = "";
+            List<String> result = _nc.listFolderContent(TEST_FOLDER, -1, false, true);
+
+            //cleanup
+            _nc.deleteFolder(TEST_FOLDER);
+
+            assertNotNull(result);
+            assertTrue(result.contains(TEST_FOLDER+"/"+TEST_FOLDER+"_sub/"));
+        }
+    }
 }

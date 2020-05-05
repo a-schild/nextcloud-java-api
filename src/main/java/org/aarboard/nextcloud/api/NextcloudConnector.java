@@ -644,7 +644,24 @@ public class NextcloudConnector {
      */
     public List<String> listFolderContent(String path, int depth, boolean excludeFolderNames)
     {
-        return fd.listFolderContent(path, depth, excludeFolderNames);
+        return fd.listFolderContent(path, depth, excludeFolderNames, false);
+    }
+
+    /**
+     * List all file names and subfolders of the specified path traversing
+     * into subfolders to the given depth.
+     *
+     * @param path path of the folder
+     * @param depth depth of recursion while listing folder contents
+     *              (use 0 for single resource, 1 for directory listing,
+     *               -1 for infinite recursion)
+     * @param excludeFolderNames excludes the folder names from the result list
+     * @param returnFullPath returns the full path instead of just the filename
+     * @return found file names and subfolders
+     */
+    public List<String> listFolderContent(String path, int depth, boolean excludeFolderNames, boolean returnFullPath)
+    {
+        return fd.listFolderContent(path, depth, excludeFolderNames, returnFullPath);
     }
 
     /**
