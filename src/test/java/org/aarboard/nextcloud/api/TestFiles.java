@@ -44,7 +44,7 @@ public class TestFiles extends ATestClass {
         if (_nc != null)
         {
             InputStream inputStream = new ByteArrayInputStream(TEST1_FILE_CONTENT.getBytes());
-            _nc.uploadFile(inputStream, TESTFILE1);
+            _nc.uploadFile(inputStream, TESTFILE1, false);
         }
     }
 
@@ -54,7 +54,7 @@ public class TestFiles extends ATestClass {
         if (_nc != null)
         {
             InputStream inputStream = new ByteArrayInputStream(TEST2_FILE_CONTENT.getBytes());
-            _nc.uploadFile(inputStream, TESTFILE2);
+            _nc.uploadFile(inputStream, TESTFILE2, false);
         }
     }
 
@@ -64,7 +64,7 @@ public class TestFiles extends ATestClass {
         if (_nc != null)
         {
             InputStream inputStream = new ByteArrayInputStream(TEST3_FILE_CONTENT.getBytes());
-            _nc.uploadFile(inputStream, TESTFILE3);
+            _nc.uploadFile(inputStream, TESTFILE3, false);
         }
     }
 
