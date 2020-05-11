@@ -1002,9 +1002,9 @@ public class NextcloudConnector {
 	 * @param value the value to set
 	 * @return
 	 */
-	public boolean editAppConfigAppKeyValue(String appConfigApp, String appConfigAppKey, Object value) 
+	public boolean setAppConfigAppKeyValue(String appConfigApp, String appConfigAppKey, Object value) 
 	{
-		return cc.editAppConfigAppKeyValue(appConfigApp, appConfigAppKey, value);
+		return cc.setAppConfigAppKeyValue(appConfigApp, appConfigAppKey, value);
 	}
 	
 	/**
@@ -1015,8 +1015,8 @@ public class NextcloudConnector {
 	 *            the value to set
 	 * @return
 	 */
-	public boolean editAppConfigAppKeyValue(String appConfigAppKeyPath, Object value){
-		return cc.editAppConfigAppKeyValue(appConfigAppKeyPath, value);
+	public boolean setAppConfigAppKeyValue(String appConfigAppKeyPath, Object value){
+		return cc.setAppConfigAppKeyValue(appConfigAppKeyPath, value);
 	}
 	
 	/**

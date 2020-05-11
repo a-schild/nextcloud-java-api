@@ -76,18 +76,18 @@ public class ConfigConnector {
 			Collections.emptyList(), XMLAnswerParser.getInstance(AppConfigAppKeyValueAnswer.class));
 	}
 	
-	public boolean editAppConfigAppKeyValue(String appConfigApp, String appConfigAppKey,
+	public boolean setAppConfigAppKeyValue(String appConfigApp, String appConfigAppKey,
 		Object value){
 		return NextcloudResponseHelper.isStatusCodeOkay(
-			editAppConfigAppKeyValueAsync(appConfigApp + "/" + appConfigAppKey, value));
+			setAppConfigAppKeyValueAsync(appConfigApp + "/" + appConfigAppKey, value));
 	}
 	
-	public boolean editAppConfigAppKeyValue(String appConfigAppKeyPath, Object value){
+	public boolean setAppConfigAppKeyValue(String appConfigAppKeyPath, Object value){
 		return NextcloudResponseHelper
-			.isStatusCodeOkay(editAppConfigAppKeyValueAsync(appConfigAppKeyPath, value));
+			.isStatusCodeOkay(setAppConfigAppKeyValueAsync(appConfigAppKeyPath, value));
 	}
 	
-	public CompletableFuture<AppConfigAppKeyValueAnswer> editAppConfigAppKeyValueAsync(
+	public CompletableFuture<AppConfigAppKeyValueAnswer> setAppConfigAppKeyValueAsync(
 		String appConfigAppKeyPath, Object value){
 		List<NameValuePair> postParams = new LinkedList<>();
 		postParams.add(new BasicNameValuePair("value", value.toString()));
