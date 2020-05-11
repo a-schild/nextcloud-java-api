@@ -24,6 +24,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+
+import org.aarboard.nextcloud.api.config.ConfigConnector;
 import org.aarboard.nextcloud.api.filesharing.FilesharingConnector;
 import org.aarboard.nextcloud.api.filesharing.Share;
 import org.aarboard.nextcloud.api.filesharing.SharePermissions;
@@ -48,6 +50,7 @@ public class NextcloudConnector {
     private final ServerConfig    _serverConfig;
     private final ProvisionConnector pc;
     private final FilesharingConnector fc;
+    private final ConfigConnector cc;
     private final Folders fd;
     private final Files fl;
 
@@ -64,6 +67,7 @@ public class NextcloudConnector {
         _serverConfig= new ServerConfig(serverName, useHTTPS, port, userName, password);
         pc= new ProvisionConnector(_serverConfig);
         fc= new FilesharingConnector(_serverConfig);
+        cc= new ConfigConnector(_serverConfig);
         fd= new Folders(_serverConfig);
         fl= new Files(_serverConfig);
     }
@@ -84,6 +88,7 @@ public class NextcloudConnector {
 			}
 			pc = new ProvisionConnector(_serverConfig);
 			fc = new FilesharingConnector(_serverConfig);
+			cc= new ConfigConnector(_serverConfig);
 			fd = new Folders(_serverConfig);
 			fl = new Files(_serverConfig);
 		} catch (MalformedURLException e) {
@@ -953,4 +958,75 @@ public class NextcloudConnector {
     {
          fd.downloadFolder(remotepath, downloadpath);
     }
+    
+    /**
+     * App-Configuration: Get all apps available for configuration
+     * @return
+     */
+	public List<String> getAppConfigApps()
+	{
+		return cc.getAppConfigApps();
+	}
+	
+	/**
+	 * App-Configuration: Get all keys available for an app
+	 * @param appConfigApp an app name as returned by {@link #getAppConfigApps()}
+	 * @return
+	 */
+	public List<String> getAppConfigAppKeys(String appConfigApp)
+	{
+		return cc.getAppConfigAppKeys(appConfigApp);
+	}
+
+	/**
+	 * App-Configuration: Get a key value for an app configuration
+	 * @param appConfigApp an app name as returned by {@link #getAppConfigApps()}
+	 * @param appConfigAppKey a key name as returned by {@link #getAppConfigAppKeys(String)}
+	 * @return
+	 */
+	public String getAppConfigAppKeyValue(String appConfigApp, String appConfigAppKey)
+	{
+		return cc.getAppConfigAppKeyValue(appConfigApp, appConfigAppKey);
+	}
+	
+
+	public String getAppConfigAppKeyValue(String appConfigAppKeyPath)
+	{
+		return cc.getAppConfigAppKeyValue(appConfigAppKeyPath);
+	}
+	
+	/**
+	 * App-Configuration: Edit a key value for an app configuration
+	 * @param appConfigApp an app name as returned by {@link #getAppConfigApps()}
+	 * @param appConfigAppKey a key name as returned by {@link #getAppConfigAppKeys(String)}
+	 * @param value the value to set
+	 * @return
+	 */
+	public boolean editAppConfigAppKeyValue(String appConfigApp, String appConfigAppKey, Object value) 
+	{
+		return cc.editAppConfigAppKeyValue(appConfigApp, appConfigAppKey, value);
+	}
+	
+	/**
+	 * 
+	 * @param appConfigAppKeyPath
+	 *            the full appConfigAppKeyPath combining appConfigApp and appConfigAppKey with "/"
+	 * @param value
+	 *            the value to set
+	 * @return
+	 */
+	public boolean editAppConfigAppKeyValue(String appConfigAppKeyPath, Object value){
+		return cc.editAppConfigAppKeyValue(appConfigAppKeyPath, value);
+	}
+	
+	/**
+	 *  App-Configuration: Delete a key of an app configuration
+	 * @param appConfigApp an app name as returned by {@link #getAppConfigApps()}
+	 * @param appConfigAppkey a key name as returned by {@link #getAppConfigAppKeys(String)}
+	 * @return
+	 */
+	public boolean deleteAppConfigAppKeyEntry(String appConfigApp, String appConfigAppkey)
+	{
+		return cc.deleteAppConfigAppKeyEntry(appConfigApp, appConfigAppkey);
+	}
 }
