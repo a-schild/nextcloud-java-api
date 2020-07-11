@@ -25,6 +25,8 @@ Java api library to access nextcloud features from java applications
 - Now you can use the methods exposed to access your nextcloud instance
 
 # Changelog
+- 2020-07-11
+  - Added jakarta xml bind, since xml bind is no longer existing in java 11
 - 2020-05-11
   - Added methods to access the application config api (Thanks to col-panic)
   - Version bump to 11.3.0 because of added api methods

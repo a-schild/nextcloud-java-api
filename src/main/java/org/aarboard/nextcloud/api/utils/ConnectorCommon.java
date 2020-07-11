@@ -249,11 +249,11 @@ public class ConnectorCommon
 
     /**
      * Close the http client. Required for clean shutdown.
-     * @throws IOException
+     * @throws IOException error on shutdown
      */
-	public static void shutdown() throws IOException{
-		if(HttpAsyncClientSingleton.HTTPC_CLIENT != null) {
-			HttpAsyncClientSingleton.getInstance(null).close();
-		}		
-	}
+    public static void shutdown() throws IOException{
+            if(HttpAsyncClientSingleton.HTTPC_CLIENT != null) {
+                    HttpAsyncClientSingleton.getInstance(null).close();
+            }		
+    }
 }

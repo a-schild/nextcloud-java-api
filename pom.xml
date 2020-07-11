@@ -16,6 +16,7 @@
         <slf4j-simple.version>1.7.30</slf4j-simple.version>
         <sardine.version>5.9</sardine.version>
         <commons-io.version>2.6</commons-io.version>
+        <jakarta.xml.bind-api.version>2.3.3</jakarta.xml.bind-api.version>
         <netbeans.hint.license>gpl30</netbeans.hint.license>
     </properties>
     <name>NextCloud Java API library</name>
@@ -85,6 +86,16 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>${commons-io.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>${jakarta.xml.bind-api.version}</version>
+        </dependency>
+        <dependency>   
+            <groupId>org.glassfish.jaxb</groupId>   
+            <artifactId>jaxb-runtime</artifactId>   
+            <version>${jakarta.xml.bind-api.version}</version> 
         </dependency>
         
         <dependency>
@@ -243,29 +254,29 @@
                 </executions>
             </plugin>
             <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-surefire-plugin</artifactId>
-              <version>2.4.2</version>
-              <configuration>
-                <systemProperties>
-                  <property>
-                    <name>nextcloud.api.test.servername</name>
-                    <value>${nextcloud.api.test.servername}</value>
-                  </property>
-                  <property>
-                    <name>nextcloud.api.test.serverport</name>
-                    <value>${nextcloud.api.test.serverport}</value>
-                  </property>
-                  <property>
-                    <name>nextcloud.api.test.username</name>
-                    <value>${nextcloud.api.test.username}</value>
-                  </property>
-                  <property>
-                    <name>nextcloud.api.test.password</name>
-                    <value>${nextcloud.api.test.password}</value>
-                  </property>
-                </systemProperties>
-              </configuration>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.4.2</version>
+                <configuration>
+                    <systemProperties>
+                        <property>
+                            <name>nextcloud.api.test.servername</name>
+                            <value>${nextcloud.api.test.servername}</value>
+                        </property>
+                        <property>
+                            <name>nextcloud.api.test.serverport</name>
+                            <value>${nextcloud.api.test.serverport}</value>
+                        </property>
+                        <property>
+                            <name>nextcloud.api.test.username</name>
+                            <value>${nextcloud.api.test.username}</value>
+                        </property>
+                        <property>
+                            <name>nextcloud.api.test.password</name>
+                            <value>${nextcloud.api.test.password}</value>
+                        </property>
+                    </systemProperties>
+                </configuration>
             </plugin>            
         </plugins>
     </build>    

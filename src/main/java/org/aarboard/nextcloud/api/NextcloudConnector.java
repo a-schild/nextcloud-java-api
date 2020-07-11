@@ -928,7 +928,7 @@ public class NextcloudConnector {
      *
      * @param remotepath Remotepath of the file to be downloaded from the nextcloud server
      * @param downloadpath Local path where the file has to be downloaded in the local machine
-     * @return boolean
+     * @return boolean true if sucessfull
      * @throws java.io.IOException In case of IO errors
      */
     public boolean downloadFile(String remotepath, String downloadpath) throws IOException
@@ -961,7 +961,7 @@ public class NextcloudConnector {
     
     /**
      * App-Configuration: Get all apps available for configuration
-     * @return
+     * @return list of all available apps
      */
 	public List<String> getAppConfigApps()
 	{
@@ -971,7 +971,7 @@ public class NextcloudConnector {
 	/**
 	 * App-Configuration: Get all keys available for an app
 	 * @param appConfigApp an app name as returned by {@link #getAppConfigApps()}
-	 * @return
+	 * @return All keys of this app
 	 */
 	public List<String> getAppConfigAppKeys(String appConfigApp)
 	{
@@ -982,14 +982,18 @@ public class NextcloudConnector {
 	 * App-Configuration: Get a key value for an app configuration
 	 * @param appConfigApp an app name as returned by {@link #getAppConfigApps()}
 	 * @param appConfigAppKey a key name as returned by {@link #getAppConfigAppKeys(String)}
-	 * @return
+	 * @return app config entry
 	 */
 	public String getAppConfigAppKeyValue(String appConfigApp, String appConfigAppKey)
 	{
 		return cc.getAppConfigAppKeyValue(appConfigApp, appConfigAppKey);
 	}
 	
-
+	/**
+	 * App-Configuration: Get a key value for an app configuration
+         * @param appConfigAppKeyPath config path to return
+	 * @return app config entry
+	 */
 	public String getAppConfigAppKeyValue(String appConfigAppKeyPath)
 	{
 		return cc.getAppConfigAppKeyValue(appConfigAppKeyPath);
@@ -1013,17 +1017,17 @@ public class NextcloudConnector {
 	 *            the full appConfigAppKeyPath combining appConfigApp and appConfigAppKey with "/"
 	 * @param value
 	 *            the value to set
-	 * @return
+	 * @return Operation sucessfull
 	 */
 	public boolean setAppConfigAppKeyValue(String appConfigAppKeyPath, Object value){
 		return cc.setAppConfigAppKeyValue(appConfigAppKeyPath, value);
 	}
 	
 	/**
-	 *  App-Configuration: Delete a key of an app configuration
+	 * App-Configuration: Delete a key of an app configuration
 	 * @param appConfigApp an app name as returned by {@link #getAppConfigApps()}
 	 * @param appConfigAppkey a key name as returned by {@link #getAppConfigAppKeys(String)}
-	 * @return
+	 * @return Operation sucessfull
 	 */
 	public boolean deleteAppConfigAppKeyEntry(String appConfigApp, String appConfigAppkey)
 	{
