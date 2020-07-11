@@ -98,7 +98,7 @@ public class NextcloudConnector {
 
 	/**
 	 * Close the HTTP client. Perform this to cleanly shut down this application.
-	 * @throws IOException 
+	 * @throws IOException In case of IO errors
 	 */
 	public void shutdown() throws IOException{
 		ConnectorCommon.shutdown();
@@ -108,7 +108,7 @@ public class NextcloudConnector {
 	 * Trust all HTTPS certificates presented by the server. This is e.g. used to work against a
 	 * Nextcloud instance with a self-signed certificate.
 	 * 
-	 * @param trustAllCertificates
+	 * @param trustAllCertificates Do we accep self signed certificates or not
 	 */
 	public void trustAllCertificates(boolean trustAllCertificates){
 		_serverConfig.setTrustAllCertificates(trustAllCertificates);
@@ -118,7 +118,7 @@ public class NextcloudConnector {
 	 * Subpath prefix to the Nextcloud service (if applicable). This is the case if the Nextcloud
 	 * installation is hosted within a subdirectory.
 	 * 
-	 * @param subpathPrefix
+	 * @param subpathPrefix Prefix to the nextcloud installation, if not installed in root
 	 */
 	public void setSubpathPrefix(String subpathPrefix){
 		_serverConfig.setSubpathPrefix(subpathPrefix);
@@ -1004,7 +1004,7 @@ public class NextcloudConnector {
 	 * @param appConfigApp an app name as returned by {@link #getAppConfigApps()}
 	 * @param appConfigAppKey a key name as returned by {@link #getAppConfigAppKeys(String)}
 	 * @param value the value to set
-	 * @return
+	 * @return true if sucessfully set
 	 */
 	public boolean setAppConfigAppKeyValue(String appConfigApp, String appConfigAppKey, Object value) 
 	{
