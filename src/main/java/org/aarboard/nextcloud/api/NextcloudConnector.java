@@ -16,6 +16,7 @@
  */
 package org.aarboard.nextcloud.api;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -788,8 +789,24 @@ public class NextcloudConnector {
 
     /** Uploads a file at the specified path with the data from the InputStream
      *
+     * @param srcFile              The file which should be uploaded
+     * @param remotePath           path where the file should be uploaded to
+     */
+    public void uploadFile(File srcFile, String remotePath)
+    {
+        fl.uploadFile(srcFile, remotePath);
+    }
+
+    
+    /** Uploads a file at the specified path with the data from the InputStream
+     *
      * @param inputStream          InputStream of the file which should be uploaded
      * @param remotePath           path where the file should be uploaded to
+     * 
+     * @deprecated Since some nextcloud installations use fpm or fastcgi to connect to php,
+     *             here the uploads might get zero empty on the server
+     *             Use a (temp) file to upload the data, so the content length is known in advance
+     *             https://github.com/a-schild/nextcloud-java-api/issues/20
      */
     public void uploadFile(InputStream inputStream, String remotePath)
     {
@@ -801,6 +818,12 @@ public class NextcloudConnector {
      * @param inputStream          InputStream of the file which should be uploaded
      * @param remotePath           path where the file should be uploaded to
      * @param continueHeader       to receive a possible error by the server before any data is sent
+
+     * 
+     * @deprecated Since some nextcloud installations use fpm or fastcgi to connect to php,
+     *             here the uploads might get zero empty on the server
+     *             Use a (temp) file to upload the data, so the content length is known in advance
+     *             https://github.com/a-schild/nextcloud-java-api/issues/20
      */
     public void uploadFile(InputStream inputStream, String remotePath, boolean continueHeader)
     {
@@ -825,6 +848,11 @@ public class NextcloudConnector {
         return fl.fileExists(path);
     }
 
+    
+    public void getFileProperties(String path) throws IOException {
+        fl.getFileProperties(path);
+    }
+            
     /**
      * Gets all shares from a given file/folder
      *
