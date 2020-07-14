@@ -45,6 +45,7 @@ import org.aarboard.nextcloud.api.utils.ListXMLAnswer;
 import org.aarboard.nextcloud.api.utils.XMLAnswer;
 import org.aarboard.nextcloud.api.webdav.Files;
 import org.aarboard.nextcloud.api.webdav.Folders;
+import org.aarboard.nextcloud.api.webdav.ResourceProperties;
 
 public class NextcloudConnector {
 
@@ -849,8 +850,16 @@ public class NextcloudConnector {
     }
 
     
-    public void getFileProperties(String path) throws IOException {
-        fl.getFileProperties(path);
+    /**
+     * Retrieve the file properties from the server
+     * 
+     * @param path to the file you are interested in it
+     * @return properties of this resource
+     * 
+     * @throws IOException 404 in case of resource not found on server
+     */
+    public ResourceProperties getFileProperties(String path) throws IOException {
+        return fl.getFileProperties(path);
     }
             
     /**
