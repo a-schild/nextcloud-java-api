@@ -25,6 +25,10 @@ Java api library to access nextcloud features from java applications
 - Now you can use the methods exposed to access your nextcloud instance
 
 # Changelog
+- 2020-07-14
+  - Added API to upload File objects
+  - Deprecated the API to upload InputStream, due to some potential server problems
+  - Added API to retrieve file meta data
 - 2020-07-11
   - Added jakarta xml bind, since xml bind is no longer existing in java 11
 - 2020-05-11
