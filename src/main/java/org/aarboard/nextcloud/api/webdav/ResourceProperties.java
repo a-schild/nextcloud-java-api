@@ -17,7 +17,6 @@
 package org.aarboard.nextcloud.api.webdav;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  *
@@ -30,6 +29,21 @@ public class ResourceProperties {
     private String  displayName= null;
     private String  etag= null;
     private Date    modified= null;
+    
+    private String resourceType;
+    private String id;
+    private String fileId;
+    private boolean favorite;
+    private String  commentsHref;
+    private long    commentsCount;
+    private long    commentsUnread;
+    private String  ownerId;
+    private String  ownerDisplayName;
+    private String  shareTypes;
+    private String  permissions;
+    private String  checksums;
+    private boolean hasPreview;
+    private long    size; // Unlike contentlength, this property also works for folders reporting the size of everything in the folder
 
     public ResourceProperties() {
     }
@@ -117,5 +131,201 @@ public class ResourceProperties {
      */
     public void setCreation(Date creation) {
         this.creation = creation;
+    }
+
+    /**
+     * @return the resourceType
+     */
+    public String getResourceType() {
+        return resourceType;
+    }
+
+    /**
+     * @param resourceType the resourceType to set
+     */
+    public void setResourceType(String resourceType) {
+        this.resourceType = resourceType;
+    }
+
+    /**
+     * @return the id
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    /**
+     * @return the fileId
+     */
+    public String getFileId() {
+        return fileId;
+    }
+
+    /**
+     * @param fileId the fileId to set
+     */
+    public void setFileId(String fileId) {
+        this.fileId = fileId;
+    }
+
+    /**
+     * @return the favorite
+     */
+    public boolean isFavorite() {
+        return favorite;
+    }
+
+    /**
+     * @param favorite the favorite to set
+     */
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
+    }
+
+    /**
+     * @return the commentsHref
+     */
+    public String getCommentsHref() {
+        return commentsHref;
+    }
+
+    /**
+     * @param commentsHref the commentsHref to set
+     */
+    public void setCommentsHref(String commentsHref) {
+        this.commentsHref = commentsHref;
+    }
+
+    /**
+     * @return the commentsCount
+     */
+    public long getCommentsCount() {
+        return commentsCount;
+    }
+
+    /**
+     * @param commentsCount the commentsCount to set
+     */
+    public void setCommentsCount(long commentsCount) {
+        this.commentsCount = commentsCount;
+    }
+
+    /**
+     * @return the commentsUnread
+     */
+    public long getCommentsUnread() {
+        return commentsUnread;
+    }
+
+    /**
+     * @param commentsUnread the commentsUnread to set
+     */
+    public void setCommentsUnread(long commentsUnread) {
+        this.commentsUnread = commentsUnread;
+    }
+
+    /**
+     * @return the ownerId
+     */
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    /**
+     * @param ownerId the ownerId to set
+     */
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
+    }
+
+    /**
+     * @return the ownerDisplayName
+     */
+    public String getOwnerDisplayName() {
+        return ownerDisplayName;
+    }
+
+    /**
+     * @param ownerDisplayName the ownerDisplayName to set
+     */
+    public void setOwnerDisplayName(String ownerDisplayName) {
+        this.ownerDisplayName = ownerDisplayName;
+    }
+
+    /**
+     * @return the shareTypes
+     */
+    public String getShareTypes() {
+        return shareTypes;
+    }
+
+    /**
+     * @param shareTypes the shareTypes to set
+     */
+    public void setShareTypes(String shareTypes) {
+        this.shareTypes = shareTypes;
+    }
+
+    /**
+     * @return the checksums
+     */
+    public String getChecksums() {
+        return checksums;
+    }
+
+    /**
+     * @param checksums the checksums to set
+     */
+    public void setChecksums(String checksums) {
+        this.checksums = checksums;
+    }
+
+    /**
+     * @return the hasPreview
+     */
+    public boolean isHasPreview() {
+        return hasPreview;
+    }
+
+    /**
+     * @param hasPreview the hasPreview to set
+     */
+    public void setHasPreview(boolean hasPreview) {
+        this.hasPreview = hasPreview;
+    }
+
+    /**
+     * @return the size
+     */
+    public long getSize() {
+        return size;
+    }
+
+    /**
+     * @param size the size to set
+     */
+    public void setSize(long size) {
+        this.size = size;
+    }
+
+    /**
+     * @return the permissions
+     */
+    public String getPermissions() {
+        return permissions;
+    }
+
+    /**
+     * @param permissions the permissions to set
+     */
+    public void setPermissions(String permissions) {
+        this.permissions = permissions;
     }
 }

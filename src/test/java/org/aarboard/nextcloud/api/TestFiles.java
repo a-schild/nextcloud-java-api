@@ -23,6 +23,9 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import org.aarboard.nextcloud.api.webdav.ResourceProperties;
+import org.junit.Assert;
+import static org.junit.Assert.assertNotNull;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -114,6 +117,23 @@ public class TestFiles extends ATestClass {
     }
 
     @Test
+    public void t27_2_1_testFolderProperties() {
+        System.out.println("folderProperties all (/)");
+        if (_nc != null)
+        {
+            try
+            {
+                ResourceProperties props= _nc.getProperties("/", true);
+                Assert.assertNotNull("Properties returned", props);
+            }
+            catch (IOException ex)
+            {
+                assertFalse(ex.getMessage(), false);
+            }
+        }
+    }
+    
+    @Test
     public void t26_2_testFileExists4() {
         System.out.println("fileExists4 ("+TESTFILE4+")");
         if (_nc != null)
@@ -125,12 +145,12 @@ public class TestFiles extends ATestClass {
 
     @Test
     public void t27_1_testFileProperties() {
-        System.out.println("fileProperties ("+TESTFILE1+")");
+        System.out.println("fileProperties basic ("+TESTFILE1+")");
         if (_nc != null)
         {
             try
             {
-                _nc.getFileProperties(TESTFILE1);
+                _nc.getProperties(TESTFILE1, false);
                 //assertTrue(result);
             }
             catch (IOException ex)
@@ -142,12 +162,12 @@ public class TestFiles extends ATestClass {
 
     @Test
     public void t27_2_testFileProperties() {
-        System.out.println("fileProperties ("+TESTFILE2+")");
+        System.out.println("fileProperties basic ("+TESTFILE2+")");
         if (_nc != null)
         {
             try
             {
-                _nc.getFileProperties(TESTFILE2);
+                _nc.getProperties(TESTFILE2, false);
                 //assertTrue(result);
             }
             catch (IOException ex)
@@ -158,13 +178,66 @@ public class TestFiles extends ATestClass {
     }
 
     @Test
+    public void t27_2_1_testFileProperties() {
+        System.out.println("fileProperties all ("+TESTFILE2+")");
+        if (_nc != null)
+        {
+            try
+            {
+                _nc.getProperties(TESTFILE2, true);
+                //assertTrue(result);
+            }
+            catch (IOException ex)
+            {
+                assertFalse(ex.getMessage(), false);
+            }
+        }
+    }
+
+    @Test
+    public void t27_2_2_testFileProperties() {
+        System.out.println("fileProperties partial/all ("+TESTFILE2+")");
+        if (_nc != null)
+        {
+            try
+            {
+                ResourceProperties propsPartial= _nc.getProperties(TESTFILE2, false);
+                ResourceProperties propsFull= _nc.getProperties(TESTFILE2, true);
+                assertTrue("ETAG is not identic", propsPartial.getEtag().equals(propsFull.getEtag()));
+            }
+            catch (IOException ex)
+            {
+                assertFalse(ex.getMessage(), false);
+            }
+        }
+    }
+
+    @Test
+    public void t27_2_6_testFileProperties() {
+        System.out.println("fileProperties all ("+TESTFILE6+")");
+        if (_nc != null)
+        {
+            try
+            {
+                ResourceProperties props= _nc.getProperties(TESTFILE6, true);
+                assertNotNull("Retval is null", props);
+            }
+            catch (IOException ex)
+            {
+                assertFalse(ex.getMessage(), false);
+            }
+        }
+    }
+
+    
+    @Test
     public void t27_99_testFileProperties() {
         System.out.println("fileProperties not existing");
         if (_nc != null)
         {
             try
             {
-                _nc.getFileProperties(TESTFILE2+"-not-existing");
+                _nc.getProperties(TESTFILE2+"-not-existing", false);
                 assertFalse("Resource should throw 404 error", true);
             }
             catch (Exception ex)

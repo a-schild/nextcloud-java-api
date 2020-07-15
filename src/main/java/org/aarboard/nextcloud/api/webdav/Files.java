@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.xml.namespace.QName;
 import org.aarboard.nextcloud.api.utils.WebdavInputStream;
@@ -217,31 +218,73 @@ public class Files extends AWebdavHandler{
     }
     
     /**
-     * Downloads the file at the specified remotepath as an InputStream,
+     * Get the properties of a resource, File or Folder
      *
-     * @param remotePath Remotepath where the file is saved in the nextcloud
+     * @param remotePath Remotepath of the resource to query for
      * server
+     * @param allProperties Return all properties, not only base properties
+     * https://docs.nextcloud.com/server/latest/developer_manual/client_apis/WebDAV/basic.html#requesting-properties
      * @return InputStream
      * @throws IOException  In case of IO errors
      */
-    public ResourceProperties getFileProperties(String remotePath) throws IOException {
+    public ResourceProperties getProperties(String remotePath, boolean allProperties) throws IOException {
         String path = buildWebdavPath(remotePath);
         Sardine sardine = buildAuthSardine();
 
         try
         {
             Set<QName> props= new HashSet<>();
+            if (allProperties)
+            {
+                props.add(new QName("DAV:", "getlastmodified", "d"));
+                props.add(new QName("DAV:", "getetag", "d"));
+                props.add(new QName("DAV:", "getcontenttype", "d"));
+                props.add(new QName("DAV:", "resourcetype", "d"));
+                props.add(new QName("DAV:", "getcontentlength", "d"));
+                props.add(new QName("DAV:", "displayname", "d"));
+                props.add(new QName("http://owncloud.org/ns", "id", "oc"));
+                props.add(new QName("http://owncloud.org/ns", "fileid", "oc"));
+                props.add(new QName("http://owncloud.org/ns", "favorite", "oc"));
+                props.add(new QName("http://owncloud.org/ns", "comments-href", "oc"));
+                props.add(new QName("http://owncloud.org/ns", "comments-count", "oc"));
+                props.add(new QName("http://owncloud.org/ns", "comments-unread", "oc"));
+                props.add(new QName("http://owncloud.org/ns", "owner-id", "oc"));
+                props.add(new QName("http://owncloud.org/ns", "owner-display-name", "oc"));
+                props.add(new QName("http://owncloud.org/ns", "share-types", "oc"));
+                props.add(new QName("http://owncloud.org/ns", "checksums", "oc"));
+                props.add(new QName("http://nextcloud.org/ns", "has-preview", "nc"));
+                props.add(new QName("http://owncloud.org/ns", "permissions", "oc"));
+                props.add(new QName("http://owncloud.org/ns", "size", "oc"));
+            }
             List<DavResource> resources= sardine.propfind(path, 0, props);
             if (resources != null && resources.size() == 1)
             {
                 DavResource res= resources.get(0);
                 ResourceProperties retVal= new ResourceProperties();
-                retVal.setContentLength(res.getContentLength());
+                retVal.setModified(res.getModified());
+                retVal.setEtag(res.getEtag());
                 retVal.setContentType(res.getContentType());
+                retVal.setContentLength(res.getContentLength());
                 retVal.setCreation(res.getCreation());
                 retVal.setDisplayName(res.getDisplayName());
-                retVal.setEtag(res.getEtag());
-                retVal.setModified(res.getModified());
+                if (allProperties)
+                {
+                    Map<String, String> custProps= res.getCustomProps();
+                    retVal.setResourceType(custProps.get("resourcetype"));
+                    retVal.setId(custProps.get("id"));
+                    retVal.setFileId(custProps.get("fileid"));
+                    retVal.setFavorite("1".equals(custProps.get("favorite")));
+                    retVal.setCommentsHref(custProps.get("comments-href"));
+                    retVal.setCommentsCount( convertStringToLong(custProps.get("comments-count")));
+                    retVal.setCommentsUnread(convertStringToLong(custProps.get("comments-unread")));
+                    retVal.setOwnerId(custProps.get("owner-id"));
+                    retVal.setOwnerDisplayName(custProps.get("owner-display-name"));
+                    retVal.setShareTypes(custProps.get("share-types"));
+                    retVal.setChecksums(custProps.get("checksums"));
+                    retVal.setHasPreview("1".equals(custProps.get("has-preview")));
+                    retVal.setPermissions(custProps.get("permissions"));
+                    retVal.setSize(convertStringToLong(custProps.get("size")));
+                }
                 return retVal;
             }
             else
@@ -262,6 +305,18 @@ public class Files extends AWebdavHandler{
             {
                 LOG.warn("Error in sardine shutdown", ex2);
             }
+        }
+    }
+    
+    private long convertStringToLong(String number)
+    {
+        if (number == null || number.equals(""))
+        {
+            return 0;
+        }
+        else
+        {
+            return Long.parseLong(number);
         }
     }
 }

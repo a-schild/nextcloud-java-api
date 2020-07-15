@@ -854,12 +854,22 @@ public class NextcloudConnector {
      * Retrieve the file properties from the server
      * 
      * @param path to the file you are interested in it
+     * @param allProperties return all properties not only 
+     * <ul>
+     * <li>contentLength</li>
+     * <li>contentType</li>
+     * <li>creation</li>
+     * <li>displayName</li>
+     * <li>etag(res</li>
+     * <li>modified</li>
+     * </ul>
      * @return properties of this resource
      * 
      * @throws IOException 404 in case of resource not found on server
      */
-    public ResourceProperties getFileProperties(String path) throws IOException {
-        return fl.getFileProperties(path);
+    public ResourceProperties getProperties(String path, 
+            boolean allProperties) throws IOException {
+        return fl.getProperties(path, allProperties);
     }
             
     /**
