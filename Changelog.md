@@ -1,6 +1,7 @@
 # Changelog for nextcloud api
 - 2020-07-15
   - Enanced API to retrieve file and folder meta data (properties)
+  - Added Version class so you can get the library version and buils infos at runtime
 - 2020-07-14
   - Added API to upload File objects
   - Deprecated the API to upload InputStream, due to some potential server problems
