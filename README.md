@@ -25,10 +25,10 @@ Java api library to access nextcloud features from java applications
 - Now you can use the methods exposed to access your nextcloud instance
 
 ## When you wish to contribute to the project
-[README.developers.md]
+Infos for contributors (README.developers.md)
 
 ## Changelog
-[Changelog.md]
+Changelog (Changelog.md)
 
 
 (c) André Schild, Aarboard AG www.aarboard.ch

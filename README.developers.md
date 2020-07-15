@@ -15,7 +15,7 @@ Given a version number MAJOR.MINOR.PATCH, increment the:
 Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.
 
 ## Changelog
-If enhancing the code base, please also update the [Changelog.md]
+If enhancing the code base, please also update the [Changelog](Changelog.md)
 
 ## How to run unit tests
 For the unit test to be executed, you need to specify valid
