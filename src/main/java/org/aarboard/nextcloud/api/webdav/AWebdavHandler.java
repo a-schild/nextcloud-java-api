@@ -53,7 +53,9 @@ public abstract class AWebdavHandler {
         .setScheme(_serverConfig.isUseHTTPS() ? "https" : "http")
         .setHost(_serverConfig.getServerName())
         .setPort(_serverConfig.getPort())
-        .setPath( WEB_DAV_BASE_PATH + remotePath);
+        .setPath(_serverConfig.getCloudpath() == null ? 
+                 WEB_DAV_BASE_PATH + remotePath :
+                 _serverConfig.getCloudpath() + "/" +  WEB_DAV_BASE_PATH + remotePath);
         return uB.toString();
     }
     
