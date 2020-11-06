@@ -64,15 +64,22 @@ public class NextcloudConnector {
      * @param userName      User for login
      * @param password      Password for login
      */
-    public NextcloudConnector(String serverName, boolean useHTTPS, int port, String userName, String password)
-    {
-        _serverConfig= new ServerConfig(serverName, useHTTPS, port, userName, password);
-        pc= new ProvisionConnector(_serverConfig);
-        fc= new FilesharingConnector(_serverConfig);
-        cc= new ConfigConnector(_serverConfig);
-        fd= new Folders(_serverConfig);
-        fl= new Files(_serverConfig);
-    }
+    	public NextcloudConnector(String serverName, boolean useHTTPS, int port, String userName, String password)
+    	{
+              	this(new ServerConfig(serverName, useHTTPS, port, userName, password));
+    	}
+	
+     /**
+     * @param serverConfig 	the ServerConfig
+     */
+     	public NextcloudConnector(ServerConfig serverConfig){
+		_serverConfig = serverConfig;
+		pc = new ProvisionConnector(_serverConfig);
+		fc = new FilesharingConnector(_serverConfig);
+		cc= new ConfigConnector(_serverConfig);
+		fd = new Folders(_serverConfig);
+		fl = new Files(_serverConfig);
+    	}
     
     /**
      * @param serviceUrl 	url of the nextcloud instance, e.g. https://nextcloud.instance.com:8443/cloud
