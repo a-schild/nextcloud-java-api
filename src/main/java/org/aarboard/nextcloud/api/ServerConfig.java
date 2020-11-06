@@ -26,6 +26,7 @@ public class ServerConfig {
     private String password;
     private String serverName;
     private String subpathPrefix;
+    private String cloudpath;
     private boolean useHTTPS;
     private int port;
     private boolean trustAllCertificates;
@@ -96,6 +97,20 @@ public class ServerConfig {
 	 */
 	public void setSubpathPrefix(String subpathPrefix){
 		this.subpathPrefix = subpathPrefix;
+	}
+	
+	/**
+	 * @return the configured cloudpath
+	 */
+	public String getCloudpath(){
+		return cloudpath;
+	}
+    
+	/**
+	 * @param cloudpath to apply
+	 */
+	public void setCloudpath(String cloudpath){
+		this.cloudpath = cloudpath;
 	}
 
     /**
