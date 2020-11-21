@@ -118,8 +118,7 @@
         </repository>
     </distributionManagement>
     <scm>
-        <connection>scm:git:git://github.com/a-schild/nextcloud-java-api.git</connection>
-        <developerConnection>scm:git:git@github.com:a-schild/nextcloud-java-api.git</developerConnection>
+        <connection>scm:git:https://github.com/a-schild/nextcloud-java-api.git</connection>
         <url>https://github.com/a-schild/nextcloud-java-api</url>
         <tag>HEAD</tag>
     </scm>
