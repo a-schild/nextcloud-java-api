@@ -104,8 +104,8 @@ public class ConnectorCommon
 
     private URI buildUrl(String subPath, List<NameValuePair> queryParams)
     {
-    	if(serverConfig.getSubpathPrefix()!=null) {
-    		subPath = serverConfig.getSubpathPrefix()+"/"+subPath;
+    	if(serverConfig.getSubPathPrefix()!=null) {
+    		subPath = serverConfig.getSubPathPrefix()+"/"+subPath;
     	}
     	
         URIBuilder uB= new URIBuilder()

@@ -86,7 +86,7 @@ public class NextcloudConnector {
 			_serverConfig = new ServerConfig(_serviceUrl.getHost(), useHTTPS, _serviceUrl.getPort(),
 				userName, password);
 			if(!_serviceUrl.getPath().isEmpty()) {
-				_serverConfig.setSubpathPrefix(_serviceUrl.getPath());
+				_serverConfig.setSubPathPrefix(_serviceUrl.getPath());
 			}
 			pc = new ProvisionConnector(_serverConfig);
 			fc = new FilesharingConnector(_serverConfig);
@@ -123,7 +123,7 @@ public class NextcloudConnector {
 	 * @param subpathPrefix Prefix to the nextcloud installation, if not installed in root
 	 */
 	public void setSubpathPrefix(String subpathPrefix){
-		_serverConfig.setSubpathPrefix(subpathPrefix);
+		_serverConfig.setSubPathPrefix(subpathPrefix);
 	}
 
     /**
