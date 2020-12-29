@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-
 import org.aarboard.nextcloud.api.config.ConfigConnector;
 import org.aarboard.nextcloud.api.filesharing.FilesharingConnector;
 import org.aarboard.nextcloud.api.filesharing.Share;
@@ -46,6 +45,8 @@ import org.aarboard.nextcloud.api.utils.XMLAnswer;
 import org.aarboard.nextcloud.api.webdav.Files;
 import org.aarboard.nextcloud.api.webdav.Folders;
 import org.aarboard.nextcloud.api.webdav.ResourceProperties;
+import org.aarboard.nextcloud.api.webdav.WebDavPathResolver;
+import org.aarboard.nextcloud.api.webdav.WebDavPathResolverBuilder;
 
 public class NextcloudConnector {
 
@@ -71,7 +72,10 @@ public class NextcloudConnector {
         fc= new FilesharingConnector(_serverConfig);
         cc= new ConfigConnector(_serverConfig);
         fd= new Folders(_serverConfig);
-        fl= new Files(_serverConfig);
+        fl = new Files(_serverConfig);
+        fd.setWebDavPathResolver(WebDavPathResolverBuilder.get().withBasePathPrefix(_serverConfig.getSubPathPrefix()).build());
+        fl.setWebDavPathResolver(WebDavPathResolverBuilder.get().withBasePathPrefix(_serverConfig.getSubPathPrefix()).build());
+
     }
     
     /**
@@ -92,11 +96,20 @@ public class NextcloudConnector {
 			fc = new FilesharingConnector(_serverConfig);
 			cc= new ConfigConnector(_serverConfig);
 			fd = new Folders(_serverConfig);
-			fl = new Files(_serverConfig);
+                    fl = new Files(_serverConfig);
+                    fd.setWebDavPathResolver(WebDavPathResolverBuilder.get().withBasePathPrefix(_serverConfig.getSubPathPrefix()).build());
+                    fl.setWebDavPathResolver(WebDavPathResolverBuilder.get().withBasePathPrefix(_serverConfig.getSubPathPrefix()).build());
+
 		} catch (MalformedURLException e) {
 			throw new IllegalArgumentException(e);
 		}
 	}
+
+    public void setWebDavPathResolver(final WebDavPathResolver resolver)
+    {
+        this.fd.setWebDavPathResolver(resolver);
+        this.fl.setWebDavPathResolver(resolver);
+    }
 
 	/**
 	 * Close the HTTP client. Perform this to cleanly shut down this application.

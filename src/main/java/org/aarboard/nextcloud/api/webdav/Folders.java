@@ -21,9 +21,9 @@ import com.github.sardine.DavResource;
 import com.github.sardine.Sardine;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import org.aarboard.nextcloud.api.ServerConfig;
@@ -120,11 +120,11 @@ public class Folders extends AWebdavHandler{
         {
             if (excludeFolderNames) {
                 if (!res.isDirectory()) {
-                    retVal.add(returnFullPath ? res.getPath().replaceFirst("/remote.php/webdav/", "") : res.getName());
+                    retVal.add(returnFullPath ? res.getPath().replaceFirst(resolver.getWebDavFilesPath(), "") : res.getName());
                 }
             }
             else {
-                retVal.add(returnFullPath ? res.getPath().replaceFirst("/remote.php/webdav/", "") : res.getName());
+                retVal.add(returnFullPath ? res.getPath().replaceFirst(resolver.getWebDavFilesPath(), "") : res.getName());
             }
         }
         return retVal;

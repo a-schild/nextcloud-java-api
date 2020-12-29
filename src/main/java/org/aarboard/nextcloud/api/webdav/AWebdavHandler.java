@@ -32,15 +32,21 @@ import org.slf4j.LoggerFactory;
 public abstract class AWebdavHandler {
     private static final Logger LOG = LoggerFactory.getLogger(AWebdavHandler.class);
 
-    public static final int  FILE_BUFFER_SIZE= 4096;
-    private static final String WEB_DAV_BASE_PATH = "remote.php/webdav/";
+    public static final int FILE_BUFFER_SIZE = 4096;
     
     private final ServerConfig _serverConfig;
+
+    protected WebDavPathResolver resolver;
 
     public AWebdavHandler(ServerConfig serverConfig) {
         _serverConfig = serverConfig;
     }
-    
+
+    public void setWebDavPathResolver(final WebDavPathResolver resolver)
+    {
+        this.resolver = resolver;
+    }
+
     /**
      * Build the full URL for the webdav access to a resource
      * 
@@ -53,11 +59,7 @@ public abstract class AWebdavHandler {
         .setScheme(_serverConfig.isUseHTTPS() ? "https" : "http")
         .setHost(_serverConfig.getServerName())
         .setPort(_serverConfig.getPort())
-        .setPath( 
-                _serverConfig.getSubPathPrefix() == null ?
-                WEB_DAV_BASE_PATH + remotePath :
-                _serverConfig.getSubPathPrefix()+ "/" + WEB_DAV_BASE_PATH + remotePath
-        );
+                .setPath(this.resolver.getWebDavFilesPath(remotePath));
         return uB.toString();
     }
     
