@@ -120,11 +120,11 @@ public class Folders extends AWebdavHandler{
         {
             if (excludeFolderNames) {
                 if (!res.isDirectory()) {
-                    retVal.add(returnFullPath ? res.getPath().replaceFirst(resolver.getWebDavFilesPath(), "") : res.getName());
+                    retVal.add(returnFullPath ? res.getPath().replaceFirst(getWebDavPathResolver().getWebDavPath(), "") : res.getName());
                 }
             }
             else {
-                retVal.add(returnFullPath ? res.getPath().replaceFirst(resolver.getWebDavFilesPath(), "") : res.getName());
+                retVal.add(returnFullPath ? res.getPath().replaceFirst(getWebDavPathResolver().getWebDavPath(), "") : res.getName());
             }
         }
         return retVal;

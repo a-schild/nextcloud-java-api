@@ -14,8 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.aarboard.nextcloud.api.webdav;
+package org.aarboard.nextcloud.api.webdav.pathresolver;
 
+/**
+ * @since 11.5
+ */
 public interface WebDavPathResolver
 {
 
@@ -27,6 +30,6 @@ public interface WebDavPathResolver
      * @param remotePaths
      * @return the webdav path
      */
-    String getWebDavFilesPath(String... remotePaths);
+    String getWebDavPath(String... remotePaths);
 
 }

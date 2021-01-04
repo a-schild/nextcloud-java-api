@@ -45,8 +45,9 @@ import org.aarboard.nextcloud.api.utils.XMLAnswer;
 import org.aarboard.nextcloud.api.webdav.Files;
 import org.aarboard.nextcloud.api.webdav.Folders;
 import org.aarboard.nextcloud.api.webdav.ResourceProperties;
-import org.aarboard.nextcloud.api.webdav.WebDavPathResolver;
-import org.aarboard.nextcloud.api.webdav.WebDavPathResolverBuilder;
+import org.aarboard.nextcloud.api.webdav.pathresolver.NextcloudVersion;
+import org.aarboard.nextcloud.api.webdav.pathresolver.WebDavPathResolver;
+import org.aarboard.nextcloud.api.webdav.pathresolver.WebDavPathResolverBuilder;
 
 public class NextcloudConnector {
 
@@ -73,9 +74,6 @@ public class NextcloudConnector {
         cc= new ConfigConnector(_serverConfig);
         fd= new Folders(_serverConfig);
         fl = new Files(_serverConfig);
-        fd.setWebDavPathResolver(WebDavPathResolverBuilder.get().withBasePathPrefix(_serverConfig.getSubPathPrefix()).build());
-        fl.setWebDavPathResolver(WebDavPathResolverBuilder.get().withBasePathPrefix(_serverConfig.getSubPathPrefix()).build());
-
     }
     
     /**
@@ -97,16 +95,55 @@ public class NextcloudConnector {
 			cc= new ConfigConnector(_serverConfig);
 			fd = new Folders(_serverConfig);
                     fl = new Files(_serverConfig);
-                    fd.setWebDavPathResolver(WebDavPathResolverBuilder.get().withBasePathPrefix(_serverConfig.getSubPathPrefix()).build());
-                    fl.setWebDavPathResolver(WebDavPathResolverBuilder.get().withBasePathPrefix(_serverConfig.getSubPathPrefix()).build());
 
 		} catch (MalformedURLException e) {
 			throw new IllegalArgumentException(e);
 		}
 	}
 
+    /**
+     * @return version of the nextcloud instance
+     * @since 11.5
+     */
+    public String getServerVersion()
+    {
+        return fl.getServerVersion();
+    }
+    /**
+     * @param resolver Resolves the WebDavPath of the server
+     * @see WebDavPathResolver
+     * @see WebDavPathResolverBuilder
+     * @since 11.5
+     */
     public void setWebDavPathResolver(final WebDavPathResolver resolver)
     {
+        this.fd.setWebDavPathResolver(resolver);
+        this.fl.setWebDavPathResolver(resolver);
+    }
+
+    /**
+     * <p>
+     * Set the type of Files and Folder connectors</p>
+     * <p>
+     * You can resolve VCARD and CALDAV paths as well</p>
+     * <code>
+     *  NextcloudConnector connector = ... <br/>
+     * connector.setWebDavPathResolver(WebDavPathResolverBuilder.TYPE.CALDAV);<br/>
+     * </code>
+     *
+     * @param type Type of the files/folders path
+     * @see WebDavPathResolver
+     * @see WebDavPathResolverBuilder
+     * @since 11.5
+     */
+    public void setWebDavPathResolverAsType(final WebDavPathResolverBuilder.TYPE type)
+    {
+
+        WebDavPathResolver resolver = WebDavPathResolverBuilder.get(type)//
+                .ofVersion(NextcloudVersion.get(getServerVersion()))//
+                .withUserName(_serverConfig.getUserName()) //
+                .withBasePathPrefix(_serverConfig.getSubPathPrefix()).build();
+
         this.fd.setWebDavPathResolver(resolver);
         this.fl.setWebDavPathResolver(resolver);
     }
