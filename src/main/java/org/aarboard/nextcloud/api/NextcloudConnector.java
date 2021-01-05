@@ -127,8 +127,8 @@ public class NextcloudConnector {
      * <p>
      * You can resolve VCARD and CALDAV paths as well</p>
      * <code>
-     *  NextcloudConnector connector = ... <br/>
-     * connector.setWebDavPathResolver(WebDavPathResolverBuilder.TYPE.CALDAV);<br/>
+     *  NextcloudConnector connector = ... <br>
+     * connector.setWebDavPathResolver(WebDavPathResolverBuilder.TYPE.CALDAV);<br>
      * </code>
      *
      * @param type Type of the files/folders path

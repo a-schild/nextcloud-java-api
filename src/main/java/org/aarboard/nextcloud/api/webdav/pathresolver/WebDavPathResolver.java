@@ -27,7 +27,7 @@ public interface WebDavPathResolver
      * nextcloud/remote.php/dav/files/username
      * nextcloud/remote.php/dav/files/username/myfolder
      *
-     * @param remotePaths
+     * @param remotePaths Subpath elements to append
      * @return the webdav path
      */
     String getWebDavPath(String... remotePaths);

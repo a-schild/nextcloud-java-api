@@ -23,11 +23,12 @@ import java.util.Properties;
 import org.aarboard.nextcloud.api.exception.NextcloudApiException;
 
 /**
+ * <p>
  * Nextcloud Version represent the version of the nextcloud server. It covers
  * path behaviours of different versions.
- * <p/>
+ * </p>
  * Get a new instance:
- * <p/>
+ * <br>
  * <code>
  *  NextcloudVersion version = NextcloudVersion.get("20.0.4");
  * </code>
