@@ -15,7 +15,7 @@
         <slf4j-api.version>1.7.30</slf4j-api.version>
         <slf4j-simple.version>1.7.30</slf4j-simple.version>
         <sardine.version>5.9</sardine.version>
-        <commons-io.version>2.6</commons-io.version>
+        <commons-io.version>2.7</commons-io.version>
         <jakarta.xml.bind-api.version>2.3.3</jakarta.xml.bind-api.version>
         <netbeans.hint.license>gpl30</netbeans.hint.license>
     </properties>
