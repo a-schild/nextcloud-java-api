@@ -1,4 +1,6 @@
 # Changelog for nextcloud api
+- 2021-04-27
+  - Updated various used libraries
 - 2020-11-21
   - Added methods to access nextcloud instance installed in subfolders (Thanks to helmut8080)
   - Version bump to 11.4.0 because of added api methods
