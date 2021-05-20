@@ -18,7 +18,7 @@ Java api library to access nextcloud features from java applications
 ```
 <groupId>org.aarboard.nextcloud</groupId>
 <artifactId>nextcloud-api</artifactId>
-<version>11.4.1</version>
+<version>1.5.0</version>
 ```
 
 - Create a NextcloudConnector instance and provide your server settings and authentification
