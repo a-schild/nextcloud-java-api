@@ -1,4 +1,6 @@
 # Changelog for nextcloud api
+- 2021-05-20
+  - Added rename/move operation for folders and files
 - 2021-04-27
   - Updated various used libraries
 - 2020-11-21

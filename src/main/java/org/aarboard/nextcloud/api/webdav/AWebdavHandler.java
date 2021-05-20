@@ -132,4 +132,35 @@ public abstract class AWebdavHandler {
             }
         }
     }
+
+    /**
+     * Rename the file/folder at the specified path
+     *
+     * @param oldPath path of the original file/folder
+     * @param newPath path of the new file/folder
+     * @param overwriteExisting Should an existing target be overwritten?
+     */
+    public void renamePath(String oldPath, String newPath, boolean overwriteExisting)
+    {
+        String oldWEBDavpath=  buildWebdavPath( oldPath );
+        String newWEBDavpath=  buildWebdavPath( newPath );
+
+        Sardine sardine = buildAuthSardine();
+        try {
+            sardine.move(oldWEBDavpath, newWEBDavpath, overwriteExisting);
+        } catch (IOException e) {
+            throw new NextcloudApiException(e);
+        }
+        finally
+        {
+            try
+            {
+                sardine.shutdown();
+            }
+            catch (IOException ex)
+            {
+                LOG.warn("error in closing sardine connector", ex);
+            }
+        }
+    }
 }

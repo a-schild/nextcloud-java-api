@@ -703,6 +703,17 @@ public class NextcloudConnector {
     }
 
     /**
+     * method to rename/move files
+     *
+     * @param oldPath path of the file which should be renamed/moved
+     * @param newPath path of the file which should be renamed/moved
+     * @param overwriteExisting overwrite if target already exists
+     */
+    public void renameFile(String oldPath, String newPath, boolean overwriteExisting) {
+        fd.renamePath(oldPath, newPath, overwriteExisting);
+    }
+    
+    /**
      * Shares the specified path with the provided parameters
      *
      * @param path                  path to the file/folder which should be shared

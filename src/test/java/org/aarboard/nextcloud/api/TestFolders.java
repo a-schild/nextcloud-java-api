@@ -74,7 +74,22 @@ public class TestFolders extends ATestClass {
     }
 
     @Test
-    public void t24_testDeleteFolder() {
+    public void t25_testFolderRename() {
+        System.out.println("folderRename");
+        if (_nc != null)
+        {
+            _nc.renameFile(TEST_FOLDER, TEST_FOLDER_RENAMED, false);
+
+            boolean result = _nc.folderExists(TEST_FOLDER_RENAMED);
+            assertTrue(result);
+
+            result = _nc.folderExists(TEST_FOLDER);
+            assertFalse(result);
+        }
+    }
+    
+    @Test
+    public void t30_testDeleteFolder() {
         System.out.println("deleteFolder");
         if (_nc != null)
         {
@@ -84,7 +99,7 @@ public class TestFolders extends ATestClass {
 
 
     @Test
-    public void t28_testList() {
+    public void t40_testList() {
         System.out.println("list");
 
         if (_nc != null)
@@ -104,7 +119,7 @@ public class TestFolders extends ATestClass {
     }
 
     @Test
-    public void t29_testListRecursive() {
+    public void t41_testListRecursive() {
         System.out.println("list recursive");
         if (_nc != null)
         {
@@ -124,7 +139,7 @@ public class TestFolders extends ATestClass {
     }
 
     @Test
-    public void t30_testListRecursiveFullPath() {
+    public void t42_testListRecursiveFullPath() {
         System.out.println("list recursive");
         if (_nc != null)
         {

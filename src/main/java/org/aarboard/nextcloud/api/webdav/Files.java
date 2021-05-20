@@ -124,6 +124,18 @@ public class Files extends AWebdavHandler{
     }
 
     /**
+     * method to rename/move files
+     *
+     * @param oldPath path of the file which should be renamed/moved
+     * @param newPath path of the file which should be renamed/moved
+     * @param overwriteExisting overwrite if target already exists
+     */
+    public void renameFile(String oldPath, String newPath, boolean overwriteExisting) {
+        renamePath(oldPath, newPath, overwriteExisting);
+    }
+
+    
+    /**
      * Downloads the file at the specified remotepath to the download directory,
      * and returns true if the download is successful
      *
