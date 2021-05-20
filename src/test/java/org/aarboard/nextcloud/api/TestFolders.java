@@ -78,7 +78,7 @@ public class TestFolders extends ATestClass {
         System.out.println("folderRename");
         if (_nc != null)
         {
-            _nc.renameFile(TEST_FOLDER, TEST_FOLDER_RENAMED, false);
+            _nc.renameFile(TEST_FOLDER, TEST_FOLDER_RENAMED, true);
 
             boolean result = _nc.folderExists(TEST_FOLDER_RENAMED);
             assertTrue(result);
@@ -86,7 +86,7 @@ public class TestFolders extends ATestClass {
             result = _nc.folderExists(TEST_FOLDER);
             assertFalse(result);
 
-            _nc.renameFile(TEST_FOLDER_RENAMED, TEST_FOLDER, false);
+            _nc.renameFile(TEST_FOLDER_RENAMED, TEST_FOLDER, true);
 
             result = _nc.folderExists(TEST_FOLDER);
             assertTrue(result);
