@@ -342,6 +342,10 @@ public class TestFiles extends ATestClass {
             result = _nc.folderExists(TESTFILE1);
             assertFalse(result);
             
+            _nc.renameFile(TESTFILE1_RENAMED, TESTFILE1, false);
+            
+            result = _nc.folderExists(TESTFILE1);
+            assertTrue(result);
         }
     }
     
