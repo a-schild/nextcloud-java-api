@@ -63,6 +63,17 @@ public class TestUserGroupAdmin extends ATestClass {
     }
 
     @Test
+    public void t02_01_testGetUsersDetails() {
+        System.out.println("getUsersDetails");
+        if (_nc != null)
+        {
+            Collection<User> result = _nc.getUsersDetails();
+            assertNotNull(result);
+            assertTrue(result.stream().anyMatch(user -> TESTUSER.equals(user.getId())));
+        }
+    }
+
+    @Test
     public void t03_testGetUsers_3args() {
         System.out.println("getUsers");
         if (_nc != null)
@@ -73,6 +84,20 @@ public class TestUserGroupAdmin extends ATestClass {
             Collection<String> result = _nc.getUsers(search, limit, offset);
             assertNotNull(result);
             assertTrue(result.contains(TESTUSER));
+        }
+    }
+
+    @Test
+    public void t03_01_testGetUsersDetails_3args() {
+        System.out.println("getUsersDetails");
+        if (_nc != null)
+        {
+            String search = TESTUSER;
+            int limit = 1;
+            int offset = -1;
+            Collection<User> result = _nc.getUsersDetails(search, limit, offset);
+            assertNotNull(result);
+            assertTrue(result.stream().anyMatch(user -> TESTUSER.equals(user.getId())));
         }
     }
 

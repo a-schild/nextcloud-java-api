@@ -159,6 +159,67 @@ public class ProvisionConnector
     }
 
     /**
+     * Gets all user details of this instance
+     *
+     * @return all user details
+     */
+    public List<User> getUsersDetails()
+    {
+        return getUsersDetails(null, -1, -1);
+    }
+
+    /**
+     * Gets all user details of this instance asynchronously
+     *
+     * @return a CompletableFuture containing the result of the operation
+     */
+    public CompletableFuture<UsersDetailsXMLAnswer> getUsersDetailsAsync()
+    {
+        return getUsersDetailsAsync(null, -1, -1);
+    }
+
+    /**
+     * Get all matching user details
+     *
+     * @param search pass null when you don't wish to filter
+     * @param limit pass -1 for no limit
+     * @param offset pass -1 for no offset
+     * @return matched user details
+     */
+    public List<User> getUsersDetails(
+            String search, int limit, int offset)
+    {
+        return NextcloudResponseHelper.getAndCheckStatus(getUsersDetailsAsync(search, limit, offset)).getUsersDetails();
+    }
+
+    /**
+     * Get all matching user derails asynchronously
+     *
+     * @param search pass null when you don't wish to filter
+     * @param limit pass -1 for no limit
+     * @param offset pass -1 for no offset
+     * @return a CompletableFuture containing the result of the operation
+     */
+    public CompletableFuture<UsersDetailsXMLAnswer> getUsersDetailsAsync(
+            String search, int limit, int offset)
+    {
+        List<NameValuePair> queryParams= new LinkedList<>();
+        if (limit != -1)
+        {
+            queryParams.add(new BasicNameValuePair("limit", Integer.toString(limit)));
+        }
+        if (offset != -1)
+        {
+            queryParams.add(new BasicNameValuePair("offset", Integer.toString(offset)));
+        }
+        if (search != null)
+        {
+            queryParams.add(new BasicNameValuePair("search", search));
+        }
+        return connectorCommon.executeGet(USERS_PART+"/details", queryParams, XMLAnswerParser.getInstance(UsersDetailsXMLAnswer.class));
+    }
+
+    /**
      * Gets all available information of one user
      *
      * @param userId unique identifier of the user

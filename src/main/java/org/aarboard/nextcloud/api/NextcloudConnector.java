@@ -33,13 +33,7 @@ import org.aarboard.nextcloud.api.filesharing.SharePermissions;
 import org.aarboard.nextcloud.api.filesharing.ShareType;
 import org.aarboard.nextcloud.api.filesharing.SharesXMLAnswer;
 import org.aarboard.nextcloud.api.filesharing.SingleShareXMLAnswer;
-import org.aarboard.nextcloud.api.provisioning.GroupsXMLAnswer;
-import org.aarboard.nextcloud.api.provisioning.ProvisionConnector;
-import org.aarboard.nextcloud.api.provisioning.ShareData;
-import org.aarboard.nextcloud.api.provisioning.User;
-import org.aarboard.nextcloud.api.provisioning.UserData;
-import org.aarboard.nextcloud.api.provisioning.UserXMLAnswer;
-import org.aarboard.nextcloud.api.provisioning.UsersXMLAnswer;
+import org.aarboard.nextcloud.api.provisioning.*;
 import org.aarboard.nextcloud.api.utils.ConnectorCommon;
 import org.aarboard.nextcloud.api.utils.ListXMLAnswer;
 import org.aarboard.nextcloud.api.utils.XMLAnswer;
@@ -481,6 +475,54 @@ public class NextcloudConnector {
             String search, int limit, int offset)
     {
         return pc.getUsersAsync(search, limit, offset);
+    }
+
+    /**
+     * Gets all user details of this instance
+     *
+     * @return all user details
+     */
+    public List<User> getUsersDetails()
+    {
+        return pc.getUsersDetails();
+    }
+
+    /**
+     * Get all matching user details
+     *
+     * @param search pass null when you don't wish to filter
+     * @param limit pass -1 for no limit
+     * @param offset pass -1 for no offset
+     * @return matched user details
+     */
+    public List<User> getUsersDetails(
+            String search, int limit, int offset)
+    {
+        return pc.getUsersDetails(search, limit, offset);
+    }
+
+    /**
+     * Gets all user details of this instance asynchronously
+     *
+     * @return a CompletableFuture containing the result of the operation
+     */
+    public CompletableFuture<UsersDetailsXMLAnswer> getUsersDetailsAsync()
+    {
+        return pc.getUsersDetailsAsync();
+    }
+
+    /**
+     * Get all matching user details asynchronously
+     *
+     * @param search pass null when you don't wish to filter
+     * @param limit pass -1 for no limit
+     * @param offset pass -1 for no offset
+     * @return a CompletableFuture containing the result of the operation
+     */
+    public CompletableFuture<UsersDetailsXMLAnswer> getUsersDetailsAsync(
+            String search, int limit, int offset)
+    {
+        return pc.getUsersDetailsAsync(search, limit, offset);
     }
 
     /**
