@@ -16,9 +16,11 @@ Java api library to access nextcloud features from java applications
 ## Usage
 - Add this dependency to your pom.xml file
 ```
-<groupId>org.aarboard.nextcloud</groupId>
-<artifactId>nextcloud-api</artifactId>
-<version>1.5.0</version>
+	<dependency>
+	    <groupId>com.github.a-schild</groupId>
+	    <artifactId>nextcloud-java-api</artifactId>
+	    <version>11.5.0</version>
+	</dependency>
 ```
 
 - Create a NextcloudConnector instance and provide your server settings and authentification
