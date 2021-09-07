@@ -506,7 +506,7 @@ public class NextcloudConnector {
      *
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<UsersDetailsXMLAnswer> getUsersDetailsAsync()
+    public CompletableFuture<UsersDetailsJsonAnswer> getUsersDetailsAsync()
     {
         return pc.getUsersDetailsAsync();
     }
@@ -519,7 +519,7 @@ public class NextcloudConnector {
      * @param offset pass -1 for no offset
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<UsersDetailsXMLAnswer> getUsersDetailsAsync(
+    public CompletableFuture<UsersDetailsJsonAnswer> getUsersDetailsAsync(
             String search, int limit, int offset)
     {
         return pc.getUsersDetailsAsync(search, limit, offset);

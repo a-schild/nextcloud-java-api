@@ -21,11 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import org.aarboard.nextcloud.api.ServerConfig;
-import org.aarboard.nextcloud.api.utils.NextcloudResponseHelper;
-import org.aarboard.nextcloud.api.utils.ConnectorCommon;
-import org.aarboard.nextcloud.api.utils.ListXMLAnswer;
-import org.aarboard.nextcloud.api.utils.XMLAnswer;
-import org.aarboard.nextcloud.api.utils.XMLAnswerParser;
+import org.aarboard.nextcloud.api.utils.*;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -173,7 +169,7 @@ public class ProvisionConnector
      *
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<UsersDetailsXMLAnswer> getUsersDetailsAsync()
+    public CompletableFuture<UsersDetailsJsonAnswer> getUsersDetailsAsync()
     {
         return getUsersDetailsAsync(null, -1, -1);
     }
@@ -200,7 +196,7 @@ public class ProvisionConnector
      * @param offset pass -1 for no offset
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<UsersDetailsXMLAnswer> getUsersDetailsAsync(
+    public CompletableFuture<UsersDetailsJsonAnswer> getUsersDetailsAsync(
             String search, int limit, int offset)
     {
         List<NameValuePair> queryParams= new LinkedList<>();
@@ -216,7 +212,7 @@ public class ProvisionConnector
         {
             queryParams.add(new BasicNameValuePair("search", search));
         }
-        return connectorCommon.executeGet(USERS_PART+"/details", queryParams, XMLAnswerParser.getInstance(UsersDetailsXMLAnswer.class));
+        return connectorCommon.executeGet(USERS_PART+"/details", queryParams, JsonAnswerParser.getInstance(UsersDetailsJsonAnswer.class));
     }
 
     /**

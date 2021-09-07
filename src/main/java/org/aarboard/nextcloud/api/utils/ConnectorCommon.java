@@ -9,6 +9,7 @@ import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -44,6 +45,7 @@ import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClients;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.ssl.SSLContexts;
 
 public class ConnectorCommon
@@ -57,7 +59,7 @@ public class ConnectorCommon
     public <R> CompletableFuture<R> executeGet(String part, List<NameValuePair> queryParams, ResponseParser<R> parser)
     {
         try {
-            URI url= buildUrl(part, queryParams);
+            URI url= buildUrl(part, queryParams, parser instanceof JsonAnswerParser);
 
             HttpRequestBase request = new HttpGet(url.toString());
             return executeRequest(parser, request);
@@ -69,7 +71,7 @@ public class ConnectorCommon
     public <R> CompletableFuture<R> executePost(String part, List<NameValuePair> postParams, ResponseParser<R> parser)
     {
         try {
-            URI url= buildUrl(part, postParams);
+            URI url= buildUrl(part, postParams, parser instanceof JsonAnswerParser);
 
             HttpRequestBase request = new HttpPost(url.toString());
             return executeRequest(parser, request);
@@ -81,7 +83,7 @@ public class ConnectorCommon
     public <R> CompletableFuture<R> executePut(String part1, String part2, List<NameValuePair> putParams, ResponseParser<R> parser)
     {
         try {
-            URI url= buildUrl(part1 + "/" + part2, putParams);
+            URI url= buildUrl(part1 + "/" + part2, putParams, parser instanceof JsonAnswerParser);
 
             HttpRequestBase request = new HttpPut(url.toString());
             return executeRequest(parser, request);
@@ -93,7 +95,7 @@ public class ConnectorCommon
     public <R> CompletableFuture<R> executeDelete(String part1, String part2, List<NameValuePair> deleteParams, ResponseParser<R> parser)
     {
         try {
-            URI url= buildUrl(part1 + "/" + part2, deleteParams);
+            URI url= buildUrl(part1 + "/" + part2, deleteParams, parser instanceof JsonAnswerParser);
 
             HttpRequestBase request = new HttpDelete(url.toString());
             return executeRequest(parser, request);
@@ -102,11 +104,18 @@ public class ConnectorCommon
         }
     }
 
-    private URI buildUrl(String subPath, List<NameValuePair> queryParams)
+    private URI buildUrl(String subPath, List<NameValuePair> queryParams, boolean useJson)
     {
     	if(serverConfig.getSubPathPrefix()!=null) {
     		subPath = serverConfig.getSubPathPrefix()+"/"+subPath;
     	}
+
+        if (useJson) {
+            if (queryParams == null) {
+                queryParams = new ArrayList<>();
+            }
+            queryParams.add(new BasicNameValuePair("format", "json"));
+        }
     	
         URIBuilder uB= new URIBuilder()
         .setScheme(serverConfig.isUseHTTPS() ? "https" : "http")
@@ -114,10 +123,11 @@ public class ConnectorCommon
         .setPort(serverConfig.getPort())
         .setUserInfo(serverConfig.getUserName(), serverConfig.getPassword())
         .setPath(subPath);
-        if (queryParams != null)
-        {
+
+        if (queryParams != null) {
             uB.addParameters(queryParams);
         }
+
         try {
             return uB.build();
         } catch (URISyntaxException e) {

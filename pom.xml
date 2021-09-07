@@ -19,6 +19,7 @@
         <jakarta.xml.bind-api.version>2.3.3</jakarta.xml.bind-api.version>
         <jaxb-runtime.version>2.3.4</jaxb-runtime.version>
         <netbeans.hint.license>gpl30</netbeans.hint.license>
+        <jackson.version>2.12.5</jackson.version>
     </properties>
     <name>NextCloud Java API library</name>
     <description>Java api library to access nextcloud features from java applications</description>
@@ -105,6 +106,13 @@
             <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
     </dependencies>
     
     <distributionManagement>

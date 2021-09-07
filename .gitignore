@@ -15,3 +15,5 @@ hs_err_pid*
 
 ### Vagrant ###
 .vagrant/
+/.idea/
+/nextcloud-api.iml
