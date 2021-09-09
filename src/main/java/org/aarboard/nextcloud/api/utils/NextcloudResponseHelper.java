@@ -12,22 +12,22 @@ public class NextcloudResponseHelper
     private NextcloudResponseHelper() {
     }
 
-    public static <A extends XMLAnswer> A getAndCheckStatus(CompletableFuture<A> answer)
+    public static <A extends NextcloudResponse> A getAndCheckStatus(CompletableFuture<A> answer)
     {
-        A xmlanswer = getAndWrapException(answer);
-        if(isStatusCodeOkay(xmlanswer))
+        A wrappedAnswer = getAndWrapException(answer);
+        if(isStatusCodeOkay(wrappedAnswer))
         {
-            return xmlanswer;
+            return wrappedAnswer;
         }
-        throw new NextcloudOperationFailedException(xmlanswer.getStatusCode(), xmlanswer.getMessage());
+        throw new NextcloudOperationFailedException(wrappedAnswer.getStatusCode(), wrappedAnswer.getMessage());
     }
 
-    public static <A extends XMLAnswer> boolean isStatusCodeOkay(CompletableFuture<A> answer)
+    public static <A extends NextcloudResponse> boolean isStatusCodeOkay(CompletableFuture<A> answer)
     {
         return isStatusCodeOkay(getAndWrapException(answer));
     }
 
-    public static  boolean isStatusCodeOkay(XMLAnswer answer)
+    public static  boolean isStatusCodeOkay(NextcloudResponse answer)
     {
         return answer.getStatusCode() == NC_OK;
     }

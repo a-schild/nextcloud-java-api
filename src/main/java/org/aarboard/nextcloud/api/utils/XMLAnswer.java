@@ -27,40 +27,30 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="ocs")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class XMLAnswer {
+public class XMLAnswer implements NextcloudResponse {
 	private Meta meta;
 
-    /**
-     * @return the status
-     */
+    @Override
     public String getStatus() {
         return meta.status;
     }
 
-    /**
-     * @return the statusCode
-     */
+    @Override
     public int getStatusCode() {
         return meta.statusCode;
     }
 
-    /**
-     * @return the message
-     */
+    @Override
     public String getMessage() {
         return meta.message;
     }
 
-    /**
-     * @return the totalItems
-     */
+    @Override
     public int getTotalItems() {
         return meta.totalItems;
     }
 
-    /**
-     * @return the itemsPerPage
-     */
+    @Override
     public int getItemsPerPage() {
         return meta.itemsPerPage;
     }

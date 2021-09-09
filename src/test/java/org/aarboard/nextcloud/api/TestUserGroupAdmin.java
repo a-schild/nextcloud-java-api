@@ -16,23 +16,16 @@
  */
 package org.aarboard.nextcloud.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.List;
-
 import org.aarboard.nextcloud.api.provisioning.User;
 import org.aarboard.nextcloud.api.provisioning.UserData;
-import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+
+import java.util.Collection;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  *
@@ -47,6 +40,16 @@ public class TestUserGroupAdmin extends ATestClass {
         if (_nc != null)
         {
             boolean result = _nc.createUser(TESTUSER, "aBcDeFg123456");
+            assertTrue(result);
+        }
+    }
+
+    @Test
+    public void t01_01_testCreateUserWithInvalidChar() {
+        System.out.println("createUserWithInvalidChar");
+        if (_nc != null)
+        {
+            boolean result = _nc.createUser(TESTUSER_WITH_INVALID_CHAR, "aBcDeFg123456");
             assertTrue(result);
         }
     }
@@ -70,6 +73,7 @@ public class TestUserGroupAdmin extends ATestClass {
             Collection<User> result = _nc.getUsersDetails();
             assertNotNull(result);
             assertTrue(result.stream().anyMatch(user -> TESTUSER.equals(user.getId())));
+            assertTrue(result.stream().anyMatch(user -> TESTUSER_WITH_INVALID_CHAR.equals(user.getId())));
         }
     }
 
@@ -92,12 +96,14 @@ public class TestUserGroupAdmin extends ATestClass {
         System.out.println("getUsersDetails");
         if (_nc != null)
         {
-            String search = TESTUSER;
             int limit = 1;
             int offset = -1;
-            Collection<User> result = _nc.getUsersDetails(search, limit, offset);
-            assertNotNull(result);
-            assertTrue(result.stream().anyMatch(user -> TESTUSER.equals(user.getId())));
+            Collection<User> result1 = _nc.getUsersDetails(TESTUSER, limit, offset);
+            assertNotNull(result1);
+            assertTrue(result1.stream().anyMatch(user -> TESTUSER.equals(user.getId())));
+            Collection<User> result2 = _nc.getUsersDetails(TESTUSER_WITH_INVALID_CHAR, limit, offset);
+            assertNotNull(result2);
+            assertTrue(result2.stream().anyMatch(user -> TESTUSER_WITH_INVALID_CHAR.equals(user.getId())));
         }
     }
 
@@ -270,6 +276,16 @@ public class TestUserGroupAdmin extends ATestClass {
         if (_nc != null)
         {
             boolean result = _nc.deleteUser(TESTUSER);
+            assertTrue(result);
+        }
+    }
+
+    @Test
+    public void t19_01_testDeleteUserWithInvalidChar() {
+        System.out.println("deleteUserWithInvalidChar");
+        if (_nc != null)
+        {
+            boolean result = _nc.deleteUser(TESTUSER_WITH_INVALID_CHAR);
             assertTrue(result);
         }
     }
