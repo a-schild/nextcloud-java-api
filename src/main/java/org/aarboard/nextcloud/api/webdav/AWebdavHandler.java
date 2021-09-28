@@ -18,6 +18,7 @@ package org.aarboard.nextcloud.api.webdav;
 
 import com.github.sardine.Sardine;
 import com.github.sardine.SardineFactory;
+import com.github.sardine.impl.SardineImpl;
 import java.io.IOException;
 import org.aarboard.nextcloud.api.ServerConfig;
 import org.aarboard.nextcloud.api.exception.NextcloudApiException;
@@ -68,10 +69,13 @@ public abstract class AWebdavHandler {
      */
     protected Sardine buildAuthSardine()
     {
-        Sardine sardine = SardineFactory.begin();
-        sardine.setCredentials(_serverConfig.getUserName(), _serverConfig.getPassword());
-        sardine.enablePreemptiveAuthentication(_serverConfig.getServerName());
-        
+        if (_serverConfig.getAuthenticationConfig().usesBasicAuthentication()) {
+            Sardine sardine = SardineFactory.begin();
+            sardine.setCredentials(_serverConfig.getUserName(), _serverConfig.getPassword());
+            sardine.enablePreemptiveAuthentication(_serverConfig.getServerName());
+            return sardine;
+        }
+        Sardine sardine = new SardineImpl(_serverConfig.getAuthenticationConfig().getBearerToken());
         return sardine;
     }
     

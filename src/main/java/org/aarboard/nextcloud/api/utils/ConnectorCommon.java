@@ -121,8 +121,12 @@ public class ConnectorCommon
         .setScheme(serverConfig.isUseHTTPS() ? "https" : "http")
         .setHost(serverConfig.getServerName())
         .setPort(serverConfig.getPort())
-        .setUserInfo(serverConfig.getUserName(), serverConfig.getPassword())
         .setPath(subPath);
+
+        if (serverConfig.getAuthenticationConfig().usesBasicAuthentication()) {
+            uB.setUserInfo(serverConfig.getAuthenticationConfig().getUserName(),
+                serverConfig.getAuthenticationConfig().getPassword());
+        }
 
         if (queryParams != null) {
             uB.addParameters(queryParams);
@@ -152,20 +156,23 @@ public class ConnectorCommon
 
     private HttpClientContext prepareContext()
     {
-        HttpHost targetHost = new HttpHost(serverConfig.getServerName(), serverConfig.getPort(), serverConfig.isUseHTTPS() ? "https" : "http");
-        AuthCache authCache = new BasicAuthCache();
-        authCache.put(targetHost, new BasicScheme());
+        if (serverConfig.getAuthenticationConfig().usesBasicAuthentication()) {
+            HttpHost targetHost = new HttpHost(serverConfig.getServerName(), serverConfig.getPort(), serverConfig.isUseHTTPS() ? "https" : "http");
+            AuthCache authCache = new BasicAuthCache();
+            authCache.put(targetHost, new BasicScheme());
 
-        CredentialsProvider credsProvider = new BasicCredentialsProvider();
-        UsernamePasswordCredentials credentials
-         = new UsernamePasswordCredentials(serverConfig.getUserName(), serverConfig.getPassword());
-        credsProvider.setCredentials(AuthScope.ANY, credentials);
+            CredentialsProvider credsProvider = new BasicCredentialsProvider();
+            UsernamePasswordCredentials credentials
+            = new UsernamePasswordCredentials(serverConfig.getAuthenticationConfig().getUserName(), serverConfig.getAuthenticationConfig().getPassword());
+            credsProvider.setCredentials(AuthScope.ANY, credentials);
 
-        // Add AuthCache to the execution context
-        HttpClientContext context = HttpClientContext.create();
-        context.setCredentialsProvider(credsProvider);
-        context.setAuthCache(authCache);
-        return context;
+            // Add AuthCache to the execution context
+            HttpClientContext context = HttpClientContext.create();
+            context.setCredentialsProvider(credsProvider);
+            context.setAuthCache(authCache);
+            return context;
+        }
+        return HttpClientContext.create();
     }
 
     private final class ResponseCallback<R> implements FutureCallback<HttpResponse>
