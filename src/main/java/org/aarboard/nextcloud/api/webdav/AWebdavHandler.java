@@ -71,7 +71,7 @@ public abstract class AWebdavHandler {
     {
         if (_serverConfig.getAuthenticationConfig().usesBasicAuthentication()) {
             Sardine sardine = SardineFactory.begin();
-            sardine.setCredentials(_serverConfig.getUserName(), _serverConfig.getPassword());
+            sardine.setCredentials(_serverConfig.getAuthenticationConfig().getUserName(), _serverConfig.getAuthenticationConfig().getPassword());
             sardine.enablePreemptiveAuthentication(_serverConfig.getServerName());
             return sardine;
         }
