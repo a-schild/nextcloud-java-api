@@ -1,6 +1,4 @@
-package src.main.java.org.aarboard.nextcloud.api;
-
-public package org.aarboard.nextcloud.api;
+package org.aarboard.nextcloud.api;
 
 public class AuthenticationConfig {
 
