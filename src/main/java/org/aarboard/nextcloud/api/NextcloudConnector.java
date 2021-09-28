@@ -95,7 +95,7 @@ public class NextcloudConnector {
      * @param serverName           Name or IP of server of your nextcloud instance
      * @param useHTTPS             Set true when https should be used
      * @param port                 Use 443 for https and 80 for non-https in most cases
-     * @param AuthenticationConfig Authentication configuration for login
+     * @param authenticationConfig Authentication configuration for login
      */
     public NextcloudConnector(String serverName, boolean useHTTPS, int port,
             AuthenticationConfig authenticationConfig) {
@@ -109,7 +109,7 @@ public class NextcloudConnector {
 
     /**
      * @param serviceUrl           url of the nextcloud instance, e.g. https://nextcloud.instance.com:8443/cloud
-     * @param AuthenticationConfig Authentication configuration for login
+     * @param authenticationConfig Authentication configuration for login
      */
     public NextcloudConnector(String serviceUrl, AuthenticationConfig authenticationConfig) {
         try {
