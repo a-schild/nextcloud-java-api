@@ -95,6 +95,7 @@ public class Folders extends AWebdavHandler{
      */
     public List<String> listFolderContent(String remotePath, int depth, boolean excludeFolderNames, boolean returnFullPath)
     {
+        String rootPath = buildWebdavPath(null);
         String path = buildWebdavPath(remotePath);
 
         List<String> retVal = new LinkedList<>();
@@ -124,9 +125,10 @@ public class Folders extends AWebdavHandler{
             else {
                 if (returnFullPath)
                 {
-                    if (res.getPath().contains(path))
+                    String prefix= path.substring(rootPath.length());
+                    if (res.getPath().startsWith(prefix))
                     {
-                        retVal.add(res.getPath().substring(res.getPath().indexOf(path)+path.length()));
+                        retVal.add(res.getPath().substring(prefix.length()));
                     }
                     else
                     {
