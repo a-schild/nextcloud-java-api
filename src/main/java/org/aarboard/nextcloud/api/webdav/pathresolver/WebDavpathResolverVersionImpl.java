@@ -16,8 +16,6 @@
  */
 package org.aarboard.nextcloud.api.webdav.pathresolver;
 
-import java.nio.file.Paths;
-import java.text.MessageFormat;
 
 public class WebDavpathResolverVersionImpl implements WebDavPathResolver
 {
@@ -44,13 +42,12 @@ public class WebDavpathResolverVersionImpl implements WebDavPathResolver
 
     private String getWebdavPath()
     {
-        return Paths.get(pathPrefix, versionPath).toString();
+        return PathHelper.concatPathElements(true, pathPrefix, versionPath);
     }
 
     @Override
-    public String getWebDavPath(String... remotePaths)
-    {
-        return MessageFormat.format("/{0}", Paths.get(getWebdavPath(), remotePaths).toString());
+    public String getWebDavPath(String... remotePaths) {
+        return PathHelper.concatPathElements(false, getWebdavPath(), remotePaths);
     }
 
 }

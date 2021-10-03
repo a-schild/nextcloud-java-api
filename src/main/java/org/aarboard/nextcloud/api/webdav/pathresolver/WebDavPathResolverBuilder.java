@@ -16,8 +16,6 @@
  */
 package org.aarboard.nextcloud.api.webdav.pathresolver;
 
-import java.nio.file.Paths;
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -246,16 +244,23 @@ public class WebDavPathResolverBuilder
         {
             if (null == this.webdavPath)
             {
-                this.webdavPath = Paths.get(this.pathPrefix, this.webDavBasePath, this.pathSuffix, this.userName).toString();
+                // We can't use Paths here, since we need / as separator, and not a platform specific delimiter
+                // which might be something else
+                this.webdavPath= PathHelper.concatPathElements(
+                        true,
+                        this.pathPrefix,
+                        this.webDavBasePath,
+                        this.pathSuffix,
+                        this.userName);
             }
             return this.webdavPath;
         }
 
         @Override
-        public String getWebDavPath(String... remotePath)
+        public String getWebDavPath(String ... remotePath)
         {
-            return MessageFormat.format(PATH_TEMPLATE, Paths.get(getWebdavPath(), remotePath).toString());
+            return PathHelper.concatPathElements(true, getWebdavPath(), remotePath);
         }
-
     }
+
 }

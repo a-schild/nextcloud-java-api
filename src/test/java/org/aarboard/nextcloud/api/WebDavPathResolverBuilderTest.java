@@ -39,7 +39,8 @@ public class WebDavPathResolverBuilderTest
     @Test
     public void testBuilder_version_2()
     {
-        String result = WebDavPathResolverBuilder.get(WebDavPathResolverBuilder.TYPE.VERSION).withBasePathSuffix("x").withUserName("x").build().getWebDavPath();
+        String result = WebDavPathResolverBuilder.get(WebDavPathResolverBuilder.TYPE.VERSION)
+                .withBasePathSuffix("x").withUserName("x").build().getWebDavPath();
 
         assertNotNull(result);
 
@@ -50,7 +51,9 @@ public class WebDavPathResolverBuilderTest
     @Test
     public void testBuilder_version_3()
     {
-        String result = WebDavPathResolverBuilder.get(WebDavPathResolverBuilder.TYPE.VERSION).withBasePathPrefix("nextcloud").withBasePathSuffix("x").withUserName("x").build().getWebDavPath();
+        String result = WebDavPathResolverBuilder.get(WebDavPathResolverBuilder.TYPE.VERSION)
+                .withBasePathPrefix("nextcloud").withBasePathSuffix("x")
+                .withUserName("x").build().getWebDavPath();
 
         assertNotNull(result);
 
@@ -61,7 +64,11 @@ public class WebDavPathResolverBuilderTest
     @Test
     public void testBuilder_version_4()
     {
-        String result = WebDavPathResolverBuilder.get(WebDavPathResolverBuilder.TYPE.VERSION).withBasePath("/mypath/other_status.php").withBasePathPrefix("nextcloud").withBasePathSuffix("x").withUserName("x").build().getWebDavPath();
+        String result = WebDavPathResolverBuilder.get(WebDavPathResolverBuilder.TYPE.VERSION)
+                .withBasePath("/mypath/other_status.php")
+                .withBasePathPrefix("nextcloud")
+                .withBasePathSuffix("x")
+                .withUserName("x").build().getWebDavPath();
 
         assertNotNull(result);
 
@@ -72,7 +79,9 @@ public class WebDavPathResolverBuilderTest
     @Test
     public void testBuilder_folder_1()
     {
-        String result = WebDavPathResolverBuilder.get(WebDavPathResolverBuilder.TYPE.FILES).withBasePathPrefix("nextcloud").withBasePathSuffix("suf").withUserName("user").build().getWebDavPath();
+        String result = WebDavPathResolverBuilder.get(WebDavPathResolverBuilder.TYPE.FILES)
+                .withBasePathPrefix("nextcloud").withBasePathSuffix("suf")
+                .withUserName("user").build().getWebDavPath();
 
         assertNotNull(result);
 
@@ -83,7 +92,9 @@ public class WebDavPathResolverBuilderTest
     @Test
     public void testBuilder_folder_2()
     {
-        String result = WebDavPathResolverBuilder.get(WebDavPathResolverBuilder.TYPE.FILES).ofVersion(NextcloudVersion.get("14.0.1")).withBasePathPrefix("nextcloud").withBasePathSuffix("suf").withUserName("user").build().getWebDavPath();
+        String result = WebDavPathResolverBuilder.get(WebDavPathResolverBuilder.TYPE.FILES)
+                .ofVersion(NextcloudVersion.get("14.0.1"))
+                .withBasePathPrefix("nextcloud").withBasePathSuffix("suf").withUserName("user").build().getWebDavPath();
 
         assertNotNull(result);
 
@@ -94,7 +105,10 @@ public class WebDavPathResolverBuilderTest
     @Test
     public void testBuilder_folder_3()
     {
-        String result = WebDavPathResolverBuilder.get(WebDavPathResolverBuilder.TYPE.FILES).ofVersion(NextcloudVersion.get("20.0.1")).withBasePathPrefix("nextcloud").withUserName("user").build().getWebDavPath();
+        String result = WebDavPathResolverBuilder.get(WebDavPathResolverBuilder.TYPE.FILES)
+                .ofVersion(NextcloudVersion.get("20.0.1"))
+                .withBasePathPrefix("nextcloud")
+                .withUserName("user").build().getWebDavPath();
 
         assertNotNull(result);
 
@@ -105,7 +119,11 @@ public class WebDavPathResolverBuilderTest
     @Test
     public void testBuilder_folder_4()
     {
-        String result = WebDavPathResolverBuilder.get(WebDavPathResolverBuilder.TYPE.CALDAV).withBasePathSuffix("calendar").ofVersion(NextcloudVersion.get("20.0.1")).withBasePathPrefix("nextcloud").withUserName("angus").build().getWebDavPath();
+        String result = WebDavPathResolverBuilder.get(WebDavPathResolverBuilder.TYPE.CALDAV)
+                .withBasePathSuffix("calendar")
+                .ofVersion(NextcloudVersion.get("20.0.1"))
+                .withBasePathPrefix("nextcloud")
+                .withUserName("angus").build().getWebDavPath();
 
         assertNotNull(result);
         Assert.assertEquals("/nextcloud/remote.php/dav/calendar/angus/", result);
@@ -115,7 +133,10 @@ public class WebDavPathResolverBuilderTest
     @Test
     public void testBuilder_folder_5()
     {
-        String result = WebDavPathResolverBuilder.get(WebDavPathResolverBuilder.TYPE.CALDAV).ofVersion(NextcloudVersion.get("20.0.1")).withBasePathPrefix("nextcloud").withUserName("angus").build().getWebDavPath();
+        String result = WebDavPathResolverBuilder.get(WebDavPathResolverBuilder.TYPE.CALDAV)
+                .ofVersion(NextcloudVersion.get("20.0.1"))
+                .withBasePathPrefix("nextcloud")
+                .withUserName("angus").build().getWebDavPath();
 
         assertNotNull(result);
         Assert.assertEquals("/nextcloud/remote.php/dav/calendars/angus/", result);
