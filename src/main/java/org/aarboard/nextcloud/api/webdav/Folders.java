@@ -91,6 +91,7 @@ public class Folders extends AWebdavHandler{
      * @param depth depth of recursion while listing folder contents
      * @param excludeFolderNames excludes the folder names from the list
      * @param returnFullPath return full path to files, not only filename
+     *                       like folder1/folder1/file.txt
      * @return found file names and subfolders
      */
     public List<String> listFolderContent(String remotePath, int depth, boolean excludeFolderNames, boolean returnFullPath)

@@ -36,6 +36,29 @@ public class ServerConfig {
      * @param serverName           ip or dns name of server
      * @param useHTTPS             Use https or http to connect
      * @param port                 Port, usuallay 443 for https and 80 for http
+     * @param userName
+     * @param password
+     */
+    public ServerConfig(String serverName, 
+            boolean useHTTPS, 
+            int port, 
+            String userName,
+            String password) {
+        this.authenticationConfig = new AuthenticationConfig(userName, password);
+        this.serverName = serverName;
+        this.subPathPrefix = null;
+        this.useHTTPS = useHTTPS;
+        this.port = port;
+        this.trustAllCertificates = false;
+    }
+    
+    /**
+     * Use this constructor if your nextcloud instance is installed in the 
+     * root of the webhosting, like https://nextcloud.company.my/
+     * 
+     * @param serverName           ip or dns name of server
+     * @param useHTTPS             Use https or http to connect
+     * @param port                 Port, usuallay 443 for https and 80 for http
      * @param authenticationConfig Authentication configuration for authentication
      */
     public ServerConfig(String serverName, 
@@ -178,5 +201,9 @@ public class ServerConfig {
 	public boolean isTrustAllCertificates(){
 		return trustAllCertificates;
 	}
-    
+
+        public String getUserName()
+        {
+            return authenticationConfig.getUserName();
+        }
 }

@@ -1,4 +1,7 @@
 # Changelog for nextcloud api
+- 2021-10-03
+  - Added bearer authentication, thanks torshid
+  - Base path customization, thanks torshid
 - 2021-09-09
   - Release 11.5.1
   - Integrated fix for invalid userlist, pull request #62, Thanks kriszman
