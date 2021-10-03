@@ -124,9 +124,9 @@ public class Folders extends AWebdavHandler{
             else {
                 if (returnFullPath)
                 {
-                    if (res.getPath().startsWith(path))
+                    if (res.getPath().contains(path))
                     {
-                        retVal.add(res.getPath().substring(path.length()));
+                        retVal.add(res.getPath().substring(res.getPath().indexOf(path)+path.length()));
                     }
                     else
                     {
