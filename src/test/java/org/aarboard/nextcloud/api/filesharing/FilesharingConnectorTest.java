@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.aarboard.nextcloud.api.AuthenticationConfig;
 import org.aarboard.nextcloud.api.NextcloudConnector;
 import org.aarboard.nextcloud.api.ServerConfig;
 import org.aarboard.nextcloud.api.TestHelper;
@@ -69,7 +70,7 @@ public class FilesharingConnectorTest {
         serverPort= th.getServerPort();
         if (serverName != null)
         {
-            _sc= new ServerConfig(serverName, serverPort == 443, serverPort, userName, password);
+            _sc= new ServerConfig(serverName, serverPort == 443, serverPort, new AuthenticationConfig(userName, password));
             _nc = new NextcloudConnector(serverName, serverPort == 443, serverPort, userName, password);
             _nc.createFolder(TEST_FOLDER);
             _nc.createFolder(TEST_FOLDER2);
