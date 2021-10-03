@@ -118,13 +118,26 @@ public class Folders extends AWebdavHandler{
         }
         for (DavResource res : resources)
         {
-            if (excludeFolderNames) {
-                if (!res.isDirectory()) {
-                    retVal.add(returnFullPath ? res.getPath().replaceFirst("/" + AWebdavHandler.WEB_DAV_BASE_PATH + "/", "") : res.getName());
-                }
+            if (excludeFolderNames && res.isDirectory()) {
+                // Dont' return folders
             }
             else {
-                retVal.add(returnFullPath ? res.getPath().replaceFirst("/" + AWebdavHandler.WEB_DAV_BASE_PATH + "/", "") : res.getName());
+                if (returnFullPath)
+                {
+                    if (res.getPath().startsWith(path))
+                    {
+                        retVal.add(res.getPath().substring(path.length()));
+                    }
+                    else
+                    {
+                        LOG.error("Unhandled edge case, path prefix {} does not match built prefix {}", res.getPath(), path);
+                        retVal.add(res.getPath());
+                    }
+                }
+                else
+                {
+                    retVal.add(res.getName());
+                }
             }
         }
         return retVal;

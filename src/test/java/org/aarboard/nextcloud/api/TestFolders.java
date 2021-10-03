@@ -159,7 +159,7 @@ public class TestFolders extends ATestClass {
             _nc.deleteFolder(TEST_FOLDER);
 
             assertNotNull(result);
-            assertTrue(result.contains(TEST_FOLDER+"/"+TEST_FOLDER+"_sub/"));
+            assertTrue("Not matching ["+result+"] with expected ["+TEST_FOLDER+"/"+TEST_FOLDER+"_sub/"+"]", result.contains(TEST_FOLDER+"/"+TEST_FOLDER+"_sub/"));
         }
     }
 }
