@@ -69,77 +69,39 @@ public class NextcloudConnector {
      */
     public NextcloudConnector(String serverName, boolean useHTTPS, int port, String userName, String password)
     {
-        this(serverName, useHTTPS, port, new AuthenticationConfig(userName, password));
-    }
-
-    /**
-     *
-     * @param serverName  Name or IP of server of your nextcloud instance
-     * @param useHTTPS    Set true when https should be used
-     * @param port        Use 443 for https and 80 for non-https in most cases
-     * @param bearerToken Bearer token for login
-     */
-    public NextcloudConnector(String serverName, boolean useHTTPS, int port, String bearerToken) {
-        this(serverName, useHTTPS, port, new AuthenticationConfig(bearerToken));
-    }
-
-    /**
-     * @param serviceUrl url of the nextcloud instance, e.g. https://nextcloud.instance.com:8443/cloud
-     * @param userName   User for login
-     * @param password   Password for login
-     */
-    public NextcloudConnector(String serviceUrl, String userName, String password) {
-        this(serviceUrl, new AuthenticationConfig(userName, password));
-    }
-
-    /**
-     * @param serviceUrl  url of the nextcloud instance, e.g. https://nextcloud.instance.com:8443/cloud
-     * @param bearerToken Bearer token for login
-     */
-    public NextcloudConnector(String serviceUrl, String bearerToken) {
-        this(serviceUrl, new AuthenticationConfig(bearerToken));
-    }
-
-    /**
-     *
-     * @param serverName           Name or IP of server of your nextcloud instance
-     * @param useHTTPS             Set true when https should be used
-     * @param port                 Use 443 for https and 80 for non-https in most cases
-     * @param authenticationConfig Authentication configuration for login
-     */
-    public NextcloudConnector(String serverName, boolean useHTTPS, int port,
-            AuthenticationConfig authenticationConfig) {
-        _serverConfig = new ServerConfig(serverName, useHTTPS, port, authenticationConfig);
-        pc = new ProvisionConnector(_serverConfig);
-        fc = new FilesharingConnector(_serverConfig);
-        cc = new ConfigConnector(_serverConfig);
-        fd = new Folders(_serverConfig);
+        _serverConfig= new ServerConfig(serverName, useHTTPS, port, userName, password);
+        pc= new ProvisionConnector(_serverConfig);
+        fc= new FilesharingConnector(_serverConfig);
+        cc= new ConfigConnector(_serverConfig);
+        fd= new Folders(_serverConfig);
         fl = new Files(_serverConfig);
     }
-
+    
     /**
-     * @param serviceUrl           url of the nextcloud instance, e.g. https://nextcloud.instance.com:8443/cloud
-     * @param authenticationConfig Authentication configuration for login
+     * @param serviceUrl 	url of the nextcloud instance, e.g. https://nextcloud.instance.com:8443/cloud
+     * @param userName 		User for login
+     * @param password 		Password for login
      */
-    public NextcloudConnector(String serviceUrl, AuthenticationConfig authenticationConfig) {
-        try {
-            URL _serviceUrl = new URL(serviceUrl);
-            boolean useHTTPS = serviceUrl.startsWith("https");
-            _serverConfig = new ServerConfig(_serviceUrl.getHost(), useHTTPS, _serviceUrl.getPort(),
-                    authenticationConfig);
-            if (!_serviceUrl.getPath().isEmpty()) {
-                _serverConfig.setSubPathPrefix(_serviceUrl.getPath());
-            }
-            pc = new ProvisionConnector(_serverConfig);
-            fc = new FilesharingConnector(_serverConfig);
-            cc = new ConfigConnector(_serverConfig);
-            fd = new Folders(_serverConfig);
-            fl = new Files(_serverConfig);
+    public NextcloudConnector(String serviceUrl, String userName, String password){
+            try {
+                    URL _serviceUrl = new URL(serviceUrl);
+                    boolean useHTTPS = serviceUrl.startsWith("https");
+                    _serverConfig = new ServerConfig(_serviceUrl.getHost(), useHTTPS, _serviceUrl.getPort(),
+                            userName, password);
+                    if(!_serviceUrl.getPath().isEmpty()) {
+                            _serverConfig.setSubPathPrefix(_serviceUrl.getPath());
+                    }
+                    pc = new ProvisionConnector(_serverConfig);
+                    fc = new FilesharingConnector(_serverConfig);
+                    cc= new ConfigConnector(_serverConfig);
+                    fd = new Folders(_serverConfig);
+                fl = new Files(_serverConfig);
+
             } catch (MalformedURLException e) {
                     throw new IllegalArgumentException(e);
             }
     }
-        
+
     /**
      * @return version of the nextcloud instance
      * @since 11.5
@@ -572,7 +534,7 @@ public class NextcloudConnector {
         return pc.getUsersAsync(search, limit, offset);
     }
 
-    /*
+    /**
      * Gets all user details of this instance
      *
      * @return all user details
@@ -620,7 +582,6 @@ public class NextcloudConnector {
         return pc.getUsersDetailsAsync(search, limit, offset);
     }
 
-        
     /**
      * Gets all available information of one user
      *
@@ -840,6 +801,17 @@ public class NextcloudConnector {
         fd.deleteFolder(path);
     }
 
+    /**
+     * method to rename/move files
+     *
+     * @param oldPath path of the file which should be renamed/moved
+     * @param newPath path of the file which should be renamed/moved
+     * @param overwriteExisting overwrite if target already exists
+     */
+    public void renameFile(String oldPath, String newPath, boolean overwriteExisting) {
+        fd.renamePath(oldPath, newPath, overwriteExisting);
+    }
+    
     /**
      * Shares the specified path with the provided parameters
      *
