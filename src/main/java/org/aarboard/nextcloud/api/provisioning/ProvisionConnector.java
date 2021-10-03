@@ -21,11 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import org.aarboard.nextcloud.api.ServerConfig;
-import org.aarboard.nextcloud.api.utils.NextcloudResponseHelper;
-import org.aarboard.nextcloud.api.utils.ConnectorCommon;
-import org.aarboard.nextcloud.api.utils.ListXMLAnswer;
-import org.aarboard.nextcloud.api.utils.XMLAnswer;
-import org.aarboard.nextcloud.api.utils.XMLAnswerParser;
+import org.aarboard.nextcloud.api.utils.*;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -156,6 +152,67 @@ public class ProvisionConnector
             queryParams.add(new BasicNameValuePair("search", search));
         }
         return connectorCommon.executeGet(USERS_PART, queryParams, XMLAnswerParser.getInstance(UsersXMLAnswer.class));
+    }
+
+    /**
+     * Gets all user details of this instance
+     *
+     * @return all user details
+     */
+    public List<User> getUsersDetails()
+    {
+        return getUsersDetails(null, -1, -1);
+    }
+
+    /**
+     * Gets all user details of this instance asynchronously
+     *
+     * @return a CompletableFuture containing the result of the operation
+     */
+    public CompletableFuture<UsersDetailsJsonAnswer> getUsersDetailsAsync()
+    {
+        return getUsersDetailsAsync(null, -1, -1);
+    }
+
+    /**
+     * Get all matching user details
+     *
+     * @param search pass null when you don't wish to filter
+     * @param limit pass -1 for no limit
+     * @param offset pass -1 for no offset
+     * @return matched user details
+     */
+    public List<User> getUsersDetails(
+            String search, int limit, int offset)
+    {
+        return NextcloudResponseHelper.getAndCheckStatus(getUsersDetailsAsync(search, limit, offset)).getUsersDetails();
+    }
+
+    /**
+     * Get all matching user derails asynchronously
+     *
+     * @param search pass null when you don't wish to filter
+     * @param limit pass -1 for no limit
+     * @param offset pass -1 for no offset
+     * @return a CompletableFuture containing the result of the operation
+     */
+    public CompletableFuture<UsersDetailsJsonAnswer> getUsersDetailsAsync(
+            String search, int limit, int offset)
+    {
+        List<NameValuePair> queryParams= new LinkedList<>();
+        if (limit != -1)
+        {
+            queryParams.add(new BasicNameValuePair("limit", Integer.toString(limit)));
+        }
+        if (offset != -1)
+        {
+            queryParams.add(new BasicNameValuePair("offset", Integer.toString(offset)));
+        }
+        if (search != null)
+        {
+            queryParams.add(new BasicNameValuePair("search", search));
+        }
+        return connectorCommon.executeGet(USERS_PART+"/details", queryParams, JsonAnswerParser.getInstance(UsersDetailsJsonAnswer.class));
     }
 
     /**

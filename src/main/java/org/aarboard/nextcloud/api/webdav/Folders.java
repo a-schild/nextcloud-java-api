@@ -21,9 +21,9 @@ import com.github.sardine.DavResource;
 import com.github.sardine.Sardine;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import org.aarboard.nextcloud.api.ServerConfig;
@@ -95,6 +95,7 @@ public class Folders extends AWebdavHandler{
      */
     public List<String> listFolderContent(String remotePath, int depth, boolean excludeFolderNames, boolean returnFullPath)
     {
+        String pathPrefix = getWebdavPathPrefix();
         String path = buildWebdavPath(remotePath);
 
         List<String> retVal = new LinkedList<>();
@@ -118,13 +119,26 @@ public class Folders extends AWebdavHandler{
         }
         for (DavResource res : resources)
         {
-            if (excludeFolderNames) {
-                if (!res.isDirectory()) {
-                    retVal.add(returnFullPath ? res.getPath().replaceFirst(getWebDavPathResolver().getWebDavPath(), "") : res.getName());
-                }
+            if (excludeFolderNames && res.isDirectory()) {
+                // Dont' return folders
             }
             else {
-                retVal.add(returnFullPath ? res.getPath().replaceFirst(getWebDavPathResolver().getWebDavPath(), "") : res.getName());
+                if (returnFullPath)
+                {
+                    if (res.getPath().startsWith("/"+pathPrefix))
+                    {
+                        retVal.add(res.getPath().substring(pathPrefix.length()+1));
+                    }
+                    else
+                    {
+                        LOG.error("Unhandled edge case, path prefix {} does not match built prefix {}", res.getPath(), path);
+                        retVal.add(res.getPath());
+                    }
+                }
+                else
+                {
+                    retVal.add(res.getName());
+                }
             }
         }
         return retVal;
@@ -179,6 +193,17 @@ public class Folders extends AWebdavHandler{
         deletePath(remotePath);
     }
 
+    /**
+     * method to rename/move folder
+     *
+     * @param oldPath path of the folder which should be renamed/moved
+     * @param newPath path of the folder which should be renamed/moved
+     * @param overwriteExisting overwrite if target already exists
+     */
+    public void renameFolder(String oldPath, String newPath, boolean overwriteExisting) {
+        renamePath(oldPath, newPath, overwriteExisting);
+    }
+    
     /**
      * Downloads the folder at the specified remotePath to the rootDownloadDirPath
      *

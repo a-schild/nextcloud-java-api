@@ -328,6 +328,26 @@ public class TestFiles extends ATestClass {
             }
         }
     }
+
+    @Test
+    public void t31_testRenameFile() {
+        System.out.println("renameFile 31 ("+TESTFILE1+") to ("+TESTFILE1_RENAMED+")");
+        if (_nc != null)
+        {
+            _nc.renameFile(TESTFILE1, TESTFILE1_RENAMED, true);
+            
+            boolean result = _nc.folderExists(TESTFILE1_RENAMED);
+            assertTrue(result);
+
+            result = _nc.folderExists(TESTFILE1);
+            assertFalse(result);
+            
+            _nc.renameFile(TESTFILE1_RENAMED, TESTFILE1, true);
+            
+            result = _nc.folderExists(TESTFILE1);
+            assertTrue(result);
+        }
+    }
     
     @Test
     public void t99_testRemoveFile() {

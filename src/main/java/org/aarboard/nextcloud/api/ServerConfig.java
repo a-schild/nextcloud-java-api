@@ -22,8 +22,7 @@ package org.aarboard.nextcloud.api;
  */
 public class ServerConfig {
     
-    private String userName;
-    private String password;
+    private AuthenticationConfig authenticationConfig;
     private String serverName;
     private String subPathPrefix;
     private boolean useHTTPS;
@@ -34,19 +33,16 @@ public class ServerConfig {
      * Use this constructor if your nextcloud instance is installed in the 
      * root of the webhosting, like https://nextcloud.company.my/
      * 
-     * @param serverName    ip or dns name of server
-     * @param useHTTPS      Use https or http to connect
-     * @param port          Port, usuallay 443 for https and 80 for http
-     * @param userName      User name for authentication
-     * @param password      Password for authentication
+     * @param serverName           ip or dns name of server
+     * @param useHTTPS             Use https or http to connect
+     * @param port                 Port, usuallay 443 for https and 80 for http
+     * @param authenticationConfig Authentication configuration for authentication
      */
     public ServerConfig(String serverName, 
             boolean useHTTPS, 
             int port, 
-            String userName, 
-            String password) {
-        this.userName = userName;
-        this.password = password;
+            AuthenticationConfig authenticationConfig) {
+        this.authenticationConfig = authenticationConfig;
         this.serverName = serverName;
         this.subPathPrefix = null;
         this.useHTTPS = useHTTPS;
@@ -58,23 +54,20 @@ public class ServerConfig {
      * Is this constructor if your nextcloud is installed in a subfolder of the server
      * like https://nextcloud.company.my/<b>nextcloud/</b>
      * 
-     * @param serverName    ip or dns name of server
-     * @param useHTTPS      Use https or http to connect
-     * @param port          Port, usuallay 443 for https and 80 for http
-     * @param subPathPrefix Path to your nextcloud instance, without starting and trailing /
-     *                      can be null if installed in root
-     * @param userName      User name for authentication
-     * @param password      Password for authentication
+     * @param serverName           ip or dns name of server
+     * @param useHTTPS             Use https or http to connect
+     * @param port                 Port, usuallay 443 for https and 80 for http
+     * @param subPathPrefix        Path to your nextcloud instance, without starting and trailing /
+     *                             can be null if installed in root
+     * @param authenticationConfig Authentication configuration for authentication
      */
     public ServerConfig(
             String serverName, 
             boolean useHTTPS, 
             int port, 
             String subPathPrefix,
-            String userName, 
-            String password) {
-        this.userName = userName;
-        this.password = password;
+            AuthenticationConfig authenticationConfig) {
+        this.authenticationConfig = authenticationConfig;
         this.serverName = serverName;
         this.subPathPrefix = subPathPrefix;
         this.useHTTPS = useHTTPS;
@@ -83,31 +76,17 @@ public class ServerConfig {
     }
 
     /**
-     * @return the userName
+     * @return the authenticationConfig
      */
-    public String getUserName() {
-        return userName;
+    public AuthenticationConfig getAuthenticationConfig() {
+        return authenticationConfig;
     }
 
     /**
-     * @param userName the userName to set
+     * @param authenticationConfig authenticationConfig to set
      */
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    /**
-     * @return the password
-     */
-    public String getPassword() {
-        return password;
-    }
-
-    /**
-     * @param password the password to set
-     */
-    public void setPassword(String password) {
-        this.password = password;
+    public void setAuthenticationConfig(AuthenticationConfig authenticationConfig) {
+        this.authenticationConfig = authenticationConfig;
     }
 
     /**

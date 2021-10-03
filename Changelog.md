@@ -1,4 +1,12 @@
 # Changelog for nextcloud api
+- 2021-09-09
+  - Release 11.5.1
+  - Integrated fix for invalid userlist, pull request #62, Thanks kriszman
+- 2021-05-20
+  - Added rename/move operation for folders and files
+  - Version bump to 11.5.0 because of added api methods
+- 2021-04-27
+  - Updated various used libraries
 - 2020-11-21
   - Added methods to access nextcloud instance installed in subfolders (Thanks to helmut8080)
   - Version bump to 11.4.0 because of added api methods

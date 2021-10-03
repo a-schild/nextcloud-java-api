@@ -5,20 +5,17 @@ import com.github.sardine.DavResource;
 import com.github.sardine.Sardine;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import javax.xml.namespace.QName;
+import org.aarboard.nextcloud.api.utils.WebdavInputStream;
 import org.aarboard.nextcloud.api.ServerConfig;
 import org.aarboard.nextcloud.api.exception.NextcloudApiException;
-import org.aarboard.nextcloud.api.utils.WebdavInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,26 +41,19 @@ public class Files extends AWebdavHandler{
         return pathExists(remotePath);
     }
 
-    public void uploadFile(File localSource, String remotePath)
-    {
-        uploadFile(localSource, remotePath, true);
-    }
     /**
      * Uploads a file at the specified path with the data from the File
      *
      * @param localSource file which should be uploaded
      * @param remotePath path where the file should be uploaded to
-     * @param continueHeader Continue header is added to receive a possible
-     * error by the server before any data is sent.
      */
-    public void uploadFile(File localSource, String remotePath, boolean continueHeader)
-    {
+    public void uploadFile(File localSource, String remotePath) {
         String path = buildWebdavPath(remotePath);
         Sardine sardine = buildAuthSardine();
 
         try
         {
-            sardine.put(path, localSource, null, continueHeader);
+            sardine.put(path, localSource, null, true);
         } catch (IOException e)
         {
             throw new NextcloudApiException(e);
@@ -100,36 +90,28 @@ public class Files extends AWebdavHandler{
      * @param continueHeader Continue header is added to receive a possible error by the server before any data is sent.
      */
     public void uploadFile(InputStream inputStream, String remotePath, boolean continueHeader) {
+        String path = buildWebdavPath(remotePath);
+        
+        Sardine sardine = buildAuthSardine();
 
-        Path tempPath = null;
         try
         {
-            tempPath = java.nio.file.Files.createTempFile("nextcloud_" + UUID.randomUUID().toString(), ".temp");
-            java.nio.file.Files.copy(inputStream, tempPath, StandardCopyOption.REPLACE_EXISTING);
-            tempPath.toFile().deleteOnExit();
-
-            uploadFile(tempPath.toFile(), remotePath);
-
-        }
-        catch (IOException ex)
+            sardine.put(path, inputStream, null, continueHeader);
+        } catch (IOException e)
         {
-            throw new NextcloudApiException(ex);
-        }
+            throw new NextcloudApiException(e);
+        }        
         finally
         {
-            if (null != tempPath)
+            try
             {
-                try
-                {
-                    java.nio.file.Files.deleteIfExists(tempPath);
-                }
-                catch (IOException ex)
-                {
-                    LOG.warn("Error in delete tempfile", ex);
-                }
+                sardine.shutdown();
+            }
+            catch(Exception ex2)
+            {
+                LOG.warn("Error in sardine shutdown", ex2);
             }
         }
-
     }
 
     /**
@@ -141,6 +123,18 @@ public class Files extends AWebdavHandler{
         deletePath(remotePath);
     }
 
+    /**
+     * method to rename/move files
+     *
+     * @param oldPath path of the file which should be renamed/moved
+     * @param newPath path of the file which should be renamed/moved
+     * @param overwriteExisting overwrite if target already exists
+     */
+    public void renameFile(String oldPath, String newPath, boolean overwriteExisting) {
+        renamePath(oldPath, newPath, overwriteExisting);
+    }
+
+    
     /**
      * Downloads the file at the specified remotepath to the download directory,
      * and returns true if the download is successful

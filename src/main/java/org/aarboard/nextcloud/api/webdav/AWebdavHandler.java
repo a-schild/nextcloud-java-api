@@ -19,6 +19,7 @@ package org.aarboard.nextcloud.api.webdav;
 import com.github.sardine.Sardine;
 import com.github.sardine.SardineFactory;
 import java.io.BufferedReader;
+import com.github.sardine.impl.SardineImpl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -43,8 +44,9 @@ public abstract class AWebdavHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(AWebdavHandler.class);
 
-    public static final int FILE_BUFFER_SIZE = 4096;
-
+    public static final int  FILE_BUFFER_SIZE= 4096;
+    public static String WEB_DAV_BASE_PATH = "remote.php/webdav/";
+    
     private final ServerConfig _serverConfig;
 
     private WebDavPathResolver resolver;
@@ -149,7 +151,14 @@ public abstract class AWebdavHandler
                 .setPath(resolver.getWebDavPath(remotePath));
         return uB.toString();
     }
-
+    
+    protected String getWebdavPathPrefix()
+    {
+        return _serverConfig.getSubPathPrefix() == null ?
+                WEB_DAV_BASE_PATH :
+                _serverConfig.getSubPathPrefix()+ "/" + WEB_DAV_BASE_PATH;
+    }
+    
     /**
      * Create a authenticate sardine connector
      *
@@ -157,10 +166,13 @@ public abstract class AWebdavHandler
      */
     protected Sardine buildAuthSardine()
     {
-        Sardine sardine = SardineFactory.begin();
-        sardine.setCredentials(_serverConfig.getUserName(), _serverConfig.getPassword());
-        sardine.enablePreemptiveAuthentication(_serverConfig.getServerName());
-
+        if (_serverConfig.getAuthenticationConfig().usesBasicAuthentication()) {
+            Sardine sardine = SardineFactory.begin();
+            sardine.setCredentials(_serverConfig.getAuthenticationConfig().getUserName(), _serverConfig.getAuthenticationConfig().getPassword());
+            sardine.enablePreemptiveAuthentication(_serverConfig.getServerName());
+            return sardine;
+        }
+        Sardine sardine = new SardineImpl(_serverConfig.getAuthenticationConfig().getBearerToken());
         return sardine;
     }
 
@@ -212,6 +224,37 @@ public abstract class AWebdavHandler
         }
         catch (IOException e)
         {
+            throw new NextcloudApiException(e);
+        }
+        finally
+        {
+            try
+            {
+                sardine.shutdown();
+            }
+            catch (IOException ex)
+            {
+                LOG.warn("error in closing sardine connector", ex);
+            }
+        }
+    }
+
+    /**
+     * Rename the file/folder at the specified path
+     *
+     * @param oldPath path of the original file/folder
+     * @param newPath path of the new file/folder
+     * @param overwriteExisting Should an existing target be overwritten?
+     */
+    public void renamePath(String oldPath, String newPath, boolean overwriteExisting)
+    {
+        String oldWEBDavpath=  buildWebdavPath( oldPath );
+        String newWEBDavpath=  buildWebdavPath( newPath );
+
+        Sardine sardine = buildAuthSardine();
+        try {
+            sardine.move(oldWEBDavpath, newWEBDavpath, overwriteExisting);
+        } catch (IOException e) {
             throw new NextcloudApiException(e);
         }
         finally
