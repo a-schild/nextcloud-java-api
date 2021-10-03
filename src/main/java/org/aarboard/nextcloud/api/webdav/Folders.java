@@ -120,11 +120,11 @@ public class Folders extends AWebdavHandler{
         {
             if (excludeFolderNames) {
                 if (!res.isDirectory()) {
-                    retVal.add(returnFullPath ? res.getPath().replaceFirst("/remote.php/webdav/", "") : res.getName());
+                    retVal.add(returnFullPath ? res.getPath().replaceFirst("/" + AWebdavHandler.WEB_DAV_BASE_PATH + "/", "") : res.getName());
                 }
             }
             else {
-                retVal.add(returnFullPath ? res.getPath().replaceFirst("/remote.php/webdav/", "") : res.getName());
+                retVal.add(returnFullPath ? res.getPath().replaceFirst("/" + AWebdavHandler.WEB_DAV_BASE_PATH + "/", "") : res.getName());
             }
         }
         return retVal;

@@ -34,7 +34,7 @@ public abstract class AWebdavHandler {
     private static final Logger LOG = LoggerFactory.getLogger(AWebdavHandler.class);
 
     public static final int  FILE_BUFFER_SIZE= 4096;
-    private static final String WEB_DAV_BASE_PATH = "remote.php/webdav/";
+    public static String WEB_DAV_BASE_PATH = "remote.php/webdav/";
     
     private final ServerConfig _serverConfig;
 
