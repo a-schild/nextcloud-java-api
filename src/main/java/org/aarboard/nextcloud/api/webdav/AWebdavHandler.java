@@ -56,8 +56,8 @@ public abstract class AWebdavHandler {
         .setPort(_serverConfig.getPort())
         .setPath( 
                 _serverConfig.getSubPathPrefix() == null ?
-                WEB_DAV_BASE_PATH + remotePath :
-                _serverConfig.getSubPathPrefix()+ "/" + WEB_DAV_BASE_PATH + remotePath
+                WEB_DAV_BASE_PATH + (remotePath != null ? remotePath : "") :
+                _serverConfig.getSubPathPrefix()+ "/" + WEB_DAV_BASE_PATH + (remotePath != null ? remotePath : "")
         );
         return uB.toString();
     }
