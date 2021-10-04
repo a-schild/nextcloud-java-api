@@ -703,7 +703,10 @@ public class NextcloudConnector {
      *
      * @param path path of the folder
      * @return found subfolders
-     * @deprecated The methods naming is somehow misleading, as it lists all resources (subfolders and files) within the given {@code rootPath}. Please use {@link #listFolderContent(String)} instead.
+     * @deprecated The methods naming is somehow misleading, as it lists all 
+     * resources (subfolders and files) within the 
+     * given {@code rootPath}. 
+     * Please use {@link #listFolderContent(String)} instead.
      */
     @Deprecated
     public List<String> getFolders(String path)

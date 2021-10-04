@@ -154,7 +154,14 @@ public abstract class AWebdavHandler
     
     protected String getWebdavPathPrefix()
     {
-        return resolver.getWebDavPath();
+        if (resolver != null)
+        {
+            return resolver.getWebDavPath();
+        }
+        else
+        {
+            return "/"+WEB_DAV_BASE_PATH;
+        }
     }
     
     /**
