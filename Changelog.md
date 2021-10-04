@@ -1,4 +1,7 @@
 # Changelog for nextcloud api
+- 2021-10-04
+  - Release 11.6.0
+  - Merged the webdav path resolver from thestomprock with some fixups
 - 2021-10-03
   - Added bearer authentication, thanks torshid
   - Base path customization, thanks torshid
