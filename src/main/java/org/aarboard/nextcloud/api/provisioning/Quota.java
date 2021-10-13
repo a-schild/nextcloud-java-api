@@ -8,10 +8,15 @@ import javax.xml.bind.annotation.XmlAccessorType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Quota {
+    private long quota;
     private long free;
     private long used;
     private long total;
     private float relative;
+
+    public long getQuota() {
+        return quota;
+    }
 
     public long getFree() {
         return free;
