@@ -33,6 +33,16 @@ import static org.junit.Assert.*;
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestUserGroupAdmin extends ATestClass {
+
+    @Test
+    public void t00_testUserDetails() {
+        System.out.println("userDetails");
+        if (_nc != null)
+        {
+            User user = _nc.getUserDetails();
+            assertNotNull(user);
+        }
+    }
     
     @Test
     public void t01_testCreateUser() {

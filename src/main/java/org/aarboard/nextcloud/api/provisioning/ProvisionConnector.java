@@ -35,6 +35,7 @@ import org.apache.http.message.BasicNameValuePair;
 public class ProvisionConnector
 {
     private final static String ROOT_PART= "ocs/v1.php/cloud/";
+    private final static String USER_PART= ROOT_PART+"user";
     private final static String USERS_PART= ROOT_PART+"users";
     private final static String GROUPS_PART= ROOT_PART+"groups";
 
@@ -165,6 +166,24 @@ public class ProvisionConnector
     }
 
     /**
+     * Get all matching user details
+     *
+     * @return user details of logged in user
+     */
+    public User getUserDetails()
+    {
+        List<User> users= NextcloudResponseHelper.getAndCheckStatus(getUserDetailsAsync()).getUsersDetails();
+        if (users != null && users.size()>0)
+        {
+            return users.get(0);
+        }
+        else
+        {
+            return null;
+        }
+    }
+    
+    /**
      * Gets all user details of this instance asynchronously
      *
      * @return a CompletableFuture containing the result of the operation
@@ -189,7 +208,7 @@ public class ProvisionConnector
     }
 
     /**
-     * Get all matching user derails asynchronously
+     * Get all matching user details asynchronously
      *
      * @param search pass null when you don't wish to filter
      * @param limit pass -1 for no limit
@@ -213,6 +232,16 @@ public class ProvisionConnector
             queryParams.add(new BasicNameValuePair("search", search));
         }
         return connectorCommon.executeGet(USERS_PART+"/details", queryParams, JsonAnswerParser.getInstance(UsersDetailsJsonAnswer.class));
+    }
+
+    /**
+     * Get user details for the logged in user asynchronously
+     *
+     * @return a CompletableFuture containing the result of the operation
+     */
+    public CompletableFuture<UsersDetailsJsonAnswer> getUserDetailsAsync()
+    {
+        return connectorCommon.executeGet(USER_PART, null, JsonAnswerParser.getInstance(UsersDetailsJsonAnswer.class));
     }
 
     /**

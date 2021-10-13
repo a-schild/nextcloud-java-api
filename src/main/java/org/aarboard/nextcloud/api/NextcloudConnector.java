@@ -556,6 +556,15 @@ public class NextcloudConnector {
     }
 
     /**
+     * Gets user details of logged in user
+     *
+     * @return all user details
+     */
+    public User getUserDetails() {
+        return pc.getUserDetails();
+    }
+    
+    /**
      * Gets all user details of this instance
      *
      * @return all user details
