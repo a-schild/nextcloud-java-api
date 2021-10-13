@@ -1,6 +1,7 @@
 # Changelog for nextcloud api
 - 2021-10-13
-  - Prepare 11.6.1-SNAPSHOT
+  - Prepare 11.7.0-SNAPSHOT
+  - Adding bearer authentication (Constructors got lost in merge)
   - Added support for user quota field, pull request #70, thanks to kriszman
   - Fix downloaded file name if URI encoded values are returned, use request file name
     Thanks to flelayo for the fix to issue #69
