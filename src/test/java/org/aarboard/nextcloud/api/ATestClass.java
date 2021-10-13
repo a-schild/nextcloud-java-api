@@ -36,6 +36,7 @@ public class ATestClass {
     public static final String TESTFILE3 = "test3-äöüÖÄÜ and with plus + sign \u32A2.txt";
     public static final String TESTFILE4 = "test4.txt";
     public static final String TESTFILE6 = "test6.txt";
+    public static final String TESTFILE7 = "test7#specialchar.txt";
 
     public static String serverName = null;
     public static String userName = null;

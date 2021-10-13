@@ -92,6 +92,15 @@ public class TestFiles extends ATestClass {
         }
     }
 
+    @Test
+    public void t25_7_testUploadFile() {
+        System.out.println("uploadFile 26 Bytes ("+TESTFILE7+")");
+        if (_nc != null)
+        {
+            File srcFile= new File("src/test/resources/"+TESTFILE7);
+            _nc.uploadFile(srcFile, TESTFILE7);
+        }
+    }
     
     @Test
     public void t26_testFileExists() {
@@ -139,6 +148,16 @@ public class TestFiles extends ATestClass {
         if (_nc != null)
         {
             boolean result = _nc.fileExists(TESTFILE4);
+            assertTrue(result);
+        }
+    }
+
+    @Test
+    public void t26_2_testFileExists7() {
+        System.out.println("fileExists7 ("+TESTFILE7+")");
+        if (_nc != null)
+        {
+            boolean result = _nc.fileExists(TESTFILE7);
             assertTrue(result);
         }
     }
@@ -329,6 +348,28 @@ public class TestFiles extends ATestClass {
         }
     }
 
+    @Test
+    public void t29_6_testDowloadFile7() throws IOException {
+        System.out.println("downloadFile  as File ("+TESTFILE7+")");
+        if (_nc != null)
+        {
+            File of= new File(System.getProperty("java.io.tmpdir")+File.separator+TESTFILE7);
+            if (_nc.downloadFile(TESTFILE7, of.getParent()))
+            {
+                File srcFile= new File("src/test/resources/"+TESTFILE7);
+                assertTrue("Downloaded content size does not match", of.length() == srcFile.length());
+            }
+            else
+            {
+                assertTrue("Downloaded file failed", false);
+            }
+            if (of.exists())
+            {
+                of.delete();
+            }
+        }
+    }
+    
     @Test
     public void t31_testRenameFile() {
         System.out.println("renameFile 31 ("+TESTFILE1+") to ("+TESTFILE1_RENAMED+")");
