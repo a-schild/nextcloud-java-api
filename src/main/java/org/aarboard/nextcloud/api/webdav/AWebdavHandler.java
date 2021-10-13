@@ -125,7 +125,6 @@ public abstract class AWebdavHandler
                     .withUserName(_serverConfig.getUserName())
                     .withBasePathSuffix("files")
                     .withBasePathPrefix(_serverConfig.getSubPathPrefix()).build();
-
         }
 
         return this.resolver;
@@ -151,7 +150,7 @@ public abstract class AWebdavHandler
                 .setPath(resolver.getWebDavPath(remotePath));
         return uB.toString();
     }
-    
+
     protected String getWebdavPathPrefix()
     {
         if (resolver != null)
@@ -173,7 +172,8 @@ public abstract class AWebdavHandler
     {
         if (_serverConfig.getAuthenticationConfig().usesBasicAuthentication()) {
             Sardine sardine = SardineFactory.begin();
-            sardine.setCredentials(_serverConfig.getAuthenticationConfig().getUserName(), _serverConfig.getAuthenticationConfig().getPassword());
+            sardine.setCredentials(_serverConfig.getUserName(),
+                    _serverConfig.getAuthenticationConfig().getPassword());
             sardine.enablePreemptiveAuthentication(_serverConfig.getServerName());
             return sardine;
         }

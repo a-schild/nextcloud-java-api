@@ -59,8 +59,16 @@ public class NextcloudConnector {
     private final Folders fd;
     private final Files fl;
 
-    public NextcloudConnector(String serverName, boolean useHTTPS, int port, String userName, String password) {
-        this(serverName, useHTTPS, port, new AuthenticationConfig(userName, password));
+    /**
+     * 
+     * @param serverName dns name of server or IP address
+     * @param useHTTPS   Use https instead of http?
+     * @param port       On which port is the NC server running
+     * @param loginName  User login name
+     * @param password   User password
+     */
+    public NextcloudConnector(String serverName, boolean useHTTPS, int port, String loginName, String password) {
+        this(serverName, useHTTPS, port, new AuthenticationConfig(loginName, password));
     }
 
     /**
@@ -77,11 +85,11 @@ public class NextcloudConnector {
     /**
      * @param serviceUrl url of the nextcloud instance, e.g.
      * https://nextcloud.instance.com:8443/cloud
-     * @param userName User for login
+     * @param loginName User for login
      * @param password Password for login
      */
-    public NextcloudConnector(String serviceUrl, String userName, String password) {
-        this(serviceUrl, new AuthenticationConfig(userName, password));
+    public NextcloudConnector(String serviceUrl, String loginName, String password) {
+        this(serviceUrl, new AuthenticationConfig(loginName, password));
     }
 
     /**

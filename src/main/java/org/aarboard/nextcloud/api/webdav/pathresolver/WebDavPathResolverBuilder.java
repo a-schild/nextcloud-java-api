@@ -106,7 +106,7 @@ public class WebDavPathResolverBuilder
     /**
      * The remoteuser
      *
-     * @param user the remoteuser
+     * @param user the remoteuser (Must be the username and not the login name if they are not identical)
      * @return the WebDavPathResolverBuilder
      */
     public WebDavPathResolverBuilder withUserName(String user)

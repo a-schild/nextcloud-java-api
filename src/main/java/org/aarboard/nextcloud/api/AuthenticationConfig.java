@@ -2,13 +2,13 @@ package org.aarboard.nextcloud.api;
 
 public class AuthenticationConfig {
 
-    private String userName;
+    private String loginName;
     private String password;
 
     private String bearerToken;
 
-    public AuthenticationConfig(String userName, String password) {
-        this.userName = userName;
+    public AuthenticationConfig(String loginName, String password) {
+        this.loginName = loginName;
         this.password = password;
     }
 
@@ -16,12 +16,12 @@ public class AuthenticationConfig {
         this.bearerToken = bearerToken;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getLoginName() {
+        return loginName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setLoginName(String loginName) {
+        this.loginName = loginName;
     }
 
     public String getPassword() {

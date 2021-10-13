@@ -124,7 +124,7 @@ public class ConnectorCommon
         .setPath(subPath);
 
         if (serverConfig.getAuthenticationConfig().usesBasicAuthentication()) {
-            uB.setUserInfo(serverConfig.getAuthenticationConfig().getUserName(),
+            uB.setUserInfo(serverConfig.getAuthenticationConfig().getLoginName(),
                 serverConfig.getAuthenticationConfig().getPassword());
         }
 
@@ -163,7 +163,7 @@ public class ConnectorCommon
 
             CredentialsProvider credsProvider = new BasicCredentialsProvider();
             UsernamePasswordCredentials credentials
-            = new UsernamePasswordCredentials(serverConfig.getAuthenticationConfig().getUserName(), serverConfig.getAuthenticationConfig().getPassword());
+            = new UsernamePasswordCredentials(serverConfig.getAuthenticationConfig().getLoginName(), serverConfig.getAuthenticationConfig().getPassword());
             credsProvider.setCredentials(AuthScope.ANY, credentials);
 
             // Add AuthCache to the execution context
