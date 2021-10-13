@@ -160,7 +160,7 @@ public class Files extends AWebdavHandler{
         if (fileExists(remotePath))
         {
             //Extract the Filename from the path
-            String[] segments = path.split("/");
+            String[] segments = remotePath.split("/");
             String filename = segments[segments.length - 1];
             downloadDirPath = downloadDirPath + "/" + filename;
         }

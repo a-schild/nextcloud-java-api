@@ -1,4 +1,9 @@
 # Changelog for nextcloud api
+- 2021-10-13
+  - Prepare 11.6.1-SNAPSHOT
+  - Added support for user quota field, pull request #70, thanks to kriszman
+  - Fix downloaded file name if URI encoded values are returned, use request file name
+    Thanks to flelayo for the fix to issue #69
 - 2021-10-04
   - Release 11.6.0
   - Merged the webdav path resolver from thestomprock with some fixups
