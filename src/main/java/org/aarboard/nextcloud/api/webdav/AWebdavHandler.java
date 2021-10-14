@@ -28,6 +28,8 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 import org.aarboard.nextcloud.api.ServerConfig;
 import org.aarboard.nextcloud.api.exception.NextcloudApiException;
+import org.aarboard.nextcloud.api.provisioning.ProvisionConnector;
+import org.aarboard.nextcloud.api.provisioning.User;
 import org.aarboard.nextcloud.api.webdav.pathresolver.NextcloudVersion;
 import org.aarboard.nextcloud.api.webdav.pathresolver.WebDavPathResolver;
 import org.aarboard.nextcloud.api.webdav.pathresolver.WebDavPathResolverBuilder;
@@ -120,9 +122,11 @@ public abstract class AWebdavHandler
     {
         if (null == this.resolver)
         {
+            ProvisionConnector pc= new ProvisionConnector(_serverConfig);
+            User currentUser= pc.getUserDetails();
             this.resolver = WebDavPathResolverBuilder.get(WebDavPathResolverBuilder.TYPE.FILES)//
                     .ofVersion(NextcloudVersion.get(getServerVersion()))
-                    .withUserName(_serverConfig.getUserName())
+                    .withUserName(currentUser.getId())
                     .withBasePathSuffix("files")
                     .withBasePathPrefix(_serverConfig.getSubPathPrefix()).build();
         }

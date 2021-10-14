@@ -179,9 +179,10 @@ public class NextcloudConnector {
      */
     public void setWebDavPathResolverAsType(final WebDavPathResolverBuilder.TYPE type) {
 
-        WebDavPathResolver resolver = WebDavPathResolverBuilder.get(type)//
-                .ofVersion(NextcloudVersion.get(getServerVersion()))//
-                .withUserName(_serverConfig.getUserName()) //
+        WebDavPathResolver resolver = WebDavPathResolverBuilder.get(type)
+                .ofVersion(NextcloudVersion.get(getServerVersion()))
+                .withUserName(getUserDetails().getId())
+//                .withUserName(_serverConfig.getUserName())
                 .withBasePathPrefix(_serverConfig.getSubPathPrefix()).build();
 
         this.fd.setWebDavPathResolver(resolver);

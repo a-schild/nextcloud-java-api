@@ -69,8 +69,6 @@ public class WebDavPathResolverBuilder
 
     }
 
-    private final static String PATH_TEMPLATE = "/{0}/";
-
     private WebDavPathResolver result;
 
     private TYPE type;
@@ -106,7 +104,8 @@ public class WebDavPathResolverBuilder
     /**
      * The remoteuser
      *
-     * @param user the remoteuser (Must be the username and not the login name if they are not identical)
+     * @param user the remoteuser (Must be the username and not 
+     *             the login name if they are not identical)
      * @return the WebDavPathResolverBuilder
      */
     public WebDavPathResolverBuilder withUserName(String user)
