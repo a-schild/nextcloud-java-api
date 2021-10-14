@@ -1,6 +1,8 @@
 # Changelog for nextcloud api
 - 2021-10-13
   - Prepare 11.7.0-SNAPSHOT
+  - Fix downloadFolder() when having special chars in folder name(s)
+    Thanks to flelayo (Issue #71)
   - Adding bearer authentication (Constructors got lost in merge)
   - Added support for user quota field, pull request #70, thanks to kriszman
   - Fix downloaded file name if URI encoded values are returned, use request file name
