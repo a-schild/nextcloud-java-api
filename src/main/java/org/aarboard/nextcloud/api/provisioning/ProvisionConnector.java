@@ -172,15 +172,7 @@ public class ProvisionConnector
      */
     public User getUserDetails()
     {
-        List<User> users= NextcloudResponseHelper.getAndCheckStatus(getUserDetailsAsync()).getUsersDetails();
-        if (users != null && users.size()>0)
-        {
-            return users.get(0);
-        }
-        else
-        {
-            return null;
-        }
+        return NextcloudResponseHelper.getAndCheckStatus(getUserDetailsAsync()).getUserDetails();
     }
     
     /**
@@ -239,9 +231,9 @@ public class ProvisionConnector
      *
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<UsersDetailsJsonAnswer> getUserDetailsAsync()
+    public CompletableFuture<UserDetailsJsonAnswer> getUserDetailsAsync()
     {
-        return connectorCommon.executeGet(USER_PART, null, JsonAnswerParser.getInstance(UsersDetailsJsonAnswer.class));
+        return connectorCommon.executeGet(USER_PART, null, JsonAnswerParser.getInstance(UserDetailsJsonAnswer.class));
     }
 
     /**
