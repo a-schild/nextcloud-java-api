@@ -27,8 +27,9 @@ public class ATestClass {
     public static final String TESTUSER = "testuser";
     public static final String TESTUSER_WITH_INVALID_CHAR = "test@user.org";
     public static final String TESTGROUP = "testgroup";
-    public static final String TEST_FOLDER = "new-test-folder";
-    public static final String TEST_FOLDER_RENAMED = "new-test-folder-renamed";
+    public static final String TEST_FOLDER1 = "new-test-folder";
+    public static final String TEST_FOLDER1_RENAMED = "new-test-folder-renamed";
+    public static final String TEST_FOLDER2 = "new test folder";
     public static final String TESTFILE1 = "test1.txt";
     public static final String TESTFILE1_RENAMED = "test1-renamed.txt";
     public static final String TESTFILE2 = "test2.txt";

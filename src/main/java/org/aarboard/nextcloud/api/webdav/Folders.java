@@ -49,8 +49,8 @@ public class Folders extends AWebdavHandler{
      * @param remotePath path of the folder
      * @return found subfolders
      *
-     * @deprecated The methods naming is somehow misleading, as it lists 
-     * all resources (subfolders and files) within the given {@code rootPath}. 
+     * @deprecated The methods naming is somehow misleading, as it lists
+     * all resources (subfolders and files) within the given {@code rootPath}.
      * Please use {@link #listFolderContent(String)} instead.
      */
     @Deprecated
@@ -84,7 +84,7 @@ public class Folders extends AWebdavHandler{
     }
 
     /**
-     * List all file names and subfolders of the specified path traversing 
+     * List all file names and subfolders of the specified path traversing
      * into subfolders to the given depth.
      *
      * @param remotePath path of the folder
@@ -204,7 +204,7 @@ public class Folders extends AWebdavHandler{
     public void renameFolder(String oldPath, String newPath, boolean overwriteExisting) {
         renamePath(oldPath, newPath, overwriteExisting);
     }
-    
+
     /**
      * Downloads the folder at the specified remotePath to the rootDownloadDirPath
      *
@@ -214,7 +214,6 @@ public class Folders extends AWebdavHandler{
      */
     public void downloadFolder(String remotePath, String rootDownloadDirPath) throws IOException {
         int depth=1;
-        String rootPath = buildWebdavPath("");
         String[] segments = remotePath.split("/");
         String folderName = segments[segments.length - 1];
         String newDownloadDir = rootDownloadDirPath + "/" + folderName;
@@ -223,7 +222,8 @@ public class Folders extends AWebdavHandler{
             LOG.info("Creating new download directory: "+newDownloadDir);
             nefile1.mkdir();
         }
-        String rootPathNew= rootPath+remotePath ;
+
+        String listPathURL = buildWebdavPath(remotePath);
         int count = 0;
         String filePath;
         List<String> retVal= new LinkedList<>();
@@ -232,7 +232,7 @@ public class Folders extends AWebdavHandler{
         try
         {
             try {
-                resources = sardine.list(rootPathNew, depth);
+                resources = sardine.list(listPathURL, depth);
             } catch (IOException e) {
                 throw new NextcloudApiException(e);
             }
@@ -249,7 +249,7 @@ public class Folders extends AWebdavHandler{
                     }
                     else {
                             String fileName = res.getName();
-                            filePath = rootPathNew + "/" + fileName;
+                            filePath = buildWebdavPath(remotePath + "/" + fileName);
                             retVal.add(res.getName());
 
                             InputStream in = null;
@@ -273,8 +273,7 @@ public class Folders extends AWebdavHandler{
                 count ++;
             }
         }
-        finally
-        {
+        finally {
             try
             {
                 sardine.shutdown();
