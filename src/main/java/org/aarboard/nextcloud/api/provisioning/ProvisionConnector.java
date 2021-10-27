@@ -244,7 +244,7 @@ public class ProvisionConnector
      */
     public User getUser(String userId)
     {
-        return NextcloudResponseHelper.getAndWrapException(getUserAsync(userId)).getUser();
+        return NextcloudResponseHelper.getAndWrapException(getUserAsync(userId)).getUserDetails();
     }
 
     /**
@@ -253,9 +253,9 @@ public class ProvisionConnector
      * @param userId unique identifier of the user
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<UserXMLAnswer> getUserAsync(String userId)
+    public CompletableFuture<UserDetailsJsonAnswer> getUserAsync(String userId)
     {
-        return connectorCommon.executeGet(USERS_PART+"/"+userId, Collections.emptyList(), XMLAnswerParser.getInstance(UserXMLAnswer.class));
+        return connectorCommon.executeGet(USERS_PART+"/"+userId, null, JsonAnswerParser.getInstance(UserDetailsJsonAnswer.class));
     }
 
     /**

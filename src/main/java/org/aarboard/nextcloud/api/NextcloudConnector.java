@@ -32,14 +32,7 @@ import org.aarboard.nextcloud.api.filesharing.SharePermissions;
 import org.aarboard.nextcloud.api.filesharing.ShareType;
 import org.aarboard.nextcloud.api.filesharing.SharesXMLAnswer;
 import org.aarboard.nextcloud.api.filesharing.SingleShareXMLAnswer;
-import org.aarboard.nextcloud.api.provisioning.GroupsXMLAnswer;
-import org.aarboard.nextcloud.api.provisioning.ProvisionConnector;
-import org.aarboard.nextcloud.api.provisioning.ShareData;
-import org.aarboard.nextcloud.api.provisioning.User;
-import org.aarboard.nextcloud.api.provisioning.UserData;
-import org.aarboard.nextcloud.api.provisioning.UserXMLAnswer;
-import org.aarboard.nextcloud.api.provisioning.UsersDetailsJsonAnswer;
-import org.aarboard.nextcloud.api.provisioning.UsersXMLAnswer;
+import org.aarboard.nextcloud.api.provisioning.*;
 import org.aarboard.nextcloud.api.utils.ConnectorCommon;
 import org.aarboard.nextcloud.api.utils.ListXMLAnswer;
 import org.aarboard.nextcloud.api.utils.XMLAnswer;
@@ -625,7 +618,7 @@ public class NextcloudConnector {
      * @param userId unique identifier of the user
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<UserXMLAnswer> getUserAsync(String userId) {
+    public CompletableFuture<UserDetailsJsonAnswer> getUserAsync(String userId) {
         return pc.getUserAsync(userId);
     }
 
