@@ -123,7 +123,7 @@ public abstract class AWebdavHandler
         if (null == this.resolver)
         {
             ProvisionConnector pc= new ProvisionConnector(_serverConfig);
-            User currentUser= pc.getUserDetails();
+            User currentUser= pc.getCurrentUser();
             this.resolver = WebDavPathResolverBuilder.get(WebDavPathResolverBuilder.TYPE.FILES)//
                     .ofVersion(NextcloudVersion.get(getServerVersion()))
                     .withUserName(currentUser.getId())

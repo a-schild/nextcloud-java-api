@@ -5,9 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import org.aarboard.nextcloud.api.utils.JsonAnswer;
 
-
 @JsonRootName(value = "ocs")
-public class UserDetailsJsonAnswer extends JsonAnswer {
+public class UserDetailsAnswer extends JsonAnswer {
     @JsonProperty
     private User data;
 
