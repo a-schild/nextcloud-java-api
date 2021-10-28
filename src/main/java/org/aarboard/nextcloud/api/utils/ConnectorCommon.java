@@ -56,8 +56,11 @@ public class ConnectorCommon
         this.serverConfig = serverConfig;
     }
 
-    public <R> CompletableFuture<R> executeGet(String part, List<NameValuePair> queryParams, ResponseParser<R> parser)
-    {
+    public <R> CompletableFuture<R> executeGet(String part, ResponseParser<R> parser) {
+        return executeGet(part, null, parser);
+    }
+
+    public <R> CompletableFuture<R> executeGet(String part, List<NameValuePair> queryParams, ResponseParser<R> parser) {
         try {
             URI url= buildUrl(part, queryParams, parser instanceof JsonAnswerParser);
 
@@ -68,8 +71,11 @@ public class ConnectorCommon
         }
     }
 
-    public <R> CompletableFuture<R> executePost(String part, List<NameValuePair> postParams, ResponseParser<R> parser)
-    {
+    public <R> CompletableFuture<R> executePost(String part, ResponseParser<R> parser) {
+        return executePost(part, null, parser);
+    }
+
+    public <R> CompletableFuture<R> executePost(String part, List<NameValuePair> postParams, ResponseParser<R> parser) {
         try {
             URI url= buildUrl(part, postParams, parser instanceof JsonAnswerParser);
 
@@ -80,8 +86,11 @@ public class ConnectorCommon
         }
     }
 
-    public <R> CompletableFuture<R> executePut(String part1, String part2, List<NameValuePair> putParams, ResponseParser<R> parser)
-    {
+    public <R> CompletableFuture<R> executePut(String part1, String part2, ResponseParser<R> parser) {
+        return executePut(part1, part2, null, parser);
+    }
+
+    public <R> CompletableFuture<R> executePut(String part1, String part2, List<NameValuePair> putParams, ResponseParser<R> parser) {
         try {
             URI url= buildUrl(part1 + "/" + part2, putParams, parser instanceof JsonAnswerParser);
 
@@ -92,8 +101,11 @@ public class ConnectorCommon
         }
     }
 
-    public <R> CompletableFuture<R> executeDelete(String part1, String part2, List<NameValuePair> deleteParams, ResponseParser<R> parser)
-    {
+    public <R> CompletableFuture<R> executeDelete(String part1, String part2, ResponseParser<R> parser) {
+        return executeDelete(part1, part2, null, parser);
+    }
+
+    public <R> CompletableFuture<R> executeDelete(String part1, String part2, List<NameValuePair> deleteParams, ResponseParser<R> parser) {
         try {
             URI url= buildUrl(part1 + "/" + part2, deleteParams, parser instanceof JsonAnswerParser);
 
@@ -104,14 +116,13 @@ public class ConnectorCommon
         }
     }
 
-    private URI buildUrl(String subPath, List<NameValuePair> queryParams, boolean useJson)
-    {
+    private URI buildUrl(String subPath, List<NameValuePair> queryParams, boolean useJson) {
     	if(serverConfig.getSubPathPrefix()!=null) {
     		subPath = serverConfig.getSubPathPrefix()+"/"+subPath;
     	}
 
         if (useJson) {
-            if (queryParams == null) {
+            if (queryParams == null || queryParams.isEmpty()) {
                 queryParams = new ArrayList<>();
             }
             queryParams.add(new BasicNameValuePair("format", "json"));
@@ -139,9 +150,7 @@ public class ConnectorCommon
         }
     }
 
-    private <R> CompletableFuture<R> executeRequest(final ResponseParser<R> parser, HttpRequestBase request)
-            throws IOException, ClientProtocolException
-    {
+    private <R> CompletableFuture<R> executeRequest(final ResponseParser<R> parser, HttpRequestBase request) throws IOException, ClientProtocolException {
         // https://docs.nextcloud.com/server/14/developer_manual/core/ocs-share-api.html
         request.addHeader("OCS-APIRequest", "true");
         request.addHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -154,8 +163,7 @@ public class ConnectorCommon
         return futureResponse;
     }
 
-    private HttpClientContext prepareContext()
-    {
+    private HttpClientContext prepareContext() {
         if (serverConfig.getAuthenticationConfig().usesBasicAuthentication()) {
             HttpHost targetHost = new HttpHost(serverConfig.getServerName(), serverConfig.getPort(), serverConfig.isUseHTTPS() ? "https" : "http");
             AuthCache authCache = new BasicAuthCache();
@@ -175,20 +183,17 @@ public class ConnectorCommon
         return HttpClientContext.create();
     }
 
-    private final class ResponseCallback<R> implements FutureCallback<HttpResponse>
-    {
+    private final class ResponseCallback<R> implements FutureCallback<HttpResponse> {
         private final ResponseParser<R> parser;
         private final CompletableFuture<R> futureResponse;
 
-        private ResponseCallback(ResponseParser<R> parser, CompletableFuture<R> futureResponse)
-        {
+        private ResponseCallback(ResponseParser<R> parser, CompletableFuture<R> futureResponse) {
             this.parser = parser;
             this.futureResponse = futureResponse;
         }
 
         @Override
-        public void completed(HttpResponse response)
-        {
+        public void completed(HttpResponse response) {
             try {
                 R result = handleResponse(parser, response);
                 futureResponse.complete(result);
@@ -197,14 +202,11 @@ public class ConnectorCommon
             }
         }
 
-        private R handleResponse(ResponseParser<R> parser, HttpResponse response) throws IOException
-        {
+        private R handleResponse(ResponseParser<R> parser, HttpResponse response) throws IOException {
             StatusLine statusLine= response.getStatusLine();
-            if (statusLine.getStatusCode() == HttpStatus.SC_OK)
-            {
+            if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
                 HttpEntity entity = response.getEntity();
-                if (entity != null)
-                {
+                if (entity != null) {
                     Charset charset = ContentType.getOrDefault(entity).getCharset();
                     Reader reader = new InputStreamReader(entity.getContent(), charset);
                     return parser.parseResponse(reader);
@@ -215,14 +217,12 @@ public class ConnectorCommon
         }
 
         @Override
-        public void failed(Exception ex)
-        {
+        public void failed(Exception ex) {
             futureResponse.completeExceptionally(ex);
         }
 
         @Override
-        public void cancelled()
-        {
+        public void cancelled() {
             futureResponse.cancel(true);
         }
     }
@@ -259,18 +259,17 @@ public class ConnectorCommon
 		
 	}
 
-    public interface ResponseParser<R>
-    {
-        public R parseResponse(Reader reader);
+    public interface ResponseParser<R> {
+        R parseResponse(Reader reader);
     }
 
     /**
      * Close the http client. Required for clean shutdown.
      * @throws IOException error on shutdown
      */
-    public static void shutdown() throws IOException{
+    public static void shutdown() throws IOException {
             if(HttpAsyncClientSingleton.HTTPC_CLIENT != null) {
-                    HttpAsyncClientSingleton.getInstance(null).close();
+                HttpAsyncClientSingleton.getInstance(null).close();
             }		
     }
 }

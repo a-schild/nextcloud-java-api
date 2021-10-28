@@ -21,9 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import org.aarboard.nextcloud.api.config.ConfigConnector;
 import org.aarboard.nextcloud.api.filesharing.FilesharingConnector;
@@ -33,9 +31,7 @@ import org.aarboard.nextcloud.api.filesharing.ShareType;
 import org.aarboard.nextcloud.api.filesharing.SharesXMLAnswer;
 import org.aarboard.nextcloud.api.filesharing.SingleShareXMLAnswer;
 import org.aarboard.nextcloud.api.provisioning.*;
-import org.aarboard.nextcloud.api.utils.ConnectorCommon;
-import org.aarboard.nextcloud.api.utils.ListXMLAnswer;
-import org.aarboard.nextcloud.api.utils.XMLAnswer;
+import org.aarboard.nextcloud.api.utils.*;
 import org.aarboard.nextcloud.api.webdav.Files;
 import org.aarboard.nextcloud.api.webdav.Folders;
 import org.aarboard.nextcloud.api.webdav.ResourceProperties;
@@ -174,7 +170,7 @@ public class NextcloudConnector {
 
         WebDavPathResolver resolver = WebDavPathResolverBuilder.get(type)
                 .ofVersion(NextcloudVersion.get(getServerVersion()))
-                .withUserName(getUserDetails().getId())
+                .withUserName(getCurrentUser().getId())
 //                .withUserName(_serverConfig.getUserName())
                 .withBasePathPrefix(_serverConfig.getSubPathPrefix()).build();
 
@@ -217,24 +213,60 @@ public class NextcloudConnector {
      * Creates a user
      *
      * @param userId unique identifier of the user
-     * @param password password needs to meet nextcloud criteria or operation
-     * will fail
+     * @param password password needs to meet nextcloud criteria or operation will fail
      * @return true if the operation succeeded
      */
     public boolean createUser(String userId, String password) {
-        return pc.createUser(userId, password);
+        CompletableFuture<JsonVoidAnswer> result = createUserAsync(userId, password);
+        return NextcloudResponseHelper.isStatusCodeOkay(result);
+    }
+
+    /**
+     * Creates a user with corresponding user information
+     *
+     * @param userId unique identifier of the user
+     * @param password password needs to meet nextcloud criteria or operation will fail
+     * @param displayName the display name of the user
+     * @param email the email address of the user
+     * @param quota the quota of the user
+     * @param language the language of the user
+     * @param groups the groups the user should be added to
+     * @return true if the operation succeeded
+     */
+    public boolean createUser(String userId, String password, String displayName, String email, String quota, String language, List<String> groups) {
+        CompletableFuture<JsonVoidAnswer> result = createUserAsync(userId, password,
+                Optional.of(displayName), Optional.of(email), Optional.of(quota), Optional.of(language), groups);
+        return NextcloudResponseHelper.isStatusCodeOkay(result);
     }
 
     /**
      * Creates a user asynchronously
      *
      * @param userId unique identifier of the user
-     * @param password password needs to meet nextcloud criteria or operation
-     * will fail
-     * @return a CompletableFuture containing the result of the operation
+     * @param password password needs to meet nextcloud criteria or operation will fail
+     * @return true if the operation succeeded
      */
-    public CompletableFuture<XMLAnswer> createUserAsync(String userId, String password) {
-        return pc.createUserAsync(userId, password);
+    public CompletableFuture<JsonVoidAnswer> createUserAsync(String userId, String password) {
+        return pc.createUserAsync(userId, password,
+                Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Collections.emptyList());
+    }
+
+    /**
+     * Creates a user with corresponding user information asynchronously
+     *
+     * @param userId unique identifier of the user
+     * @param password password needs to meet nextcloud criteria or operation will fail
+     * @param displayName the display name of the user
+     * @param email the email address of the user
+     * @param quota the quota of the user
+     * @param language the language of the user
+     * @param groups the groups the user should be added to
+     * @return true if the operation succeeded
+     */
+    public CompletableFuture<JsonVoidAnswer> createUserAsync(String userId, String password,
+                                                             Optional<String> displayName, Optional<String> email,
+                                                             Optional<String> quota, Optional<String> language, List<String> groups) {
+        return pc.createUserAsync(userId, password, displayName, email, quota, language, groups);
     }
 
     /**
@@ -253,7 +285,7 @@ public class NextcloudConnector {
      * @param userId unique identifier of the user
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<XMLAnswer> deleteUserAsync(String userId) {
+    public CompletableFuture<JsonVoidAnswer> deleteUserAsync(String userId) {
         return pc.deleteUserAsync(userId);
     }
 
@@ -273,7 +305,7 @@ public class NextcloudConnector {
      * @param userId unique identifier of the user
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<XMLAnswer> enableUserAsync(String userId) {
+    public CompletableFuture<JsonVoidAnswer> enableUserAsync(String userId) {
         return pc.enableUserAsync(userId);
     }
 
@@ -293,7 +325,7 @@ public class NextcloudConnector {
      * @param userId unique identifier of the user
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<XMLAnswer> disableUserAsync(String userId) {
+    public CompletableFuture<JsonVoidAnswer> disableUserAsync(String userId) {
         return pc.disableUserAsync(userId);
     }
 
@@ -313,7 +345,7 @@ public class NextcloudConnector {
      * @param userId unique identifier of the user
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<GroupsXMLAnswer> getGroupsOfUserAsync(String userId) {
+    public CompletableFuture<GroupListAnswer> getGroupsOfUserAsync(String userId) {
         return pc.getGroupsOfUserAsync(userId);
     }
 
@@ -335,7 +367,7 @@ public class NextcloudConnector {
      * @param groupId unique identifier of the group
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<XMLAnswer> addUserToGroupAsync(String userId, String groupId) {
+    public CompletableFuture<JsonVoidAnswer> addUserToGroupAsync(String userId, String groupId) {
         return pc.addUserToGroupAsync(userId, groupId);
     }
 
@@ -357,7 +389,7 @@ public class NextcloudConnector {
      * @param groupId unique identifier of the group
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<XMLAnswer> removeUserFromGroupAsync(String userId, String groupId) {
+    public CompletableFuture<JsonVoidAnswer> removeUserFromGroupAsync(String userId, String groupId) {
         return pc.removeUserFromGroupAsync(userId, groupId);
     }
 
@@ -377,7 +409,7 @@ public class NextcloudConnector {
      * @param userId unique identifier of the user
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<ListXMLAnswer> getSubadminGroupsOfUserAsync(String userId) {
+    public CompletableFuture<JsonListAnswer> getSubadminGroupsOfUserAsync(String userId) {
         return pc.getSubadminGroupsOfUserAsync(userId);
     }
 
@@ -399,7 +431,7 @@ public class NextcloudConnector {
      * @param groupId unique identifier of the group
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<XMLAnswer> promoteToSubadminAsync(String userId, String groupId) {
+    public CompletableFuture<JsonVoidAnswer> promoteToSubadminAsync(String userId, String groupId) {
         return pc.promoteToSubadminAsync(userId, groupId);
     }
 
@@ -421,7 +453,7 @@ public class NextcloudConnector {
      * @param groupId unique identifier of the group
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<XMLAnswer> demoteSubadminAsync(String userId, String groupId) {
+    public CompletableFuture<JsonVoidAnswer> demoteSubadminAsync(String userId, String groupId) {
         return pc.demoteSubadminAsync(userId, groupId);
     }
 
@@ -441,7 +473,7 @@ public class NextcloudConnector {
      * @param userId unique identifier of the user
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<XMLAnswer> sendWelcomeMailAsync(String userId) {
+    public CompletableFuture<JsonVoidAnswer> sendWelcomeMailAsync(String userId) {
         return pc.sendWelcomeMailAsync(userId);
     }
 
@@ -461,8 +493,28 @@ public class NextcloudConnector {
      * @param groupId unique identifier of the user
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<UsersXMLAnswer> getMembersOfGroupAsync(String groupId) {
+    public CompletableFuture<UserListAnswer> getMembersOfGroupAsync(String groupId) {
         return pc.getMembersOfGroupAsync(groupId);
+    }
+
+    /**
+     * Gets all members details of a group
+     *
+     * @param groupId unique identifier of the user
+     * @return user IDs of members
+     */
+    public List<User> getMembersDetailsOfGroup(String groupId) {
+        return pc.getMembersDetailsOfGroup(groupId);
+    }
+
+    /**
+     * Gets all members details of a group asynchronously
+     *
+     * @param groupId unique identifier of the user
+     * @return a CompletableFuture containing the result of the operation
+     */
+    public CompletableFuture<UserDetailsListAnswer> getMembersDetailsOfGroupAsync(String groupId) {
+        return pc.getMembersDetailsOfGroupAsync(groupId);
     }
 
     /**
@@ -481,7 +533,7 @@ public class NextcloudConnector {
      * @param groupId unique identifier of the group
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<ListXMLAnswer> getSubadminsOfGroupAsync(String groupId) {
+    public CompletableFuture<JsonListAnswer> getSubadminsOfGroupAsync(String groupId) {
         return pc.getSubadminsOfGroupAsync(groupId);
     }
 
@@ -501,7 +553,7 @@ public class NextcloudConnector {
      * @param groupId unique identifier of the group
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<XMLAnswer> createGroupAsync(String groupId) {
+    public CompletableFuture<JsonVoidAnswer> createGroupAsync(String groupId) {
         return pc.createGroupAsync(groupId);
     }
 
@@ -511,7 +563,7 @@ public class NextcloudConnector {
      * @return all user IDs
      */
     public List<String> getUsers() {
-        return pc.getUsers();
+        return pc.getAllUsers();
     }
 
     /**
@@ -522,9 +574,8 @@ public class NextcloudConnector {
      * @param offset pass -1 for no offset
      * @return matched user IDs
      */
-    public List<String> getUsers(
-            String search, int limit, int offset) {
-        return pc.getUsers(search, limit, offset);
+    public List<String> getUsers(String search, int limit, int offset) {
+        return pc.getAllUsers(search, limit, offset);
     }
 
     /**
@@ -532,8 +583,8 @@ public class NextcloudConnector {
      *
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<UsersXMLAnswer> getUsersAsync() {
-        return pc.getUsersAsync();
+    public CompletableFuture<UserListAnswer> getUsersAsync() {
+        return pc.getAllUsersAsync();
     }
 
     /**
@@ -544,18 +595,8 @@ public class NextcloudConnector {
      * @param offset pass -1 for no offset
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<UsersXMLAnswer> getUsersAsync(
-            String search, int limit, int offset) {
-        return pc.getUsersAsync(search, limit, offset);
-    }
-
-    /**
-     * Gets user details of logged in user
-     *
-     * @return all user details
-     */
-    public User getUserDetails() {
-        return pc.getUserDetails();
+    public CompletableFuture<UserListAnswer> getUsersAsync(String search, int limit, int offset) {
+        return pc.getAllUsersAsync(search, limit, offset);
     }
     
     /**
@@ -564,7 +605,7 @@ public class NextcloudConnector {
      * @return all user details
      */
     public List<User> getUsersDetails() {
-        return pc.getUsersDetails();
+        return pc.getAllUserDetails();
     }
 
     /**
@@ -575,9 +616,8 @@ public class NextcloudConnector {
      * @param offset pass -1 for no offset
      * @return matched user details
      */
-    public List<User> getUsersDetails(
-            String search, int limit, int offset) {
-        return pc.getUsersDetails(search, limit, offset);
+    public List<User> getUsersDetails(String search, int limit, int offset) {
+        return pc.getAllUserDetails(search, limit, offset);
     }
 
     /**
@@ -585,8 +625,8 @@ public class NextcloudConnector {
      *
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<UsersDetailsJsonAnswer> getUsersDetailsAsync() {
-        return pc.getUsersDetailsAsync();
+    public CompletableFuture<UserDetailsListAnswer> getUsersDetailsAsync() {
+        return pc.getAllUserDetailsAsync();
     }
 
     /**
@@ -597,9 +637,8 @@ public class NextcloudConnector {
      * @param offset pass -1 for no offset
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<UsersDetailsJsonAnswer> getUsersDetailsAsync(
-            String search, int limit, int offset) {
-        return pc.getUsersDetailsAsync(search, limit, offset);
+    public CompletableFuture<UserDetailsListAnswer> getUsersDetailsAsync(String search, int limit, int offset) {
+        return pc.getAllUserDetailsAsync(search, limit, offset);
     }
 
     /**
@@ -618,8 +657,17 @@ public class NextcloudConnector {
      * @param userId unique identifier of the user
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<UserDetailsJsonAnswer> getUserAsync(String userId) {
+    public CompletableFuture<UserDetailsAnswer> getUserAsync(String userId) {
         return pc.getUserAsync(userId);
+    }
+
+    /**
+     * Gets user details of currently logged in user
+     *
+     * @return all user details
+     */
+    public User getCurrentUser() {
+        return pc.getCurrentUser();
     }
 
     /**
@@ -642,7 +690,7 @@ public class NextcloudConnector {
      * @param value the value to set
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<XMLAnswer> editUserAsync(String userId, UserData key, String value) {
+    public CompletableFuture<JsonVoidAnswer> editUserAsync(String userId, UserData key, String value) {
         return pc.editUserAsync(userId, key, value);
     }
 
@@ -662,7 +710,7 @@ public class NextcloudConnector {
      * @param groupId unique identifier of the group
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<XMLAnswer> deleteGroupAsync(String groupId) {
+    public CompletableFuture<JsonVoidAnswer> deleteGroupAsync(String groupId) {
         return pc.deleteGroupAsync(groupId);
     }
 
@@ -671,7 +719,7 @@ public class NextcloudConnector {
      *
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<GroupsXMLAnswer> getGroupsAsync() {
+    public CompletableFuture<GroupListAnswer> getGroupsAsync() {
         return pc.getGroupsAsync();
     }
 
@@ -704,7 +752,7 @@ public class NextcloudConnector {
      * @param offset pass -1 for no offset
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<GroupsXMLAnswer> getGroupsAsync(String search, int limit, int offset) {
+    public CompletableFuture<GroupListAnswer> getGroupsAsync(String search, int limit, int offset) {
         return pc.getGroupsAsync(search, limit, offset);
     }
 
