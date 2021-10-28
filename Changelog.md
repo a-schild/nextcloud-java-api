@@ -1,4 +1,11 @@
 # Changelog for nextcloud api
+- 2021-10-28
+  - Bump version to 12.0.0-SNAPSHOT due to api changes
+  - We did remove all xml based provision api, since they don't work
+    in many cases, we use JSON now
+  - The getQuota() method now returns an Optional<Long>, to handle the case
+    when no quota is set at all (Allowing unlimited storage)
+	Thanks @kriszman for the patches
 - 2021-10-13
   - Prepare 11.7.0-SNAPSHOT
   - Fix downloadFolder() when having special chars in folder name(s)
