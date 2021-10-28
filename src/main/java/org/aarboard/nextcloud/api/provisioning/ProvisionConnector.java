@@ -16,14 +16,16 @@
  */
 package org.aarboard.nextcloud.api.provisioning;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import org.aarboard.nextcloud.api.ServerConfig;
 import org.aarboard.nextcloud.api.utils.*;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 /**
  *
@@ -46,30 +48,40 @@ public class ProvisionConnector
     }
 
     /**
-     * Creates a user
+     * Creates a user with corresponding user information asynchronously
      *
      * @param userId unique identifier of the user
      * @param password password needs to meet nextcloud criteria or operation will fail
+     * @param displayName the display name of the user
+     * @param email the email address of the user
+     * @param quota the quota of the user
+     * @param language the language of the user
+     * @param groups the groups the user should be added to
      * @return true if the operation succeeded
      */
-    public boolean createUser(String userId, String password)
-    {
-        return NextcloudResponseHelper.isStatusCodeOkay(createUserAsync(userId, password));
-    }
-
-    /**
-     * Creates a user asynchronously
-     *
-     * @param userId unique identifier of the user
-     * @param password password needs to meet nextcloud criteria or operation will fail
-     * @return a CompletableFuture containing the result of the operation
-     */
-    public CompletableFuture<XMLAnswer> createUserAsync(String userId, String password)
-    {
+    public CompletableFuture<JsonVoidAnswer> createUserAsync(String userId, String password,
+                                                             Optional<String> displayName, Optional<String> email,
+                                                             Optional<String> quota, Optional<String> language, List<String> groups) {
         List<NameValuePair> postParams= new LinkedList<>();
         postParams.add(new BasicNameValuePair("userid", userId));
         postParams.add(new BasicNameValuePair("password", password));
-        return connectorCommon.executePost(USERS_PART, postParams, XMLAnswerParser.getInstance(XMLAnswer.class));
+        if (displayName.isPresent()) {
+            postParams.add(new BasicNameValuePair("displayName", displayName.get()));
+        }
+        if (email.isPresent()) {
+            postParams.add(new BasicNameValuePair("email", email.get()));
+        }
+        if (quota.isPresent()) {
+            postParams.add(new BasicNameValuePair("quota", quota.get()));
+        }
+        if (language.isPresent()) {
+            postParams.add(new BasicNameValuePair("language", language.get()));
+        }
+        groups.forEach(group -> {
+            postParams.add(new BasicNameValuePair("groups[]", group));
+        });
+
+        return connectorCommon.executePost(USERS_PART, postParams, JsonAnswerParser.getInstance(JsonVoidAnswer.class));
     }
 
     /**
@@ -78,8 +90,7 @@ public class ProvisionConnector
      * @param userId unique identifier of the user
      * @return true if the operation succeeded
      */
-    public boolean deleteUser(String userId)
-    {
+    public boolean deleteUser(String userId) {
         return NextcloudResponseHelper.isStatusCodeOkay(deleteUserAsync(userId));
     }
 
@@ -89,9 +100,9 @@ public class ProvisionConnector
      * @param userId unique identifier of the user
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<XMLAnswer> deleteUserAsync(String userId)
+    public CompletableFuture<JsonVoidAnswer> deleteUserAsync(String userId)
     {
-        return connectorCommon.executeDelete(USERS_PART, userId, null, XMLAnswerParser.getInstance(XMLAnswer.class));
+        return connectorCommon.executeDelete(USERS_PART, userId, JsonAnswerParser.getInstance(JsonVoidAnswer.class));
     }
 
     /**
@@ -99,9 +110,8 @@ public class ProvisionConnector
      *
      * @return all user IDs
      */
-    public List<String> getUsers()
-    {
-        return getUsers(null, -1, -1);
+    public List<String> getAllUsers() {
+        return getAllUsers(null, -1, -1);
     }
 
     /**
@@ -109,9 +119,8 @@ public class ProvisionConnector
      *
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<UsersXMLAnswer> getUsersAsync()
-    {
-        return getUsersAsync(null, -1, -1);
+    public CompletableFuture<UserListAnswer> getAllUsersAsync() {
+        return getAllUsersAsync(null, -1, -1);
     }
 
     /**
@@ -122,10 +131,8 @@ public class ProvisionConnector
      * @param offset pass -1 for no offset
      * @return matched user IDs
      */
-    public List<String> getUsers(
-            String search, int limit, int offset)
-    {
-        return NextcloudResponseHelper.getAndCheckStatus(getUsersAsync(search, limit, offset)).getUsers();
+    public List<String> getAllUsers(String search, int limit, int offset) {
+        return NextcloudResponseHelper.getAndCheckStatus(getAllUsersAsync(search, limit, offset)).getAllUsers();
     }
 
     /**
@@ -136,23 +143,9 @@ public class ProvisionConnector
      * @param offset pass -1 for no offset
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<UsersXMLAnswer> getUsersAsync(
-            String search, int limit, int offset)
-    {
-        List<NameValuePair> queryParams= new LinkedList<>();
-        if (limit != -1)
-        {
-            queryParams.add(new BasicNameValuePair("limit", Integer.toString(limit)));
-        }
-        if (offset != -1)
-        {
-            queryParams.add(new BasicNameValuePair("offset", Integer.toString(offset)));
-        }
-        if (search != null)
-        {
-            queryParams.add(new BasicNameValuePair("search", search));
-        }
-        return connectorCommon.executeGet(USERS_PART, queryParams, XMLAnswerParser.getInstance(UsersXMLAnswer.class));
+    public CompletableFuture<UserListAnswer> getAllUsersAsync(String search, int limit, int offset) {
+        NextcloudSearch nextcloudSearch = new NextcloudSearch(search, limit, offset);
+        return connectorCommon.executeGet(USERS_PART, nextcloudSearch.asQueryParameters(), JsonAnswerParser.getInstance(UserListAnswer.class));
     }
 
     /**
@@ -160,19 +153,8 @@ public class ProvisionConnector
      *
      * @return all user details
      */
-    public List<User> getUsersDetails()
-    {
-        return getUsersDetails(null, -1, -1);
-    }
-
-    /**
-     * Get all matching user details
-     *
-     * @return user details of logged in user
-     */
-    public User getUserDetails()
-    {
-        return NextcloudResponseHelper.getAndCheckStatus(getUserDetailsAsync()).getUserDetails();
+    public List<User> getAllUserDetails() {
+        return getAllUserDetails(null, -1, -1);
     }
     
     /**
@@ -180,9 +162,8 @@ public class ProvisionConnector
      *
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<UsersDetailsJsonAnswer> getUsersDetailsAsync()
-    {
-        return getUsersDetailsAsync(null, -1, -1);
+    public CompletableFuture<UserDetailsListAnswer> getAllUserDetailsAsync() {
+        return getAllUserDetailsAsync(null, -1, -1);
     }
 
     /**
@@ -193,10 +174,8 @@ public class ProvisionConnector
      * @param offset pass -1 for no offset
      * @return matched user details
      */
-    public List<User> getUsersDetails(
-            String search, int limit, int offset)
-    {
-        return NextcloudResponseHelper.getAndCheckStatus(getUsersDetailsAsync(search, limit, offset)).getUsersDetails();
+    public List<User> getAllUserDetails(String search, int limit, int offset) {
+        return NextcloudResponseHelper.getAndCheckStatus(getAllUserDetailsAsync(search, limit, offset)).getAllUserDetails();
     }
 
     /**
@@ -207,33 +186,9 @@ public class ProvisionConnector
      * @param offset pass -1 for no offset
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<UsersDetailsJsonAnswer> getUsersDetailsAsync(
-            String search, int limit, int offset)
-    {
-        List<NameValuePair> queryParams= new LinkedList<>();
-        if (limit != -1)
-        {
-            queryParams.add(new BasicNameValuePair("limit", Integer.toString(limit)));
-        }
-        if (offset != -1)
-        {
-            queryParams.add(new BasicNameValuePair("offset", Integer.toString(offset)));
-        }
-        if (search != null)
-        {
-            queryParams.add(new BasicNameValuePair("search", search));
-        }
-        return connectorCommon.executeGet(USERS_PART+"/details", queryParams, JsonAnswerParser.getInstance(UsersDetailsJsonAnswer.class));
-    }
-
-    /**
-     * Get user details for the logged in user asynchronously
-     *
-     * @return a CompletableFuture containing the result of the operation
-     */
-    public CompletableFuture<UserDetailsJsonAnswer> getUserDetailsAsync()
-    {
-        return connectorCommon.executeGet(USER_PART, null, JsonAnswerParser.getInstance(UserDetailsJsonAnswer.class));
+    public CompletableFuture<UserDetailsListAnswer> getAllUserDetailsAsync(String search, int limit, int offset) {
+        NextcloudSearch nextcloudSearch = new NextcloudSearch(search, limit, offset);
+        return connectorCommon.executeGet(USERS_PART+"/details", nextcloudSearch.asQueryParameters(), JsonAnswerParser.getInstance(UserDetailsListAnswer.class));
     }
 
     /**
@@ -242,9 +197,8 @@ public class ProvisionConnector
      * @param userId unique identifier of the user
      * @return user object containing all information
      */
-    public User getUser(String userId)
-    {
-        return NextcloudResponseHelper.getAndWrapException(getUserAsync(userId)).getUser();
+    public User getUser(String userId) {
+        return NextcloudResponseHelper.getAndWrapException(getUserAsync(userId)).getUserDetails();
     }
 
     /**
@@ -253,9 +207,26 @@ public class ProvisionConnector
      * @param userId unique identifier of the user
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<UserXMLAnswer> getUserAsync(String userId)
-    {
-        return connectorCommon.executeGet(USERS_PART+"/"+userId, Collections.emptyList(), XMLAnswerParser.getInstance(UserXMLAnswer.class));
+    public CompletableFuture<UserDetailsAnswer> getUserAsync(String userId) {
+        return connectorCommon.executeGet(USERS_PART+"/"+userId, JsonAnswerParser.getInstance(UserDetailsAnswer.class));
+    }
+
+    /**
+     * Get user details for the logged in user
+     *
+     * @return user details of logged in user
+     */
+    public User getCurrentUser() {
+        return NextcloudResponseHelper.getAndCheckStatus(getCurrentUserAsync()).getUserDetails();
+    }
+
+    /**
+     * Get user details for the logged in user asynchronously
+     *
+     * @return a CompletableFuture containing the result of the operation
+     */
+    public CompletableFuture<UserDetailsAnswer> getCurrentUserAsync() {
+        return connectorCommon.executeGet(USER_PART, JsonAnswerParser.getInstance(UserDetailsAnswer.class));
     }
 
     /**
@@ -266,8 +237,7 @@ public class ProvisionConnector
      * @param value the value to set
      * @return true if the operation succeeded
      */
-    public boolean editUser(String userId, UserData key, String value)
-    {
+    public boolean editUser(String userId, UserData key, String value) {
         return NextcloudResponseHelper.isStatusCodeOkay(editUserAsync(userId, key, value));
     }
 
@@ -279,12 +249,11 @@ public class ProvisionConnector
      * @param value the value to set
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<XMLAnswer> editUserAsync(String userId, UserData key, String value)
-    {
+    public CompletableFuture<JsonVoidAnswer> editUserAsync(String userId, UserData key, String value) {
         List<NameValuePair> queryParams= new LinkedList<>();
         queryParams.add(new BasicNameValuePair("key", key.name().toLowerCase()));
         queryParams.add(new BasicNameValuePair("value", value));
-        return connectorCommon.executePut(USERS_PART, userId, queryParams, XMLAnswerParser.getInstance(XMLAnswer.class));
+        return connectorCommon.executePut(USERS_PART, userId, queryParams, JsonAnswerParser.getInstance(JsonVoidAnswer.class));
     }
 
     /**
@@ -293,8 +262,7 @@ public class ProvisionConnector
      * @param userId unique identifier of the user
      * @return true if the operation succeeded
      */
-    public boolean enableUser(String userId)
-    {
+    public boolean enableUser(String userId) {
         return NextcloudResponseHelper.isStatusCodeOkay(enableUserAsync(userId));
     }
 
@@ -304,9 +272,8 @@ public class ProvisionConnector
      * @param userId unique identifier of the user
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<XMLAnswer> enableUserAsync(String userId)
-    {
-        return connectorCommon.executePut(USERS_PART, userId + "/enable", null, XMLAnswerParser.getInstance(XMLAnswer.class));
+    public CompletableFuture<JsonVoidAnswer> enableUserAsync(String userId) {
+        return connectorCommon.executePut(USERS_PART, userId + "/enable", null, JsonAnswerParser.getInstance(JsonVoidAnswer.class));
     }
 
     /**
@@ -315,8 +282,7 @@ public class ProvisionConnector
      * @param userId unique identifier of the user
      * @return true if the operation succeeded
      */
-    public boolean disableUser(String userId)
-    {
+    public boolean disableUser(String userId) {
         return NextcloudResponseHelper.isStatusCodeOkay(disableUserAsync(userId));
     }
 
@@ -326,9 +292,8 @@ public class ProvisionConnector
      * @param userId unique identifier of the user
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<XMLAnswer> disableUserAsync(String userId)
-    {
-        return connectorCommon.executePut(USERS_PART, userId + "/disable", null, XMLAnswerParser.getInstance(XMLAnswer.class));
+    public CompletableFuture<JsonVoidAnswer> disableUserAsync(String userId) {
+        return connectorCommon.executePut(USERS_PART, userId + "/disable", null, JsonAnswerParser.getInstance(JsonVoidAnswer.class));
     }
 
     /**
@@ -337,9 +302,8 @@ public class ProvisionConnector
      * @param userId unique identifier of the user
      * @return matched group IDs
      */
-    public List<String> getGroupsOfUser(String userId)
-    {
-        return NextcloudResponseHelper.getAndCheckStatus(getGroupsOfUserAsync(userId)).getGroups();
+    public List<String> getGroupsOfUser(String userId) {
+        return NextcloudResponseHelper.getAndCheckStatus(getGroupsOfUserAsync(userId)).getAllGroups();
     }
 
     /**
@@ -348,9 +312,8 @@ public class ProvisionConnector
      * @param userId unique identifier of the user
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<GroupsXMLAnswer> getGroupsOfUserAsync(String userId)
-    {
-        return connectorCommon.executeGet(USERS_PART + "/" + userId + "/groups", null, XMLAnswerParser.getInstance(GroupsXMLAnswer.class));
+    public CompletableFuture<GroupListAnswer> getGroupsOfUserAsync(String userId) {
+        return connectorCommon.executeGet(USERS_PART + "/" + userId + "/groups", null, JsonAnswerParser.getInstance(GroupListAnswer.class));
     }
 
     /**
@@ -360,8 +323,7 @@ public class ProvisionConnector
      * @param groupId unique identifier of the group
      * @return true if the operation succeeded
      */
-    public boolean addUserToGroup(String userId, String groupId)
-    {
+    public boolean addUserToGroup(String userId, String groupId) {
         return NextcloudResponseHelper.isStatusCodeOkay(addUserToGroupAsync(userId, groupId));
     }
 
@@ -372,10 +334,10 @@ public class ProvisionConnector
      * @param groupId unique identifier of the group
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<XMLAnswer> addUserToGroupAsync(String userId, String groupId)
-    {
-        List<NameValuePair> queryParams= Collections.singletonList(new BasicNameValuePair("groupid", groupId));
-        return connectorCommon.executePost(USERS_PART + "/" + userId + "/groups", queryParams, XMLAnswerParser.getInstance(XMLAnswer.class));
+    public CompletableFuture<JsonVoidAnswer> addUserToGroupAsync(String userId, String groupId) {
+        List<NameValuePair> queryParams = new LinkedList<>();
+        queryParams.add(new BasicNameValuePair("groupid", groupId));
+        return connectorCommon.executePost(USERS_PART + "/" + userId + "/groups", queryParams, JsonAnswerParser.getInstance(JsonVoidAnswer.class));
     }
 
     /**
@@ -385,8 +347,7 @@ public class ProvisionConnector
      * @param groupId unique identifier of the group
      * @return true if the operation succeeded
      */
-    public boolean removeUserFromGroup(String userId, String groupId)
-    {
+    public boolean removeUserFromGroup(String userId, String groupId) {
         return NextcloudResponseHelper.isStatusCodeOkay(removeUserFromGroupAsync(userId, groupId));
     }
 
@@ -397,10 +358,10 @@ public class ProvisionConnector
      * @param groupId unique identifier of the group
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<XMLAnswer> removeUserFromGroupAsync(String userId, String groupId)
-    {
-        List<NameValuePair> queryParams= Collections.singletonList(new BasicNameValuePair("groupid", groupId));
-        return connectorCommon.executeDelete(USERS_PART, userId + "/groups", queryParams, XMLAnswerParser.getInstance(XMLAnswer.class));
+    public CompletableFuture<JsonVoidAnswer> removeUserFromGroupAsync(String userId, String groupId) {
+        List<NameValuePair> queryParams = new LinkedList<>();
+        queryParams.add(new BasicNameValuePair("groupid", groupId));
+        return connectorCommon.executeDelete(USERS_PART, userId + "/groups", queryParams, JsonAnswerParser.getInstance(JsonVoidAnswer.class));
     }
 
     /**
@@ -409,8 +370,7 @@ public class ProvisionConnector
      * @param userId unique identifier of the user
      * @return matched group IDs
      */
-    public List<String> getSubadminGroupsOfUser(String userId)
-    {
+    public List<String> getSubadminGroupsOfUser(String userId) {
         return NextcloudResponseHelper.getAndCheckStatus(getSubadminGroupsOfUserAsync(userId)).getResult();
     }
 
@@ -420,9 +380,8 @@ public class ProvisionConnector
      * @param userId unique identifier of the user
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<ListXMLAnswer> getSubadminGroupsOfUserAsync(String userId)
-    {
-        return connectorCommon.executeGet(USERS_PART + "/" + userId + "/subadmins", null, XMLAnswerParser.getInstance(ListXMLAnswer.class));
+    public CompletableFuture<JsonListAnswer> getSubadminGroupsOfUserAsync(String userId) {
+        return connectorCommon.executeGet(USERS_PART + "/" + userId + "/subadmins", null, JsonAnswerParser.getInstance(JsonListAnswer.class));
     }
 
     /**
@@ -432,8 +391,7 @@ public class ProvisionConnector
      * @param groupId unique identifier of the group
      * @return true if the operation succeeded
      */
-    public boolean promoteToSubadmin(String userId, String groupId)
-    {
+    public boolean promoteToSubadmin(String userId, String groupId) {
         return NextcloudResponseHelper.isStatusCodeOkay(promoteToSubadminAsync(userId, groupId));
     }
 
@@ -444,10 +402,10 @@ public class ProvisionConnector
      * @param groupId unique identifier of the group
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<XMLAnswer> promoteToSubadminAsync(String userId, String groupId)
-    {
-        List<NameValuePair> queryParams= Collections.singletonList(new BasicNameValuePair("groupid", groupId));
-        return connectorCommon.executePost(USERS_PART + "/" + userId + "/subadmins", queryParams, XMLAnswerParser.getInstance(XMLAnswer.class));
+    public CompletableFuture<JsonVoidAnswer> promoteToSubadminAsync(String userId, String groupId) {
+        List<NameValuePair> queryParams = new LinkedList<>();
+        queryParams.add(new BasicNameValuePair("groupid", groupId));
+        return connectorCommon.executePost(USERS_PART + "/" + userId + "/subadmins", queryParams, JsonAnswerParser.getInstance(JsonVoidAnswer.class));
     }
 
     /**
@@ -457,8 +415,7 @@ public class ProvisionConnector
      * @param groupId unique identifier of the group
      * @return true if the operation succeeded
      */
-    public boolean demoteSubadmin(String userId, String groupId)
-    {
+    public boolean demoteSubadmin(String userId, String groupId) {
         return NextcloudResponseHelper.isStatusCodeOkay(demoteSubadminAsync(userId, groupId));
     }
 
@@ -469,10 +426,10 @@ public class ProvisionConnector
      * @param groupId unique identifier of the group
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<XMLAnswer> demoteSubadminAsync(String userId, String groupId)
-    {
-        List<NameValuePair> queryParams= Collections.singletonList(new BasicNameValuePair("groupid", groupId));
-        return connectorCommon.executeDelete(USERS_PART, userId + "/subadmins", queryParams, XMLAnswerParser.getInstance(XMLAnswer.class));
+    public CompletableFuture<JsonVoidAnswer> demoteSubadminAsync(String userId, String groupId) {
+        List<NameValuePair> queryParams = new LinkedList<>();
+        queryParams.add(new BasicNameValuePair("groupid", groupId));
+        return connectorCommon.executeDelete(USERS_PART, userId + "/subadmins", queryParams, JsonAnswerParser.getInstance(JsonVoidAnswer.class));
     }
 
     /**
@@ -481,8 +438,7 @@ public class ProvisionConnector
      * @param userId unique identifier of the user
      * @return true if the operation succeeded
      */
-    public boolean sendWelcomeMail(String userId)
-    {
+    public boolean sendWelcomeMail(String userId) {
         return NextcloudResponseHelper.isStatusCodeOkay(sendWelcomeMailAsync(userId));
     }
 
@@ -492,9 +448,8 @@ public class ProvisionConnector
      * @param userId unique identifier of the user
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<XMLAnswer> sendWelcomeMailAsync(String userId)
-    {
-        return connectorCommon.executePost(USERS_PART + "/" + userId + "/welcome", null, XMLAnswerParser.getInstance(XMLAnswer.class));
+    public CompletableFuture<JsonVoidAnswer> sendWelcomeMailAsync(String userId) {
+        return connectorCommon.executePost(USERS_PART + "/" + userId + "/welcome", JsonAnswerParser.getInstance(JsonVoidAnswer.class));
     }
 
     /**
@@ -503,9 +458,8 @@ public class ProvisionConnector
      * @param groupId unique identifier of the user
      * @return user IDs of members
      */
-    public List<String> getMembersOfGroup(String groupId)
-    {
-        return NextcloudResponseHelper.getAndCheckStatus(getMembersOfGroupAsync(groupId)).getUsers();
+    public List<String> getMembersOfGroup(String groupId) {
+        return NextcloudResponseHelper.getAndCheckStatus(getMembersOfGroupAsync(groupId)).getAllUsers();
     }
 
     /**
@@ -514,9 +468,28 @@ public class ProvisionConnector
      * @param groupId unique identifier of the user
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<UsersXMLAnswer> getMembersOfGroupAsync(String groupId)
-    {
-        return connectorCommon.executeGet(GROUPS_PART + "/" + groupId, null, XMLAnswerParser.getInstance(UsersXMLAnswer.class));
+    public CompletableFuture<UserListAnswer> getMembersOfGroupAsync(String groupId) {
+        return connectorCommon.executeGet(GROUPS_PART + "/" + groupId + "/users", JsonAnswerParser.getInstance(UserListAnswer.class));
+    }
+
+    /**
+     * Gets all members details of a group
+     *
+     * @param groupId unique identifier of the user
+     * @return user IDs of members
+     */
+    public List<User> getMembersDetailsOfGroup(String groupId) {
+        return NextcloudResponseHelper.getAndCheckStatus(getMembersDetailsOfGroupAsync(groupId)).getAllUserDetails();
+    }
+
+    /**
+     * Gets all members details of a group asynchronously
+     *
+     * @param groupId unique identifier of the user
+     * @return a CompletableFuture containing the result of the operation
+     */
+    public CompletableFuture<UserDetailsListAnswer> getMembersDetailsOfGroupAsync(String groupId) {
+        return connectorCommon.executeGet(GROUPS_PART + "/" + groupId + "/users/details", JsonAnswerParser.getInstance(UserDetailsListAnswer.class));
     }
 
     /**
@@ -525,8 +498,7 @@ public class ProvisionConnector
      * @param groupId unique identifier of the group
      * @return user IDs of subadministrators
      */
-    public List<String> getSubadminsOfGroup(String groupId)
-    {
+    public List<String> getSubadminsOfGroup(String groupId) {
         return NextcloudResponseHelper.getAndCheckStatus(getSubadminsOfGroupAsync(groupId)).getResult();
     }
 
@@ -536,9 +508,8 @@ public class ProvisionConnector
      * @param groupId unique identifier of the group
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<ListXMLAnswer> getSubadminsOfGroupAsync(String groupId)
-    {
-        return connectorCommon.executeGet(GROUPS_PART + "/" + groupId + "/subadmins", null, XMLAnswerParser.getInstance(ListXMLAnswer.class));
+    public CompletableFuture<JsonListAnswer> getSubadminsOfGroupAsync(String groupId) {
+        return connectorCommon.executeGet(GROUPS_PART + "/" + groupId + "/subadmins", null, JsonAnswerParser.getInstance(JsonListAnswer.class));
     }
 
     /**
@@ -547,8 +518,7 @@ public class ProvisionConnector
      * @param groupId unique identifier of the group
      * @return true if the operation succeeded
      */
-    public boolean createGroup(String groupId)
-    {
+    public boolean createGroup(String groupId) {
         return NextcloudResponseHelper.isStatusCodeOkay(createGroupAsync(groupId));
     }
 
@@ -558,11 +528,10 @@ public class ProvisionConnector
      * @param groupId unique identifier of the group
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<XMLAnswer> createGroupAsync(String groupId)
-    {
+    public CompletableFuture<JsonVoidAnswer> createGroupAsync(String groupId) {
         List<NameValuePair> postParams= new LinkedList<>();
         postParams.add(new BasicNameValuePair("groupid", groupId));
-        return connectorCommon.executePost(GROUPS_PART, postParams, XMLAnswerParser.getInstance(XMLAnswer.class));
+        return connectorCommon.executePost(GROUPS_PART, postParams, JsonAnswerParser.getInstance(JsonVoidAnswer.class));
     }
 
     /**
@@ -571,8 +540,7 @@ public class ProvisionConnector
      * @param groupId unique identifier of the group
      * @return true if the operation succeeded
      */
-    public boolean deleteGroup(String groupId)
-    {
+    public boolean deleteGroup(String groupId) {
         return NextcloudResponseHelper.isStatusCodeOkay(deleteGroupAsync(groupId));
     }
 
@@ -582,9 +550,8 @@ public class ProvisionConnector
      * @param groupId unique identifier of the group
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<XMLAnswer> deleteGroupAsync(String groupId)
-    {
-        return connectorCommon.executeDelete(GROUPS_PART, groupId, null, XMLAnswerParser.getInstance(XMLAnswer.class));
+    public CompletableFuture<JsonVoidAnswer> deleteGroupAsync(String groupId) {
+        return connectorCommon.executeDelete(GROUPS_PART, groupId, null, JsonAnswerParser.getInstance(JsonVoidAnswer.class));
     }
 
     /**
@@ -592,8 +559,7 @@ public class ProvisionConnector
      *
      * @return all group IDs
      */
-    public List<String> getGroups()
-    {
+    public List<String> getGroups() {
         return getGroups(null, -1, -1);
     }
 
@@ -602,8 +568,7 @@ public class ProvisionConnector
      *
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<GroupsXMLAnswer> getGroupsAsync()
-    {
+    public CompletableFuture<GroupListAnswer> getGroupsAsync() {
         return getGroupsAsync(null, -1, -1);
     }
 
@@ -615,9 +580,8 @@ public class ProvisionConnector
      * @param offset pass -1 for no offset
      * @return matching group IDs
      */
-    public List<String> getGroups(String search, int limit, int offset)
-    {
-        return NextcloudResponseHelper.getAndCheckStatus(getGroupsAsync(search, limit, offset)).getGroups();
+    public List<String> getGroups(String search, int limit, int offset) {
+        return NextcloudResponseHelper.getAndCheckStatus(getGroupsAsync(search, limit, offset)).getAllGroups();
     }
 
     /**
@@ -628,22 +592,8 @@ public class ProvisionConnector
      * @param offset pass -1 for no offset
      * @return a CompletableFuture containing the result of the operation
      */
-    public CompletableFuture<GroupsXMLAnswer> getGroupsAsync(String search, int limit, int offset)
-    {
-        List<NameValuePair> queryParams= new LinkedList<>();
-        if (limit != -1)
-        {
-            queryParams.add(new BasicNameValuePair("limit", Integer.toString(limit)));
-        }
-        if (offset != -1)
-        {
-            queryParams.add(new BasicNameValuePair("offset", Integer.toString(offset)));
-        }
-        if (search != null)
-        {
-            queryParams.add(new BasicNameValuePair("search", search));
-        }
-
-        return connectorCommon.executeGet(GROUPS_PART, queryParams, XMLAnswerParser.getInstance(GroupsXMLAnswer.class));
+    public CompletableFuture<GroupListAnswer> getGroupsAsync(String search, int limit, int offset) {
+        NextcloudSearch nextcloudSearch = new NextcloudSearch(search, limit, offset);
+        return connectorCommon.executeGet(GROUPS_PART, nextcloudSearch.asQueryParameters(), JsonAnswerParser.getInstance(GroupListAnswer.class));
     }
 }

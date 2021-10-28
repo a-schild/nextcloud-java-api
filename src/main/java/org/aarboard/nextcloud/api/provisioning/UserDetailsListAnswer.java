@@ -11,12 +11,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @JsonRootName(value = "ocs")
-public class UsersDetailsJsonAnswer extends JsonAnswer {
+public class UserDetailsListAnswer extends JsonAnswer {
     @JsonProperty
     private Data data;
 
     @JsonIgnore
-    public List<User> getUsersDetails() {
+    public List<User> getAllUserDetails() {
         if (data != null && data.users != null) {
             return data.users.values().stream().collect(Collectors.toList());
         }

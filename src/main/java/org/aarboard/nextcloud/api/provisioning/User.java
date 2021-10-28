@@ -19,16 +19,11 @@ package org.aarboard.nextcloud.api.provisioning;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 
 /**
  *
  * @author a.schild
  */
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class User
 {
@@ -41,8 +36,6 @@ public class User
     private String website;
     private String twitter;
     private Quota quota;
-    @XmlElementWrapper(name = "groups")
-    @XmlElement(name = "element")
     private List<String> groups;
 
     public String getId() {

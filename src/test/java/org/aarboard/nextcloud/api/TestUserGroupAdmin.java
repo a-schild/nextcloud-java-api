@@ -18,10 +18,12 @@ package org.aarboard.nextcloud.api;
 
 import org.aarboard.nextcloud.api.provisioning.User;
 import org.aarboard.nextcloud.api.provisioning.UserData;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -35,40 +37,70 @@ import static org.junit.Assert.*;
 public class TestUserGroupAdmin extends ATestClass {
 
     @Test
-    public void t00_testUserDetails() {
-        System.out.println("userDetails");
-        if (_nc != null)
-        {
-            User user = _nc.getUserDetails();
-            assertNotNull(user);
+    public void t01_testCreateGroup() {
+        System.out.println("createGroup");
+        if (_nc != null) {
+            String groupId = TESTGROUP;
+            boolean result = _nc.createGroup(groupId);
+            assertTrue(result);
+        }
+    }
+
+    @Test
+    public void t02_testGetGroups_0args() {
+        System.out.println("getGroups");
+        if (_nc != null) {
+            Collection<String> result = _nc.getGroups();
+            assertNotNull(result);
+            assertTrue(result.contains(TESTGROUP));
+        }
+    }
+
+    @Test
+    public void t03_testGetGroups_3args() {
+        System.out.println("getGroups");
+        if (_nc != null) {
+            String search = TESTGROUP;
+            int limit = 1;
+            int offset = -1;
+            Collection<String> result = _nc.getGroups(search, limit, offset);
+            assertNotNull(result);
+            assertTrue(result.contains(TESTGROUP));
         }
     }
     
     @Test
-    public void t01_testCreateUser() {
+    public void t04_00_testCreateUser() {
         System.out.println("createUser");
-        if (_nc != null)
-        {
+        if (_nc != null) {
             boolean result = _nc.createUser(TESTUSER, "aBcDeFg123456");
             assertTrue(result);
         }
     }
 
     @Test
-    public void t01_01_testCreateUserWithInvalidChar() {
+    public void t04_01_testCreateUserFull() {
+        System.out.println("createUser");
+        if (_nc != null) {
+            boolean result = _nc.createUser(TESTUSER+"Full", "aBcDeFg123456",
+                    "Full Test User", "full@test.org", "5368709120000B", "de", Arrays.asList(TESTGROUP));
+            assertTrue(result);
+        }
+    }
+
+    @Test
+    public void t04_02_testCreateUserWithInvalidChar() {
         System.out.println("createUserWithInvalidChar");
-        if (_nc != null)
-        {
+        if (_nc != null) {
             boolean result = _nc.createUser(TESTUSER_WITH_INVALID_CHAR, "aBcDeFg123456");
             assertTrue(result);
         }
     }
 
     @Test
-    public void t02_testGetUsers() {
+    public void t05_00_testGetUsers() {
         System.out.println("getUsers");
-        if (_nc != null)
-        {
+        if (_nc != null) {
             Collection<String> result = _nc.getUsers();
             assertNotNull(result);
             assertTrue(result.contains(TESTUSER));
@@ -76,7 +108,7 @@ public class TestUserGroupAdmin extends ATestClass {
     }
 
     @Test
-    public void t02_01_testGetUsersDetails() {
+    public void t05_01_testGetUsersDetails() {
         System.out.println("getUsersDetails");
         if (_nc != null)
         {
@@ -88,10 +120,9 @@ public class TestUserGroupAdmin extends ATestClass {
     }
 
     @Test
-    public void t03_testGetUsers_3args() {
+    public void t06_00_testGetUsers_3args() {
         System.out.println("getUsers");
-        if (_nc != null)
-        {
+        if (_nc != null) {
             String search = TESTUSER;
             int limit = 1;
             int offset = -1;
@@ -102,10 +133,9 @@ public class TestUserGroupAdmin extends ATestClass {
     }
 
     @Test
-    public void t03_01_testGetUsersDetails_3args() {
+    public void t06_01_testGetUsersDetails_3args() {
         System.out.println("getUsersDetails");
-        if (_nc != null)
-        {
+        if (_nc != null) {
             int limit = 1;
             int offset = -1;
             Collection<User> result1 = _nc.getUsersDetails(TESTUSER, limit, offset);
@@ -118,30 +148,27 @@ public class TestUserGroupAdmin extends ATestClass {
     }
 
     @Test
-    public void t04_testEditUser() {
+    public void t07_testEditUser() {
         System.out.println("editUser");
-        if (_nc != null)
-        {
+        if (_nc != null) {
             boolean result = _nc.editUser(TESTUSER, UserData.TWITTER, "test");
             assertTrue(result);
         }
     }
 
     @Test
-    public void t05_testDisableUser() {
+    public void t08_testDisableUser() {
         System.out.println("disableUser");
-        if (_nc != null)
-        {
+        if (_nc != null) {
             boolean result = _nc.disableUser(TESTUSER);
             assertTrue(result);
         }
     }
 
     @Test
-    public void t06_testGetUser() {
+    public void t09_00_testGetUser() {
         System.out.println("getUser");
-        if (_nc != null)
-        {
+        if (_nc != null) {
             User result = _nc.getUser(TESTUSER);
             assertNotNull(result);
             assertEquals(TESTUSER, result.getId());
@@ -151,56 +178,27 @@ public class TestUserGroupAdmin extends ATestClass {
     }
 
     @Test
-    public void t07_testEnableUser() {
+    public void t09_01_testGetCurrentUser() {
+        System.out.println("getCurrentUser");
+        if (_nc != null) {
+            User user = _nc.getCurrentUser();
+            assertNotNull(user);
+        }
+    }
+
+    @Test
+    public void t10_testEnableUser() {
         System.out.println("enableUser");
-        if (_nc != null)
-        {
+        if (_nc != null) {
             boolean result = _nc.enableUser(TESTUSER);
             assertTrue(result);
         }
     }
 
     @Test
-    public void t08_testCreateGroup() {
-        System.out.println("createGroup");
-        if (_nc != null)
-        {
-            String groupId = TESTGROUP;
-            boolean result = _nc.createGroup(groupId);
-            assertTrue(result);
-        }
-    }
-
-    @Test
-    public void t09_testGetGroups_0args() {
-        System.out.println("getGroups");
-        if (_nc != null)
-        {
-            Collection<String> result = _nc.getGroups();
-            assertNotNull(result);
-            assertTrue(result.contains(TESTGROUP));
-        }
-    }
-
-    @Test
-    public void t10_testGetGroups_3args() {
-        System.out.println("getGroups");
-        if (_nc != null)
-        {
-            String search = TESTGROUP;
-            int limit = 1;
-            int offset = -1;
-            Collection<String> result = _nc.getGroups(search, limit, offset);
-            assertNotNull(result);
-            assertTrue(result.contains(TESTGROUP));
-        }
-    }
-
-    @Test
     public void t11_testAddUserToGroup() {
         System.out.println("addUserToGroup");
-        if (_nc != null)
-        {
+        if (_nc != null) {
             boolean result = _nc.addUserToGroup(TESTUSER, TESTGROUP);
             assertTrue(result);
         }
@@ -209,8 +207,7 @@ public class TestUserGroupAdmin extends ATestClass {
     @Test
     public void t12_testGetGroupsOfUser() {
         System.out.println("getGroupsOfUser");
-        if (_nc != null)
-        {
+        if (_nc != null) {
             List<String> result = _nc.getGroupsOfUser(TESTUSER);
             assertNotNull(result);
             assertTrue(result.contains(TESTGROUP));
@@ -218,10 +215,9 @@ public class TestUserGroupAdmin extends ATestClass {
     }
 
     @Test
-    public void t13_testGetMembersOfGroup() {
+    public void t13_00_testGetMembersOfGroup() {
         System.out.println("getMembersOfGroup");
-        if (_nc != null)
-        {
+        if (_nc != null) {
             List<String> result = _nc.getMembersOfGroup(TESTGROUP);
             assertNotNull(result);
             assertTrue(result.contains(TESTUSER));
@@ -229,10 +225,19 @@ public class TestUserGroupAdmin extends ATestClass {
     }
 
     @Test
+    public void t13_01_testGetMembersDetailsOfGroup() {
+        System.out.println("getMembersDetailsOfGroup");
+        if (_nc != null) {
+            List<User> result = _nc.getMembersDetailsOfGroup(TESTGROUP);
+            assertNotNull(result);
+            assertTrue(result.stream().anyMatch(user -> StringUtils.equals(user.getId(), TESTUSER)));
+        }
+    }
+
+    @Test
     public void t14_testPromoteToSubadmin() {
         System.out.println("promoteToSubadmin");
-        if (_nc != null)
-        {
+        if (_nc != null) {
             boolean result = _nc.promoteToSubadmin(TESTUSER, TESTGROUP);
             assertTrue(result);
         }
@@ -241,8 +246,7 @@ public class TestUserGroupAdmin extends ATestClass {
     @Test
     public void t15_testGetSubadminGroupsOfUser() {
         System.out.println("getSubadminGroupsOfUser");
-        if (_nc != null)
-        {
+        if (_nc != null) {
             List<String> result = _nc.getSubadminGroupsOfUser(TESTUSER);
             assertNotNull(result);
             assertTrue(result.contains(TESTGROUP));
@@ -252,8 +256,7 @@ public class TestUserGroupAdmin extends ATestClass {
     @Test
     public void t16_testGetSubadminsOfGroup() {
         System.out.println("getSubadminsOfGroup");
-        if (_nc != null)
-        {
+        if (_nc != null) {
             List<String> result = _nc.getSubadminsOfGroup(TESTGROUP);
             assertNotNull(result);
             assertTrue(result.contains(TESTUSER));
@@ -263,8 +266,7 @@ public class TestUserGroupAdmin extends ATestClass {
     @Test
     public void t17_testDemoteSubadmin() {
         System.out.println("demoteSubadmin");
-        if (_nc != null)
-        {
+        if (_nc != null) {
             boolean result = _nc.demoteSubadmin(TESTUSER, TESTGROUP);
             assertTrue(result);
         }
@@ -273,28 +275,34 @@ public class TestUserGroupAdmin extends ATestClass {
     @Test
     public void t18_testRemoveUserFromGroup() {
         System.out.println("removeUserFromGroup");
-        if (_nc != null)
-        {
+        if (_nc != null) {
             boolean result = _nc.removeUserFromGroup(TESTUSER, TESTGROUP);
             assertTrue(result);
         }
     }
 
     @Test
-    public void t19_testDeleteUser() {
+    public void t19_00_testDeleteUser() {
         System.out.println("deleteUser");
-        if (_nc != null)
-        {
+        if (_nc != null) {
             boolean result = _nc.deleteUser(TESTUSER);
             assertTrue(result);
         }
     }
 
     @Test
-    public void t19_01_testDeleteUserWithInvalidChar() {
+    public void t19_01_testDeleteUserFull() {
+        System.out.println("deleteUserFull");
+        if (_nc != null) {
+            boolean result = _nc.deleteUser(TESTUSER+"Full");
+            assertTrue(result);
+        }
+    }
+
+    @Test
+    public void t19_02_testDeleteUserWithInvalidChar() {
         System.out.println("deleteUserWithInvalidChar");
-        if (_nc != null)
-        {
+        if (_nc != null) {
             boolean result = _nc.deleteUser(TESTUSER_WITH_INVALID_CHAR);
             assertTrue(result);
         }
@@ -303,8 +311,7 @@ public class TestUserGroupAdmin extends ATestClass {
     @Test
     public void t20_testDeleteGroup() {
         System.out.println("deleteGroup");
-        if (_nc != null)
-        {
+        if (_nc != null) {
             String groupId = TESTGROUP;
             boolean result = _nc.deleteGroup(groupId);
             assertTrue(result);
