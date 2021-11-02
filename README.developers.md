@@ -17,7 +17,9 @@ Additional labels for pre-release and build metadata are available as extensions
 ## Changelog
 If enhancing the code base, please also update the [Changelog](Changelog.md)
 
-## How to run unit tests
+## Unit tests
+For all new functionality, please provide a unit test.
+
 For the unit test to be executed, you need to specify valid
 next cloud server name and login admin credentials
 

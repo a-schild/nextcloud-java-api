@@ -1,4 +1,6 @@
 # Changelog for nextcloud api
+- 2021-11-02
+  - Release 12.0.0, thanks for all contributions (See below)
 - 2021-10-28
   - Bump version to 12.0.0-SNAPSHOT due to api changes
   - We did remove all xml based provision api, since they don't work
