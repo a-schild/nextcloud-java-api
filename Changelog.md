@@ -1,5 +1,7 @@
 # Changelog for nextcloud api
 - 2022-04-01
+  - Release 12.0.2, upgraded jaxb-runtime to 3.0.2 too because of indirect dependencies
+- 2022-04-01
   - Release 12.0.1, upgraded various dependencies
   - jackson-databind upgraded to 2.13.2.2 to fix CVE-2020-36518 (Thanks to MrRoubous)
 - 2021-11-02
