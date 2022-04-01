@@ -3,25 +3,25 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.aarboard.nextcloud</groupId>
     <artifactId>nextcloud-api</artifactId>
-    <version>12.0.0</version>
+    <version>12.0.1</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <junit.version>4.13.2</junit.version>
-        <httpcore.version>4.4.14</httpcore.version>
-        <httpasyncclient.version>4.1.4</httpasyncclient.version>
+        <httpcore.version>4.4.15</httpcore.version>
+        <httpasyncclient.version>4.1.5</httpasyncclient.version>
         <httpclient.version>4.5.13</httpclient.version>
-        <slf4j-api.version>1.7.32</slf4j-api.version>
-        <slf4j-simple.version>1.7.32</slf4j-simple.version>
+        <slf4j-api.version>1.7.36</slf4j-api.version>
+        <slf4j-simple.version>1.7.36</slf4j-simple.version>
         <sardine.version>5.10</sardine.version>
         <commons-io.version>2.11.0</commons-io.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <jakarta.xml.bind-api.version>2.3.3</jakarta.xml.bind-api.version>
-        <jaxb-runtime.version>2.3.5</jaxb-runtime.version>
+        <jaxb-runtime.version>2.3.6</jaxb-runtime.version>
+        <jackson.version>2.13.2.2</jackson.version>
         <netbeans.hint.license>gpl30</netbeans.hint.license>
-        <jackson.version>2.13.0</jackson.version>
     </properties>
     <name>NextCloud Java API library</name>
     <description>Java api library to access nextcloud features from java applications</description>
