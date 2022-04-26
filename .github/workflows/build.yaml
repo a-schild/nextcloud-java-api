@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@develop
       with:
         ref: ${{ github.ref }}
     - name: Set up JDK 1.8
