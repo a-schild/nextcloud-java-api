@@ -17,7 +17,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       with:
-      ref: develop
+        ref: develop
     - name: Set up JDK 1.8
       uses: actions/setup-java@v3
       with:
