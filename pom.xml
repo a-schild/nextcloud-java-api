@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.aarboard.nextcloud</groupId>
     <artifactId>nextcloud-api</artifactId>
-    <version>12.0.2</version>
+    <version>12.0.3</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -20,7 +20,7 @@
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <jakarta.xml.bind-api.version>2.3.3</jakarta.xml.bind-api.version>
         <jaxb-runtime.version>3.0.2</jaxb-runtime.version>
-        <jackson.version>2.13.2.2</jackson.version>
+        <jackson.version>2.14.1</jackson.version>
         <netbeans.hint.license>gpl30</netbeans.hint.license>
     </properties>
     <name>NextCloud Java API library</name>
