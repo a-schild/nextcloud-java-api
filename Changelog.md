@@ -1,5 +1,6 @@
 # Changelog for nextcloud api
-- 2022-11.29
+- 2022-11-29
+  - Release 12.0.4, upgraded indirect commons-codec dependency
   - Release 12.0.3, upgraded jackson dependencies
 - 2022-04-01
   - Release 12.0.2, upgraded jaxb-runtime to 3.0.2 too because of indirect dependencies
