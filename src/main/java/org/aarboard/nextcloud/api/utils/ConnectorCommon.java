@@ -154,6 +154,9 @@ public class ConnectorCommon
         // https://docs.nextcloud.com/server/14/developer_manual/core/ocs-share-api.html
         request.addHeader("OCS-APIRequest", "true");
         request.addHeader("Content-Type", "application/x-www-form-urlencoded");
+        if (serverConfig.getAuthenticationConfig().usesBearerTokenAuthentication()) {
+            request.addHeader("Authorization", "Bearer " + serverConfig.getAuthenticationConfig().getBearerToken());
+        }
         request.setProtocolVersion(HttpVersion.HTTP_1_1);
 
         HttpClientContext context = prepareContext();
