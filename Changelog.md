@@ -1,4 +1,6 @@
 # Changelog for nextcloud api
+- 2023-09-29
+  - Release 12.0.5, added bearer authentication for non-webdav calls (Thanks to Arnout Engelen)
 - 2022-11-29
   - Release 12.0.4, upgraded indirect commons-codec dependency
   - Release 12.0.3, upgraded jackson dependencies
