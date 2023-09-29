@@ -6,7 +6,7 @@
   - The api remains identical, except the places where javax.xml stuff was exposed
 	They now use the jakarta.xml names
   - Bump all dependencies to latest versions, also build environment
-  - Added Cyclode DX SBOM
+  - Added Cyclone DX SBOM
 
 ## Version 12
 - 2023-09-29
