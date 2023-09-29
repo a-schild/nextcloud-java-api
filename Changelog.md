@@ -2,11 +2,11 @@
 ## Version 13
 - 2023-09-29
   - Release 13.0.0
-    -- Switch to jakarta xml stuff for simpler Java 11+ compatibility
-    -- The api remains identical, except the places where javax.xml stuff was exposed
-	   They now use the jakarta.xml names
-	-- Bump all dependencies to latest versions, also build environment
-	-- Added Cyclode DX SBOM
+  - Switch to jakarta xml stuff for simpler Java 11+ compatibility
+  - The api remains identical, except the places where javax.xml stuff was exposed
+	They now use the jakarta.xml names
+  - Bump all dependencies to latest versions, also build environment
+  - Added Cyclode DX SBOM
 
 ## Version 12
 - 2023-09-29
