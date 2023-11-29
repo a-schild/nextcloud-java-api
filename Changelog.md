@@ -1,4 +1,9 @@
 # Changelog for nextcloud api
+## Version 13.0.1
+- 2023-09-29
+  - Release 13.0.1
+  - Cleanup closed http client, thanks to lucnygr
+
 ## Version 13
 - 2023-09-29
   - Release 13.0.0
