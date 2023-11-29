@@ -1,4 +1,21 @@
 # Changelog for nextcloud api
+## Version 13.0.1
+- 2023-09-29
+  - Release 13.0.1
+  - Cleanup closed http client, thanks to lucnygr
+
+## Version 13
+- 2023-09-29
+  - Release 13.0.0
+  - Switch to jakarta xml stuff for simpler Java 11+ compatibility
+  - The api remains identical, except the places where javax.xml stuff was exposed
+	They now use the jakarta.xml names
+  - Bump all dependencies to latest versions, also build environment
+  - Added Cyclone DX SBOM
+
+## Version 12
+- 2023-09-29
+  - Release 12.0.5, added bearer authentication for non-webdav calls (Thanks to Arnout Engelen)
 - 2022-11-29
   - Release 12.0.4, upgraded indirect commons-codec dependency
   - Release 12.0.3, upgraded jackson dependencies
@@ -16,6 +33,8 @@
   - The getQuota() method now returns an Optional<Long>, to handle the case
     when no quota is set at all (Allowing unlimited storage)
 	Thanks @kriszman for the patches
+
+## Version 11
 - 2021-10-13
   - Prepare 11.7.0-SNAPSHOT
   - Fix downloadFolder() when having special chars in folder name(s)

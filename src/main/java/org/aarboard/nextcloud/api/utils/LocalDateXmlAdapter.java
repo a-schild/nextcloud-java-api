@@ -1,8 +1,8 @@
 package org.aarboard.nextcloud.api.utils;
 
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 import java.time.LocalDate;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 public class LocalDateXmlAdapter extends XmlAdapter<String, LocalDate>
 {
