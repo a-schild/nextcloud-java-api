@@ -192,7 +192,7 @@ public class NextcloudConnector {
      * Trust all HTTPS certificates presented by the server. This is e.g. used
      * to work against a Nextcloud instance with a self-signed certificate.
      *
-     * @param trustAllCertificates Do we accep self signed certificates or not
+     * @param trustAllCertificates Do we accept self-signed certificates or not
      */
     public void trustAllCertificates(boolean trustAllCertificates) {
         this.serverConfig.setTrustAllCertificates(trustAllCertificates);
@@ -662,7 +662,7 @@ public class NextcloudConnector {
     }
 
     /**
-     * Gets user details of currently logged in user
+     * Gets user details of currently logged-in user
      *
      * @return all user details
      */
@@ -1136,7 +1136,7 @@ public class NextcloudConnector {
      * nextcloud server
      * @param downloadpath Local path where the file has to be downloaded in the
      * local machine
-     * @return boolean true if sucessfull
+     * @return boolean true if successful
      * @throws java.io.IOException In case of IO errors
      */
     public boolean downloadFile(String remotepath, String downloadpath) throws IOException {
@@ -1219,7 +1219,7 @@ public class NextcloudConnector {
      * @param appConfigAppKey a key name as returned by
      * {@link #getAppConfigAppKeys(String)}
      * @param value the value to set
-     * @return true if sucessfully set
+     * @return true if successfully set
      */
     public boolean setAppConfigAppKeyValue(String appConfigApp, String appConfigAppKey, Object value) {
         return cc.setAppConfigAppKeyValue(appConfigApp, appConfigAppKey, value);
@@ -1230,7 +1230,7 @@ public class NextcloudConnector {
      * @param appConfigAppKeyPath the full appConfigAppKeyPath combining
      * appConfigApp and appConfigAppKey with "/"
      * @param value the value to set
-     * @return Operation sucessfull
+     * @return Operation successful
      */
     public boolean setAppConfigAppKeyValue(String appConfigAppKeyPath, Object value) {
         return cc.setAppConfigAppKeyValue(appConfigAppKeyPath, value);
@@ -1243,7 +1243,7 @@ public class NextcloudConnector {
      * {@link #getAppConfigApps()}
      * @param appConfigAppkey a key name as returned by
      * {@link #getAppConfigAppKeys(String)}
-     * @return Operation sucessfull
+     * @return Operation successful
      */
     public boolean deleteAppConfigAppKeyEntry(String appConfigApp, String appConfigAppkey) {
         return cc.deleteAppConfigAppKeyEntry(appConfigApp, appConfigAppkey);

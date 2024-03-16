@@ -71,7 +71,7 @@ public class NextcloudVersion
      * major.minor.path(.revision) E.g. 20.4.0.0 or 14.1.3
      *
      * @param value of NextCloudInstance
-     * @return a versionbn instance
+     * @return a version instance
      * @since 11.5
      */
     public static NextcloudVersion get(final String value)
@@ -103,7 +103,7 @@ public class NextcloudVersion
 
     /**
      *
-     * @return true if usernae shall appendend to path, false otherwise
+     * @return true if username shall be appended to path, false otherwise
      */
     public boolean isAppendUserName()
     {
@@ -112,7 +112,7 @@ public class NextcloudVersion
 
     /**
      *
-     * @return true if appendSuffix shall appendend to path, false otherwise
+     * @return true if appendSuffix shall be appended to path, false otherwise
      */
     public boolean isAppendSuffix()
     {
