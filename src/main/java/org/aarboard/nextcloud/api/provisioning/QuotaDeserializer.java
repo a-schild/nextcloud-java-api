@@ -12,7 +12,7 @@ import java.util.Optional;
 public class QuotaDeserializer extends JsonDeserializer<Optional<Long>> {
 
     @Override
-    public Optional<Long> deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+    public Optional<Long> deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         Long result = null;
         String quota = jsonParser.getValueAsString();
         if (NumberUtils.isCreatable(quota)) {
