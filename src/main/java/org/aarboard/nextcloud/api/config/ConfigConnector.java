@@ -30,8 +30,8 @@ import org.apache.http.message.BasicNameValuePair;
 
 public class ConfigConnector {
 	
-	private final static String CONFIG_PART = "ocs/v2.php/apps/provisioning_api/api/v1/config/";
-	
+	private static final String CONFIG_PART = "ocs/v2.php/apps/provisioning_api/api/v1/config/apps";
+
 	private final ConnectorCommon connectorCommon;
 	
 	public ConfigConnector(ServerConfig serverConfig){

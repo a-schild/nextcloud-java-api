@@ -147,7 +147,7 @@ public class Files extends AWebdavHandler{
      * @throws IOException  In case of IO errors
      */
     public boolean downloadFile(String remotePath, String downloadDirPath) throws IOException {
-        boolean status = false;
+        boolean status;
         String path = buildWebdavPath(remotePath);
         Sardine sardine = buildAuthSardine();
 
@@ -207,7 +207,7 @@ public class Files extends AWebdavHandler{
         String path = buildWebdavPath(remotePath);
         Sardine sardine = buildAuthSardine();
 
-        WebdavInputStream in = null;
+        WebdavInputStream in;
         try
         {
             in = new WebdavInputStream(sardine, sardine.get(path));
@@ -322,7 +322,7 @@ public class Files extends AWebdavHandler{
     
     private long convertStringToLong(String number)
     {
-        if (number == null || number.equals(""))
+        if (number == null || number.isEmpty())
         {
             return 0;
         }

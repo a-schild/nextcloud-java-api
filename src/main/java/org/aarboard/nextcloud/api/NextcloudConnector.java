@@ -41,7 +41,7 @@ import org.aarboard.nextcloud.api.webdav.pathresolver.WebDavPathResolverBuilder;
 
 public class NextcloudConnector {
 
-    private final ServerConfig _serverConfig;
+    private final ServerConfig serverConfig;
     private final ProvisionConnector pc;
     private final FilesharingConnector fc;
     private final ConfigConnector cc;
@@ -95,20 +95,20 @@ public class NextcloudConnector {
      * <a href="https://nextcloud.instance.com:8443/cloud">...</a>
      * @param authenticationConfig Authentication config
      */
-    public NextcloudConnector(String serviceUrl, AuthenticationConfig authenticationConfig) {
+    public NextcloudConnector(String originalServiceUrl, AuthenticationConfig authenticationConfig) {
         try {
-            URL _serviceUrl = new URL(serviceUrl);
-            boolean useHTTPS = serviceUrl.startsWith("https");
-            _serverConfig = new ServerConfig(_serviceUrl.getHost(), useHTTPS, _serviceUrl.getPort(),
+            URL serviceUrl = new URL(originalServiceUrl);
+            boolean useHTTPS = originalServiceUrl.startsWith("https");
+            this.serverConfig = new ServerConfig(serviceUrl.getHost(), useHTTPS, serviceUrl.getPort(),
                     authenticationConfig);
-            if (!_serviceUrl.getPath().isEmpty()) {
-                _serverConfig.setSubPathPrefix(_serviceUrl.getPath());
+            if (!serviceUrl.getPath().isEmpty()) {
+                this.serverConfig.setSubPathPrefix(serviceUrl.getPath());
             }
-            pc = new ProvisionConnector(_serverConfig);
-            fc = new FilesharingConnector(_serverConfig);
-            cc = new ConfigConnector(_serverConfig);
-            fd = new Folders(_serverConfig);
-            fl = new Files(_serverConfig);
+            pc = new ProvisionConnector(this.serverConfig);
+            fc = new FilesharingConnector(this.serverConfig);
+            cc = new ConfigConnector(this.serverConfig);
+            fd = new Folders(this.serverConfig);
+            fl = new Files(this.serverConfig);
 
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException(e);
@@ -124,12 +124,12 @@ public class NextcloudConnector {
      */
     public NextcloudConnector(String serverName, boolean useHTTPS, int port,
             AuthenticationConfig authenticationConfig) {
-        _serverConfig = new ServerConfig(serverName, useHTTPS, port, authenticationConfig);
-        pc = new ProvisionConnector(_serverConfig);
-        fc = new FilesharingConnector(_serverConfig);
-        cc = new ConfigConnector(_serverConfig);
-        fd = new Folders(_serverConfig);
-        fl = new Files(_serverConfig);
+        this.serverConfig = new ServerConfig(serverName, useHTTPS, port, authenticationConfig);
+        pc = new ProvisionConnector(this.serverConfig);
+        fc = new FilesharingConnector(this.serverConfig);
+        cc = new ConfigConnector(this.serverConfig);
+        fd = new Folders(this.serverConfig);
+        fl = new Files(this.serverConfig);
     }
 
     /**
@@ -171,8 +171,8 @@ public class NextcloudConnector {
         WebDavPathResolver resolver = WebDavPathResolverBuilder.get(type)
                 .ofVersion(NextcloudVersion.get(getServerVersion()))
                 .withUserName(getCurrentUser().getId())
-//                .withUserName(_serverConfig.getUserName())
-                .withBasePathPrefix(_serverConfig.getSubPathPrefix()).build();
+//                .withUserName(this.serverConfig.getUserName())
+                .withBasePathPrefix(this.serverConfig.getSubPathPrefix()).build();
 
         this.fd.setWebDavPathResolver(resolver);
         this.fl.setWebDavPathResolver(resolver);
@@ -195,7 +195,7 @@ public class NextcloudConnector {
      * @param trustAllCertificates Do we accep self signed certificates or not
      */
     public void trustAllCertificates(boolean trustAllCertificates) {
-        _serverConfig.setTrustAllCertificates(trustAllCertificates);
+        this.serverConfig.setTrustAllCertificates(trustAllCertificates);
     }
 
     /**
@@ -206,7 +206,7 @@ public class NextcloudConnector {
      * installed in root
      */
     public void setSubpathPrefix(String subpathPrefix) {
-        _serverConfig.setSubPathPrefix(subpathPrefix);
+        this.serverConfig.setSubPathPrefix(subpathPrefix);
     }
 
     /**

@@ -43,8 +43,9 @@ import org.apache.http.message.BasicNameValuePair;
  */
 public class FilesharingConnector
 {
-    private final static String ROOT_PART= "ocs/v1.php/apps/files_sharing/api/v1/";
-    private final static String SHARES_PART= ROOT_PART+"shares";
+
+    private static final String ROOT_PART= "ocs/v1.php/apps/files_sharing/api/v1/";
+    private static final String SHARES_PART= ROOT_PART+"shares";
 
     private final ConnectorCommon connectorCommon;
 

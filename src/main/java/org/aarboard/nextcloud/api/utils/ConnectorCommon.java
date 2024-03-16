@@ -186,7 +186,7 @@ public class ConnectorCommon
         return HttpClientContext.create();
     }
 
-    private final class ResponseCallback<R> implements FutureCallback<HttpResponse> {
+    private static final class ResponseCallback<R> implements FutureCallback<HttpResponse> {
         private final ResponseParser<R> parser;
         private final CompletableFuture<R> futureResponse;
 

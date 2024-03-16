@@ -38,8 +38,8 @@ import org.aarboard.nextcloud.api.exception.NextcloudApiException;
 public class NextcloudVersion
 {
 
-    private final static String PROPERTIES_PATH_PATTERN = "/org/aarboard/nextcloud/api/webdav/pathresolver/webdavpathresolver_{0}.properties";
-    private final static String APPEND_USERNAME_PATTERN = "nextcloud.webdav.base.{0}.suffix.append.username";
+    private static final String PROPERTIES_PATH_PATTERN = "/org/aarboard/nextcloud/api/webdav/pathresolver/webdavpathresolver_{0}.properties";
+    private static final String APPEND_USERNAME_PATTERN = "nextcloud.webdav.base.{0}.suffix.append.username";
 
     private final String versionValue;
 
@@ -52,7 +52,7 @@ public class NextcloudVersion
     private String patch = "0";
     private String revision = "0";
 
-    private Properties configProperties = new Properties();
+    private final Properties configProperties = new Properties();
     /**
      * defaults to files
      */
@@ -89,9 +89,9 @@ public class NextcloudVersion
         return new NextcloudVersion(value);
     }
 
-    public NextcloudVersion ofType(WebDavPathResolverBuilder.TYPE _type)
+    public NextcloudVersion ofType(WebDavPathResolverBuilder.TYPE type)
     {
-        this.webdavType = _type;
+        this.webdavType = type;
 
         return this;
     }

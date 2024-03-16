@@ -47,17 +47,17 @@ public abstract class AWebdavHandler
     private static final Logger LOG = LoggerFactory.getLogger(AWebdavHandler.class);
 
     public static final int  FILE_BUFFER_SIZE= 4096;
-    public static String WEB_DAV_BASE_PATH = "remote.php/webdav/";
+    public static final String WEB_DAV_BASE_PATH = "remote.php/webdav/";
     
-    private final ServerConfig _serverConfig;
+    private final ServerConfig serverConfig;
 
     private WebDavPathResolver resolver;
 
     private String nextcloudServerVersion;
 
-    public AWebdavHandler(ServerConfig serverConfig)
+    protected AWebdavHandler(ServerConfig serverConfig)
     {
-        _serverConfig = serverConfig;
+        this.serverConfig = serverConfig;
     }
 
     public void setWebDavPathResolver(final WebDavPathResolver resolver)
@@ -80,7 +80,7 @@ public abstract class AWebdavHandler
 
     private void resolveNextcloudServerVersion()
     {
-        final WebDavPathResolver versionResolver = WebDavPathResolverBuilder.get(WebDavPathResolverBuilder.TYPE.VERSION).withBasePathPrefix(_serverConfig.getSubPathPrefix()).build();
+        final WebDavPathResolver versionResolver = WebDavPathResolverBuilder.get(WebDavPathResolverBuilder.TYPE.VERSION).withBasePathPrefix(this.serverConfig.getSubPathPrefix()).build();
 
         final String url = buildWebdavPath(versionResolver, "");
         final Sardine sardine = buildAuthSardine();
@@ -91,7 +91,7 @@ public abstract class AWebdavHandler
                     .lines().collect(Collectors.joining("\n"));
 
             //TODO parse with proper json api
-            nextcloudServerVersion = Arrays.asList(json.split(",")).stream().filter(x -> x.contains("version")).map(x -> x.split(":")[1]).findAny().orElse("20.0").replaceAll("\"", "");
+            nextcloudServerVersion = Arrays.stream(json.split(",")).filter(x -> x.contains("version")).map(x -> x.split(":")[1]).findAny().orElse("20.0").replace("\"", "");
 
         }
         catch (IOException ex)
@@ -122,13 +122,13 @@ public abstract class AWebdavHandler
     {
         if (null == this.resolver)
         {
-            ProvisionConnector pc= new ProvisionConnector(_serverConfig);
+            ProvisionConnector pc= new ProvisionConnector(this.serverConfig);
             User currentUser= pc.getCurrentUser();
             this.resolver = WebDavPathResolverBuilder.get(WebDavPathResolverBuilder.TYPE.FILES)//
                     .ofVersion(NextcloudVersion.get(getServerVersion()))
                     .withUserName(currentUser.getId())
                     .withBasePathSuffix("files")
-                    .withBasePathPrefix(_serverConfig.getSubPathPrefix()).build();
+                    .withBasePathPrefix(this.serverConfig.getSubPathPrefix()).build();
         }
 
         return this.resolver;
@@ -148,9 +148,9 @@ public abstract class AWebdavHandler
     protected String buildWebdavPath(WebDavPathResolver resolver, String remotePath)
     {
         URIBuilder uB = new URIBuilder()
-                .setScheme(_serverConfig.isUseHTTPS() ? "https" : "http")
-                .setHost(_serverConfig.getServerName())
-                .setPort(_serverConfig.getPort())
+                .setScheme(this.serverConfig.isUseHTTPS() ? "https" : "http")
+                .setHost(this.serverConfig.getServerName())
+                .setPort(this.serverConfig.getPort())
                 .setPath(resolver.getWebDavPath(remotePath));
         return uB.toString();
     }
@@ -174,15 +174,14 @@ public abstract class AWebdavHandler
      */
     protected Sardine buildAuthSardine()
     {
-        if (_serverConfig.getAuthenticationConfig().usesBasicAuthentication()) {
+        if (this.serverConfig.getAuthenticationConfig().usesBasicAuthentication()) {
             Sardine sardine = SardineFactory.begin();
-            sardine.setCredentials(_serverConfig.getUserName(),
-                    _serverConfig.getAuthenticationConfig().getPassword());
-            sardine.enablePreemptiveAuthentication(_serverConfig.getServerName());
+            sardine.setCredentials(this.serverConfig.getUserName(),
+                    this.serverConfig.getAuthenticationConfig().getPassword());
+            sardine.enablePreemptiveAuthentication(this.serverConfig.getServerName());
             return sardine;
         }
-        Sardine sardine = new SardineImpl(_serverConfig.getAuthenticationConfig().getBearerToken());
-        return sardine;
+      return new SardineImpl(this.serverConfig.getAuthenticationConfig().getBearerToken());
     }
 
     /**

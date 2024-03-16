@@ -40,6 +40,10 @@ public class ProvisionConnector
     private final static String USER_PART= ROOT_PART+"user";
     private final static String USERS_PART= ROOT_PART+"users";
     private final static String GROUPS_PART= ROOT_PART+"groups";
+    private static final String ROOT_PART= "ocs/v1.php/cloud/";
+    private static final String USER_PART= ROOT_PART+"user";
+    private static final String USERS_PART= ROOT_PART+"users";
+    private static final String GROUPS_PART= ROOT_PART+"groups";
 
     private final ConnectorCommon connectorCommon;
 
@@ -65,21 +69,11 @@ public class ProvisionConnector
         List<NameValuePair> postParams= new LinkedList<>();
         postParams.add(new BasicNameValuePair("userid", userId));
         postParams.add(new BasicNameValuePair("password", password));
-        if (displayName.isPresent()) {
-            postParams.add(new BasicNameValuePair("displayName", displayName.get()));
-        }
-        if (email.isPresent()) {
-            postParams.add(new BasicNameValuePair("email", email.get()));
-        }
-        if (quota.isPresent()) {
-            postParams.add(new BasicNameValuePair("quota", quota.get()));
-        }
-        if (language.isPresent()) {
-            postParams.add(new BasicNameValuePair("language", language.get()));
-        }
-        groups.forEach(group -> {
-            postParams.add(new BasicNameValuePair("groups[]", group));
-        });
+        displayName.ifPresent(s -> postParams.add(new BasicNameValuePair("displayName", s)));
+        email.ifPresent(s -> postParams.add(new BasicNameValuePair("email", s)));
+        quota.ifPresent(s -> postParams.add(new BasicNameValuePair("quota", s)));
+        language.ifPresent(s -> postParams.add(new BasicNameValuePair("language", s)));
+        groups.forEach(group -> postParams.add(new BasicNameValuePair("groups[]", group)));
 
         return connectorCommon.executePost(USERS_PART, postParams, JsonAnswerParser.getInstance(JsonVoidAnswer.class));
     }
