@@ -35,7 +35,7 @@ public class ServerConfig {
      * 
      * @param serverName           ip or dns name of server
      * @param useHTTPS             Use https or http to connect
-     * @param port                 Port, usuallay 443 for https and 80 for http
+     * @param port                 Port, usually 443 for https and 80 for http
      * @param loginName
      * @param password
      */
@@ -58,7 +58,7 @@ public class ServerConfig {
      * 
      * @param serverName           ip or dns name of server
      * @param useHTTPS             Use https or http to connect
-     * @param port                 Port, usuallay 443 for https and 80 for http
+     * @param port                 Port, usually 443 for https and 80 for http
      * @param authenticationConfig Authentication configuration for authentication
      */
     public ServerConfig(String serverName, 
@@ -79,7 +79,7 @@ public class ServerConfig {
      * 
      * @param serverName           ip or dns name of server
      * @param useHTTPS             Use https or http to connect
-     * @param port                 Port, usuallay 443 for https and 80 for http
+     * @param port                 Port, usually 443 for https and 80 for http
      * @param subPathPrefix        Path to your nextcloud instance, without starting and trailing /
      *                             can be null if installed in root
      * @param authenticationConfig Authentication configuration for authentication
@@ -204,7 +204,7 @@ public class ServerConfig {
 
         /**
          * 
-         * @return user name of the given user (Is not always the login name)
+         * @return username of the given user (Is not always the login name)
          */
         public String getUserName()
         {
@@ -215,7 +215,7 @@ public class ServerConfig {
         
         /**
          * 
-         * @return login name of the given user (Is not always the user name)
+         * @return login name of the given user (Is not always the username)
          */
         public String getLoginName()
         {
