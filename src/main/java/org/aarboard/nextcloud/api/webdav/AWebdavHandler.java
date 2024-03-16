@@ -45,6 +45,7 @@ public abstract class AWebdavHandler
 {
 
     private static final Logger LOG = LoggerFactory.getLogger(AWebdavHandler.class);
+    private static final String ERROR_CLOSING = "error in closing sardine connector";
 
     public static final int  FILE_BUFFER_SIZE= 4096;
     public static final String WEB_DAV_BASE_PATH = "remote.php/webdav/";
@@ -106,7 +107,7 @@ public abstract class AWebdavHandler
             }
             catch (IOException ex)
             {
-                LOG.warn("error in closing sardine connector", ex);
+                LOG.warn(ERROR_CLOSING, ex);
             }
         }
 
@@ -211,7 +212,7 @@ public abstract class AWebdavHandler
             }
             catch (IOException ex)
             {
-                LOG.warn("error in closing sardine connector", ex);
+                LOG.warn(ERROR_CLOSING, ex);
             }
         }
     }
@@ -242,7 +243,7 @@ public abstract class AWebdavHandler
             }
             catch (IOException ex)
             {
-                LOG.warn("error in closing sardine connector", ex);
+                LOG.warn(ERROR_CLOSING, ex);
             }
         }
     }
@@ -273,7 +274,7 @@ public abstract class AWebdavHandler
             }
             catch (IOException ex)
             {
-                LOG.warn("error in closing sardine connector", ex);
+                LOG.warn(ERROR_CLOSING, ex);
             }
         }
     }

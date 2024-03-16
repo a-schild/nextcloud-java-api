@@ -36,14 +36,13 @@ import java.util.concurrent.CompletableFuture;
  */
 public class ProvisionConnector
 {
-    private final static String ROOT_PART= "ocs/v1.php/cloud/";
-    private final static String USER_PART= ROOT_PART+"user";
-    private final static String USERS_PART= ROOT_PART+"users";
-    private final static String GROUPS_PART= ROOT_PART+"groups";
+
     private static final String ROOT_PART= "ocs/v1.php/cloud/";
     private static final String USER_PART= ROOT_PART+"user";
     private static final String USERS_PART= ROOT_PART+"users";
     private static final String GROUPS_PART= ROOT_PART+"groups";
+    public static final String GROUPID_KEY = "groupid";
+    public static final String SUBADMINS_PART = "/subadmins";
 
     private final ConnectorCommon connectorCommon;
 
@@ -330,7 +329,7 @@ public class ProvisionConnector
      */
     public CompletableFuture<JsonVoidAnswer> addUserToGroupAsync(String userId, String groupId) {
         List<NameValuePair> queryParams = new LinkedList<>();
-        queryParams.add(new BasicNameValuePair("groupid", groupId));
+        queryParams.add(new BasicNameValuePair(GROUPID_KEY, groupId));
         return connectorCommon.executePost(USERS_PART + "/" + userId + "/groups", queryParams, JsonAnswerParser.getInstance(JsonVoidAnswer.class));
     }
 
@@ -354,7 +353,7 @@ public class ProvisionConnector
      */
     public CompletableFuture<JsonVoidAnswer> removeUserFromGroupAsync(String userId, String groupId) {
         List<NameValuePair> queryParams = new LinkedList<>();
-        queryParams.add(new BasicNameValuePair("groupid", groupId));
+        queryParams.add(new BasicNameValuePair(GROUPID_KEY, groupId));
         return connectorCommon.executeDelete(USERS_PART, userId + "/groups", queryParams, JsonAnswerParser.getInstance(JsonVoidAnswer.class));
     }
 
@@ -375,7 +374,7 @@ public class ProvisionConnector
      * @return a CompletableFuture containing the result of the operation
      */
     public CompletableFuture<JsonListAnswer> getSubadminGroupsOfUserAsync(String userId) {
-        return connectorCommon.executeGet(USERS_PART + "/" + userId + "/subadmins", null, JsonAnswerParser.getInstance(JsonListAnswer.class));
+        return connectorCommon.executeGet(USERS_PART + "/" + userId + SUBADMINS_PART, null, JsonAnswerParser.getInstance(JsonListAnswer.class));
     }
 
     /**
@@ -398,8 +397,8 @@ public class ProvisionConnector
      */
     public CompletableFuture<JsonVoidAnswer> promoteToSubadminAsync(String userId, String groupId) {
         List<NameValuePair> queryParams = new LinkedList<>();
-        queryParams.add(new BasicNameValuePair("groupid", groupId));
-        return connectorCommon.executePost(USERS_PART + "/" + userId + "/subadmins", queryParams, JsonAnswerParser.getInstance(JsonVoidAnswer.class));
+        queryParams.add(new BasicNameValuePair(GROUPID_KEY, groupId));
+        return connectorCommon.executePost(USERS_PART + "/" + userId + SUBADMINS_PART, queryParams, JsonAnswerParser.getInstance(JsonVoidAnswer.class));
     }
 
     /**
@@ -422,8 +421,8 @@ public class ProvisionConnector
      */
     public CompletableFuture<JsonVoidAnswer> demoteSubadminAsync(String userId, String groupId) {
         List<NameValuePair> queryParams = new LinkedList<>();
-        queryParams.add(new BasicNameValuePair("groupid", groupId));
-        return connectorCommon.executeDelete(USERS_PART, userId + "/subadmins", queryParams, JsonAnswerParser.getInstance(JsonVoidAnswer.class));
+        queryParams.add(new BasicNameValuePair(GROUPID_KEY, groupId));
+        return connectorCommon.executeDelete(USERS_PART, userId + SUBADMINS_PART, queryParams, JsonAnswerParser.getInstance(JsonVoidAnswer.class));
     }
 
     /**
@@ -503,7 +502,7 @@ public class ProvisionConnector
      * @return a CompletableFuture containing the result of the operation
      */
     public CompletableFuture<JsonListAnswer> getSubadminsOfGroupAsync(String groupId) {
-        return connectorCommon.executeGet(GROUPS_PART + "/" + groupId + "/subadmins", null, JsonAnswerParser.getInstance(JsonListAnswer.class));
+        return connectorCommon.executeGet(GROUPS_PART + "/" + groupId + SUBADMINS_PART, null, JsonAnswerParser.getInstance(JsonListAnswer.class));
     }
 
     /**
@@ -524,7 +523,7 @@ public class ProvisionConnector
      */
     public CompletableFuture<JsonVoidAnswer> createGroupAsync(String groupId) {
         List<NameValuePair> postParams= new LinkedList<>();
-        postParams.add(new BasicNameValuePair("groupid", groupId));
+        postParams.add(new BasicNameValuePair(GROUPID_KEY, groupId));
         return connectorCommon.executePost(GROUPS_PART, postParams, JsonAnswerParser.getInstance(JsonVoidAnswer.class));
     }
 

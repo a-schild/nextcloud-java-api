@@ -4,7 +4,6 @@ package org.aarboard.nextcloud.api.webdav;
 import com.github.sardine.DavResource;
 import com.github.sardine.Sardine;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,7 +24,11 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class Files extends AWebdavHandler{
+
     private static final Logger LOG = LoggerFactory.getLogger(Files.class);
+    private static final String ERROR_SHUTDOWN = "Error in sardine shutdown";
+    public static final String URI_NS_OWNCLOUD = "http://owncloud.org/ns";
+    public static final String URI_NS_DAV = "DAV:";
 
     public Files(ServerConfig serverConfig) {
         super(serverConfig);
@@ -66,7 +69,7 @@ public class Files extends AWebdavHandler{
             }
             catch(Exception ex2)
             {
-                LOG.warn("Error in sardine shutdown", ex2);
+                LOG.warn(ERROR_SHUTDOWN, ex2);
             }
         }
     }
@@ -109,7 +112,7 @@ public class Files extends AWebdavHandler{
             }
             catch(Exception ex2)
             {
-                LOG.warn("Error in sardine shutdown", ex2);
+                LOG.warn(ERROR_SHUTDOWN, ex2);
             }
         }
     }
@@ -189,9 +192,8 @@ public class Files extends AWebdavHandler{
      * @param remotePath Remotepath where the file is saved in the nextcloud
      * server
      * @return InputStream
-     * @throws IOException  In case of IO errors
      */
-    public InputStream downloadFile(String remotePath) throws IOException {
+    public InputStream downloadFile(String remotePath) {
         String path = buildWebdavPath(remotePath);
         Sardine sardine = buildAuthSardine();
 
@@ -211,7 +213,7 @@ public class Files extends AWebdavHandler{
             }
             catch(Exception ex2)
             {
-                LOG.warn("Error in sardine shutdown", ex2);
+                LOG.warn(ERROR_SHUTDOWN, ex2);
             }
         }
         return in;
@@ -225,9 +227,8 @@ public class Files extends AWebdavHandler{
      * @param allProperties Return all properties, not only base properties
      * <a href="https://docs.nextcloud.com/server/latest/developer_manual/client_apis/WebDAV/basic.html#requesting-properties">...</a>
      * @return InputStream
-     * @throws IOException  In case of IO errors
      */
-    public ResourceProperties getProperties(String remotePath, boolean allProperties) throws IOException {
+    public ResourceProperties getProperties(String remotePath, boolean allProperties) {
         String path = buildWebdavPath(remotePath);
         Sardine sardine = buildAuthSardine();
 
@@ -236,25 +237,25 @@ public class Files extends AWebdavHandler{
             Set<QName> props= new HashSet<>();
             if (allProperties)
             {
-                props.add(new QName("DAV:", "getlastmodified", "d"));
-                props.add(new QName("DAV:", "getetag", "d"));
-                props.add(new QName("DAV:", "getcontenttype", "d"));
-                props.add(new QName("DAV:", "resourcetype", "d"));
-                props.add(new QName("DAV:", "getcontentlength", "d"));
-                props.add(new QName("DAV:", "displayname", "d"));
-                props.add(new QName("http://owncloud.org/ns", "id", "oc"));
-                props.add(new QName("http://owncloud.org/ns", "fileid", "oc"));
-                props.add(new QName("http://owncloud.org/ns", "favorite", "oc"));
-                props.add(new QName("http://owncloud.org/ns", "comments-href", "oc"));
-                props.add(new QName("http://owncloud.org/ns", "comments-count", "oc"));
-                props.add(new QName("http://owncloud.org/ns", "comments-unread", "oc"));
-                props.add(new QName("http://owncloud.org/ns", "owner-id", "oc"));
-                props.add(new QName("http://owncloud.org/ns", "owner-display-name", "oc"));
-                props.add(new QName("http://owncloud.org/ns", "share-types", "oc"));
-                props.add(new QName("http://owncloud.org/ns", "checksums", "oc"));
+                props.add(new QName(URI_NS_DAV, "getlastmodified", "d"));
+                props.add(new QName(URI_NS_DAV, "getetag", "d"));
+                props.add(new QName(URI_NS_DAV, "getcontenttype", "d"));
+                props.add(new QName(URI_NS_DAV, "resourcetype", "d"));
+                props.add(new QName(URI_NS_DAV, "getcontentlength", "d"));
+                props.add(new QName(URI_NS_DAV, "displayname", "d"));
+                props.add(new QName(URI_NS_OWNCLOUD, "id", "oc"));
+                props.add(new QName(URI_NS_OWNCLOUD, "fileid", "oc"));
+                props.add(new QName(URI_NS_OWNCLOUD, "favorite", "oc"));
+                props.add(new QName(URI_NS_OWNCLOUD, "comments-href", "oc"));
+                props.add(new QName(URI_NS_OWNCLOUD, "comments-count", "oc"));
+                props.add(new QName(URI_NS_OWNCLOUD, "comments-unread", "oc"));
+                props.add(new QName(URI_NS_OWNCLOUD, "owner-id", "oc"));
+                props.add(new QName(URI_NS_OWNCLOUD, "owner-display-name", "oc"));
+                props.add(new QName(URI_NS_OWNCLOUD, "share-types", "oc"));
+                props.add(new QName(URI_NS_OWNCLOUD, "checksums", "oc"));
                 props.add(new QName("http://nextcloud.org/ns", "has-preview", "nc"));
-                props.add(new QName("http://owncloud.org/ns", "permissions", "oc"));
-                props.add(new QName("http://owncloud.org/ns", "size", "oc"));
+                props.add(new QName(URI_NS_OWNCLOUD, "permissions", "oc"));
+                props.add(new QName(URI_NS_OWNCLOUD, "size", "oc"));
             }
             List<DavResource> resources= sardine.propfind(path, 0, props);
             if (resources != null && resources.size() == 1)
@@ -303,7 +304,7 @@ public class Files extends AWebdavHandler{
             }
             catch(Exception ex2)
             {
-                LOG.warn("Error in sardine shutdown", ex2);
+                LOG.warn(ERROR_SHUTDOWN, ex2);
             }
         }
     }
