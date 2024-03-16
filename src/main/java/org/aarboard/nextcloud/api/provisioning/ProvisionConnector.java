@@ -31,7 +31,7 @@ import java.util.concurrent.CompletableFuture;
  *
  * @author a.schild
  *
- * https://docs.nextcloud.com/server/11.0/admin_manual/configuration_user/user_provisioning_api.html
+ * <a href="https://docs.nextcloud.com/server/11.0/admin_manual/configuration_user/user_provisioning_api.html">...</a>
  *
  */
 public class ProvisionConnector

@@ -235,7 +235,7 @@ public class Files extends AWebdavHandler{
      * @param remotePath Remotepath of the resource to query for
      * server
      * @param allProperties Return all properties, not only base properties
-     * https://docs.nextcloud.com/server/latest/developer_manual/client_apis/WebDAV/basic.html#requesting-properties
+     * <a href="https://docs.nextcloud.com/server/latest/developer_manual/client_apis/WebDAV/basic.html#requesting-properties">...</a>
      * @return InputStream
      * @throws IOException  In case of IO errors
      */

@@ -31,8 +31,8 @@ public class ServerConfig {
 
     /**
      * Use this constructor if your nextcloud instance is installed in the 
-     * root of the webhosting, like https://nextcloud.company.my/
-     * 
+     * root of the webhosting, like <a href="https://nextcloud.company.my/">...</a>
+     *
      * @param serverName           ip or dns name of server
      * @param useHTTPS             Use https or http to connect
      * @param port                 Port, usually 443 for https and 80 for http
@@ -54,8 +54,8 @@ public class ServerConfig {
     
     /**
      * Use this constructor if your nextcloud instance is installed in the 
-     * root of the webhosting, like https://nextcloud.company.my/
-     * 
+     * root of the webhosting, like <a href="https://nextcloud.company.my/">...</a>
+     *
      * @param serverName           ip or dns name of server
      * @param useHTTPS             Use https or http to connect
      * @param port                 Port, usually 443 for https and 80 for http
@@ -75,8 +75,8 @@ public class ServerConfig {
     
     /**
      * Is this constructor if your nextcloud is installed in a subfolder of the server
-     * like https://nextcloud.company.my/<b>nextcloud/</b>
-     * 
+     * like <a href="https://nextcloud.company.my/">...</a><b>nextcloud/</b>
+     *
      * @param serverName           ip or dns name of server
      * @param useHTTPS             Use https or http to connect
      * @param port                 Port, usually 443 for https and 80 for http

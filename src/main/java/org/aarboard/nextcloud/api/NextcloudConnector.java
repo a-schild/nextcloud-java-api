@@ -73,7 +73,7 @@ public class NextcloudConnector {
 
     /**
      * @param serviceUrl url of the nextcloud instance, e.g.
-     * https://nextcloud.instance.com:8443/cloud
+     * <a href="https://nextcloud.instance.com:8443/cloud">...</a>
      * @param loginName User for login
      * @param password Password for login
      */
@@ -83,7 +83,7 @@ public class NextcloudConnector {
 
     /**
      * @param serviceUrl url of the nextcloud instance, e.g.
-     * https://nextcloud.instance.com:8443/cloud
+     * <a href="https://nextcloud.instance.com:8443/cloud">...</a>
      * @param bearerToken Bearer token for login
      */
     public NextcloudConnector(String serviceUrl, String bearerToken) {
@@ -91,8 +91,8 @@ public class NextcloudConnector {
     }
 
     /**
-     * @param serviceUrl url of the nextcloud instance, e.g.
-     * https://nextcloud.instance.com:8443/cloud
+     * @param originalServiceUrl url of the nextcloud instance, e.g.
+     * <a href="https://nextcloud.instance.com:8443/cloud">...</a>
      * @param authenticationConfig Authentication config
      */
     public NextcloudConnector(String serviceUrl, AuthenticationConfig authenticationConfig) {
@@ -968,7 +968,7 @@ public class NextcloudConnector {
      * @deprecated Since some nextcloud installations use fpm or fastcgi to
      * connect to php, here the uploads might get zero empty on the server Use a
      * (temp) file to upload the data, so the content length is known in advance
-     * https://github.com/a-schild/nextcloud-java-api/issues/20
+     * <a href="https://github.com/a-schild/nextcloud-java-api/issues/20">...</a>
      */
     public void uploadFile(InputStream inputStream, String remotePath) {
         fl.uploadFile(inputStream, remotePath);
@@ -987,7 +987,7 @@ public class NextcloudConnector {
      * @deprecated Since some nextcloud installations use fpm or fastcgi to
      * connect to php, here the uploads might get zero empty on the server Use a
      * (temp) file to upload the data, so the content length is known in advance
-     * https://github.com/a-schild/nextcloud-java-api/issues/20
+     * <a href="https://github.com/a-schild/nextcloud-java-api/issues/20">...</a>
      */
     public void uploadFile(InputStream inputStream, String remotePath, boolean continueHeader) {
         fl.uploadFile(inputStream, remotePath, continueHeader);
