@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.aarboard.nextcloud</groupId>
     <artifactId>nextcloud-api</artifactId>
-    <version>13.0.1</version>
+    <version>13.0.2</version>
     <packaging>jar</packaging>
     <properties>
         <!-- compile time dependencies -->
