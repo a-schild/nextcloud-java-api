@@ -30,8 +30,8 @@ import org.apache.http.message.BasicNameValuePair;
 
 public class ConfigConnector {
 	
-	private final static String CONFIG_PART = "ocs/v2.php/apps/provisioning_api/api/v1/config/";
-	
+	private static final String CONFIG_PART = "ocs/v2.php/apps/provisioning_api/api/v1/config/apps";
+
 	private final ConnectorCommon connectorCommon;
 	
 	public ConfigConnector(ServerConfig serverConfig){
@@ -44,7 +44,7 @@ public class ConfigConnector {
 	}
 	
 	private CompletableFuture<AppConfigAppsAnswer> getAppConfigAppsAsync(){
-		return connectorCommon.executeGet(CONFIG_PART + "apps", Collections.emptyList(),
+		return connectorCommon.executeGet(CONFIG_PART, Collections.emptyList(),
 			XMLAnswerParser.getInstance(AppConfigAppsAnswer.class));
 	}
 	
@@ -54,7 +54,7 @@ public class ConfigConnector {
 	}
 	
 	private CompletableFuture<AppConfigAppsAnswer> getAppConfigAppsAsync(String appConfigApp){
-		return connectorCommon.executeGet(CONFIG_PART + "apps/" + appConfigApp,
+		return connectorCommon.executeGet(CONFIG_PART + "/" + appConfigApp,
 			Collections.emptyList(), XMLAnswerParser.getInstance(AppConfigAppsAnswer.class));
 	}
 	
@@ -72,7 +72,7 @@ public class ConfigConnector {
 	
 	private CompletableFuture<AppConfigAppKeyValueAnswer> getAppConfigAppsKeyAsync(
 		String appConfigAppKeyPath){
-		return connectorCommon.executeGet(CONFIG_PART + "apps/" + appConfigAppKeyPath,
+		return connectorCommon.executeGet(CONFIG_PART + "/" + appConfigAppKeyPath,
 			Collections.emptyList(), XMLAnswerParser.getInstance(AppConfigAppKeyValueAnswer.class));
 	}
 	
@@ -91,7 +91,7 @@ public class ConfigConnector {
 		String appConfigAppKeyPath, Object value){
 		List<NameValuePair> postParams = new LinkedList<>();
 		postParams.add(new BasicNameValuePair("value", value.toString()));
-		return connectorCommon.executePost(CONFIG_PART + "apps/" + appConfigAppKeyPath, postParams,
+		return connectorCommon.executePost(CONFIG_PART + "/" + appConfigAppKeyPath, postParams,
 			XMLAnswerParser.getInstance(AppConfigAppKeyValueAnswer.class));
 	}
 	

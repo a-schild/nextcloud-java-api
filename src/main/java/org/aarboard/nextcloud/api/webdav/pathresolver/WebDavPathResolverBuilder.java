@@ -25,13 +25,13 @@ import java.util.Map;
 public class WebDavPathResolverBuilder
 {
 
-    public final static String NEXTCLOUD_WEBDAV_BASE_PATH = "nextcloud.webdav.base.path";
+    public static final String NEXTCLOUD_WEBDAV_BASE_PATH = "nextcloud.webdav.base.path";
 
-    public final static String NEXTCLOUD_WEBDAV_BASE_PATH_SUFFIX = "nextcloud.webdav.base.suffix.path";
+    public static final String NEXTCLOUD_WEBDAV_BASE_PATH_SUFFIX = "nextcloud.webdav.base.suffix.path";
 
-    public final static String NEXTCLOUD_WEBDAV_BASE_PATH_PREFIX = "nextcloud.webdav.base.prefix.path";
+    public static final String NEXTCLOUD_WEBDAV_BASE_PATH_PREFIX = "nextcloud.webdav.base.prefix.path";
 
-    public final static String NEXTCLOUD_USER_NAME = "nextcloud.userName";
+    public static final String NEXTCLOUD_USER_NAME = "nextcloud.userName";
 
     /**
      * Type of the resolver FILES, VCARD, CALDAV, VERSION
@@ -69,16 +69,14 @@ public class WebDavPathResolverBuilder
 
     }
 
-    private WebDavPathResolver result;
-
-    private TYPE type;
+  private final TYPE type;
 
     /**
      * Defaults to the latest
      */
     private NextcloudVersion version = NextcloudVersion.get("20.0.4");
 
-    private Map<String, String> valueMap = new HashMap<>();
+    private final Map<String, String> valueMap = new HashMap<>();
 
     public static WebDavPathResolverBuilder get(final TYPE type)
     {
@@ -174,7 +172,8 @@ public class WebDavPathResolverBuilder
      */
     public WebDavPathResolver build()
     {
-        switch (type)
+      WebDavPathResolver result;
+      switch (type)
         {
             case FILES:
             case CALDAV:

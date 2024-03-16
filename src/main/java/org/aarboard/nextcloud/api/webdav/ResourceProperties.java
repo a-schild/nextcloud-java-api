@@ -46,6 +46,7 @@ public class ResourceProperties {
     private long    size; // Unlike contentlength, this property also works for folders reporting the size of everything in the folder
 
     public ResourceProperties() {
+        //no-op
     }
 
     

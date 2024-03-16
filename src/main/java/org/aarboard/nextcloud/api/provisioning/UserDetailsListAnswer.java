@@ -3,6 +3,7 @@ package org.aarboard.nextcloud.api.provisioning;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
+import java.util.ArrayList;
 import org.aarboard.nextcloud.api.utils.JsonAnswer;
 
 import java.util.Collections;
@@ -18,7 +19,7 @@ public class UserDetailsListAnswer extends JsonAnswer {
     @JsonIgnore
     public List<User> getAllUserDetails() {
         if (data != null && data.users != null) {
-            return data.users.values().stream().collect(Collectors.toList());
+            return new ArrayList<>(data.users.values());
         }
         return Collections.emptyList();
     }

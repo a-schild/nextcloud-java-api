@@ -20,10 +20,10 @@ package org.aarboard.nextcloud.api.webdav;
 import com.github.sardine.DavResource;
 import com.github.sardine.Sardine;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.LinkedList;
 import java.util.List;
 import org.aarboard.nextcloud.api.ServerConfig;
@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 public class Folders extends AWebdavHandler{
 
     private static final Logger LOG = LoggerFactory.getLogger(Folders.class);
+    public static final String ERROR_SARDINE_CLOSING = "error in closing sardine connector";
 
     public Folders(ServerConfig serverConfig) {
         super(serverConfig);
@@ -115,7 +116,7 @@ public class Folders extends AWebdavHandler{
             }
             catch (IOException ex)
             {
-                LOG.warn("error in closing sardine connector", ex);
+                LOG.warn(ERROR_SARDINE_CLOSING, ex);
             }
         }
         for (DavResource res : resources)
@@ -179,7 +180,7 @@ public class Folders extends AWebdavHandler{
             }
             catch (IOException ex)
             {
-                LOG.warn("error in closing sardine connector", ex);
+                LOG.warn(ERROR_SARDINE_CLOSING, ex);
             }
         }
     }
@@ -219,7 +220,7 @@ public class Folders extends AWebdavHandler{
         String newDownloadDir = rootDownloadDirPath + "/" + folderName;
         File nefile1 = new File(newDownloadDir);
         if(!nefile1.exists()) {
-            LOG.info("Creating new download directory: "+newDownloadDir);
+            LOG.info("Creating new download directory: {}", newDownloadDir);
             nefile1.mkdir();
         }
 
@@ -239,7 +240,6 @@ public class Folders extends AWebdavHandler{
 
             for (DavResource res : resources)
             {
-                System.out.println(res.getName());
                 //Skip the Documents folder which is listed as default as first by the sardine output
                 if(count != 0) {
                     if(res.isDirectory()) {
@@ -252,20 +252,20 @@ public class Folders extends AWebdavHandler{
                             filePath = buildWebdavPath(remotePath + "/" + fileName);
                             retVal.add(res.getName());
 
-                            InputStream in = null;
+                            InputStream in;
                             if (sardine.exists(filePath)) {
                                 in = sardine.get(filePath);
                                 byte[] buffer = new byte[AWebdavHandler.FILE_BUFFER_SIZE];
                                 int bytesRead;
                                 File targetFile = new File(newDownloadDir + "/" + fileName);
-                                try (OutputStream outStream = new FileOutputStream(targetFile))
+                                try (OutputStream outStream = Files.newOutputStream(
+                                    targetFile.toPath()))
                                 {
                                     while ((bytesRead = in.read(buffer)) != -1)
                                     {
                                         outStream.write(buffer, 0, bytesRead);
                                     }
                                     outStream.flush();
-                                    outStream.close();
                                 }
                             }
                     }
@@ -280,7 +280,7 @@ public class Folders extends AWebdavHandler{
             }
             catch (IOException ex)
             {
-                LOG.warn("error in closing sardine connector", ex);
+                LOG.warn(ERROR_SARDINE_CLOSING, ex);
             }
         }
     }
