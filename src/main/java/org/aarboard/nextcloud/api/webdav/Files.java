@@ -164,34 +164,22 @@ public class Files extends AWebdavHandler{
             String filename = segments[segments.length - 1];
             downloadDirPath = downloadDirPath + "/" + filename;
         }
-        InputStream in = null;
-        try
-        {
-            in = sardine.get(path);
-            byte[] buffer = new byte[AWebdavHandler.FILE_BUFFER_SIZE];
-            int bytesRead;
-            File targetFile = new File(downloadDirPath);
-            try (OutputStream outStream = new FileOutputStream(targetFile))
-            {
-                while ((bytesRead = in.read(buffer)) != -1)
-                {
-                    outStream.write(buffer, 0, bytesRead);
-                }
-                outStream.flush();
-                outStream.close();
-            }
-            status = true;
-        } catch (IOException e)
-        {
-            throw new NextcloudApiException(e);
-        } finally
-        {
-            sardine.shutdown();
-            if (in != null)
-            {
-                in.close();
-            }
+      try (InputStream in = sardine.get(path)) {
+        byte[] buffer = new byte[AWebdavHandler.FILE_BUFFER_SIZE];
+        int bytesRead;
+        File targetFile = new File(downloadDirPath);
+        try (OutputStream outStream = java.nio.file.Files.newOutputStream(targetFile.toPath())) {
+          while ((bytesRead = in.read(buffer)) != -1) {
+            outStream.write(buffer, 0, bytesRead);
+          }
+          outStream.flush();
         }
+        status = true;
+      } catch (IOException e) {
+        throw new NextcloudApiException(e);
+      } finally {
+        sardine.shutdown();
+      }
         return status;
     }
 
