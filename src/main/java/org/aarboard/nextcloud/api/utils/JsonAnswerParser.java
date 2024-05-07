@@ -28,10 +28,8 @@ public class JsonAnswerParser<A extends JsonAnswer> implements ConnectorCommon.R
         JsonAnswerParser<A> parser = (JsonAnswerParser<A>) PARSERS.get(answerClass.getName());
         if (parser == null) {
             synchronized (PARSERS) {
-                if (parser == null) {
-                    parser = new JsonAnswerParser<>(answerClass);
-                    PARSERS.put(answerClass.getName(), parser);
-                }
+              parser = new JsonAnswerParser<>(answerClass);
+              PARSERS.put(answerClass.getName(), parser);
             }
         }
         return parser;

@@ -9,7 +9,7 @@ public enum ShareData
 
     public final String parameterName;
 
-    private ShareData(String parameterName)
+    ShareData(String parameterName)
     {
         this.parameterName = parameterName;
     }
