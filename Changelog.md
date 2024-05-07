@@ -1,4 +1,9 @@
 # Changelog for nextcloud api
+## Version 13.1.0
+- 2024-05-07
+  - Release 13.1.0
+  - Merged enhancements and cleanups (Thanks to mathiasbosman)
+
 ## Version 13.0.1
 - 2023-09-29
   - Release 13.0.1
