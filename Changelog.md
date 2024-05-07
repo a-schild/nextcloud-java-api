@@ -1,8 +1,13 @@
 # Changelog for nextcloud api
-## Version 13.1.0
-- 2024-05-07
-  - Release 13.1.0
-  - Merged enhancements and cleanups (Thanks to mathiasbosman)
+## Version 13.0.2
+- 2024-03-16
+  - Typo fixes
+  - Javadoc url's
+  - Modifiers should be declared in the correct order
+  - Try-with resources
+  - Use constants where possible
+  - Removed redundant Exception throwing
+  - Simplified assertions in tests
 
 ## Version 13.0.1
 - 2023-09-29

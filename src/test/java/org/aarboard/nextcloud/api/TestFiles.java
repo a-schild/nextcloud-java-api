@@ -16,6 +16,7 @@
  */
 package org.aarboard.nextcloud.api;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -26,6 +27,8 @@ import java.io.InputStream;
 import org.aarboard.nextcloud.api.webdav.ResourceProperties;
 import org.junit.Assert;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -257,11 +260,13 @@ public class TestFiles extends ATestClass {
             try
             {
                 _nc.getProperties(TESTFILE2+"-not-existing", false);
-                assertFalse("Resource should throw 404 error", true);
+                fail("Resource should throw 404 error");
             }
             catch (Exception ex)
             {
-                assertTrue("com.github.sardine.impl.SardineException: status code: 404, reason phrase: Unexpected response (404 Not Found)".equals(ex.getMessage()));
+              assertEquals(
+                  "com.github.sardine.impl.SardineException: status code: 404, reason phrase: Unexpected response (404 Not Found)",
+                  ex.getMessage());
             }
         }
     }
@@ -280,7 +285,8 @@ public class TestFiles extends ATestClass {
                 nCount++;
             }
             is.close();
-            assertTrue("Downloaded content size does not match", nCount == TEST3_FILE_CONTENT.length());
+            assertEquals("Downloaded content size does not match", nCount,
+              TEST3_FILE_CONTENT.length());
         }
     }
 
@@ -292,11 +298,12 @@ public class TestFiles extends ATestClass {
             File of= new File(System.getProperty("java.io.tmpdir")+File.separator+TESTFILE1);
             if (_nc.downloadFile(TESTFILE1, of.getParent()))
             {
-                assertTrue("Downloaded content size does not match", of.length() == TEST1_FILE_CONTENT.length());
+                assertEquals("Downloaded content size does not match", of.length(),
+                  TEST1_FILE_CONTENT.length());
             }
             else
             {
-                assertTrue("Downloaded file failed", false);
+                fail("Downloaded file failed");
             }
             if (of.exists())
             {
@@ -313,11 +320,11 @@ public class TestFiles extends ATestClass {
             File of= new File(System.getProperty("java.io.tmpdir")+File.separator+TESTFILE4);
             if (_nc.downloadFile(TESTFILE4, of.getParent()))
             {
-                assertTrue("Downloaded content size does not match", of.length() == 0);
+                assertEquals("Downloaded content size does not match", 0, of.length());
             }
             else
             {
-                assertTrue("Downloaded file failed", false);
+                fail("Downloaded file failed");
             }
             if (of.exists())
             {
@@ -335,11 +342,11 @@ public class TestFiles extends ATestClass {
             if (_nc.downloadFile(TESTFILE6, of.getParent()))
             {
                 File srcFile= new File("src/test/resources/"+TESTFILE6);
-                assertTrue("Downloaded content size does not match", of.length() == srcFile.length());
+                assertEquals("Downloaded content size does not match", of.length(), srcFile.length());
             }
             else
             {
-                assertTrue("Downloaded file failed", false);
+                fail("Downloaded file failed");
             }
             if (of.exists())
             {
@@ -357,11 +364,11 @@ public class TestFiles extends ATestClass {
             if (_nc.downloadFile(TESTFILE7, of.getParent()))
             {
                 File srcFile= new File("src/test/resources/"+TESTFILE7);
-                assertTrue("Downloaded content size does not match", of.length() == srcFile.length());
+                assertEquals("Downloaded content size does not match", of.length(), srcFile.length());
             }
             else
             {
-                assertTrue("Downloaded file failed", false);
+                fail("Downloaded file failed");
             }
             if (of.exists())
             {

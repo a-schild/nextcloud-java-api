@@ -33,11 +33,8 @@ public class XMLAnswerParser<A extends XMLAnswer> implements ResponseParser<A>
         {
             synchronized (PARSERS)
             {
-                if (parser == null)
-                {
-                    parser = new XMLAnswerParser<>(answerClass);
-                    PARSERS.put(answerClass.getName(), parser);
-                }
+              parser = new XMLAnswerParser<>(answerClass);
+              PARSERS.put(answerClass.getName(), parser);
             }
         }
         return parser;
@@ -60,8 +57,7 @@ public class XMLAnswerParser<A extends XMLAnswer> implements ResponseParser<A>
     }
 
     @SuppressWarnings("unchecked")
-    private A tryParseAnswer(Reader xmlStream) throws JAXBException, IOException
-    {
+    private A tryParseAnswer(Reader xmlStream) throws JAXBException {
         Unmarshaller unmarshaller = jAXBContext.createUnmarshaller();
         Object result = unmarshaller.unmarshal(xmlStream);
         return (A) result;
