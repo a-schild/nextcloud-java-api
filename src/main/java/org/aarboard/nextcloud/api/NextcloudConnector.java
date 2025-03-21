@@ -39,7 +39,7 @@ import org.aarboard.nextcloud.api.webdav.pathresolver.NextcloudVersion;
 import org.aarboard.nextcloud.api.webdav.pathresolver.WebDavPathResolver;
 import org.aarboard.nextcloud.api.webdav.pathresolver.WebDavPathResolverBuilder;
 
-public class NextcloudConnector {
+public class NextcloudConnector implements AutoCloseable {
 
     private final ServerConfig serverConfig;
     private final ProvisionConnector pc;
@@ -186,6 +186,16 @@ public class NextcloudConnector {
      */
     public void shutdown() throws IOException {
         ConnectorCommon.shutdown();
+    }
+
+    /**
+     * Close the HTTP client. Perform this to cleanly shut down this
+     * application.
+     *
+     * @throws Exception In case of errors
+     */
+    public void close() throws Exception {
+        shutdown();
     }
 
     /**
