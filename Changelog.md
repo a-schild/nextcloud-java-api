@@ -1,5 +1,9 @@
 # Changelog for nextcloud api
 
+## Version 14.1.0
+- 2025-10-21
+  - Add HTTP proxy support (via system variables `https.proxyHost` and `https.proxyPort`)
+    
 ## Version 14.0.0
 - 2025-10-21
   - Bump required java version from 8 to 11+ (Thanks to kindlich)
