@@ -4,6 +4,7 @@
 - 2025-10-21
   - Bump required java version from 8 to 11+ (Thanks to kindlich)
   - Make connection autoclosable (thanks to raboof)
+  - Bump pom.xml dependencies where possible
 
 ## Version 13.0.2
 - 2024-03-16
