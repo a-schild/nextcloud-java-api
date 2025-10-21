@@ -249,8 +249,11 @@ public class ConnectorCommon
 					} catch (KeyManagementException | NoSuchAlgorithmException
 							| KeyStoreException e) {
 						throw new IOException(e);
-					} 
-					
+					}
+
+				} else if (System.getProperty("https.proxyHost") != null && System.getProperty("https.proxyPort") != null) {
+					HttpHost proxy = new HttpHost(System.getProperty("https.proxyHost"), Integer.parseInt(System.getProperty("https.proxyPort")), "http");
+					HTTPC_CLIENT = HttpAsyncClients.custom().setProxy(proxy).build();
 				} else {
 					HTTPC_CLIENT = HttpAsyncClients.createDefault();
 				}
