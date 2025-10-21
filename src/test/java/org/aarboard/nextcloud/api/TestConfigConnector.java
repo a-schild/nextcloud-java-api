@@ -16,20 +16,9 @@
  */
 package org.aarboard.nextcloud.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.Collection;
 import java.util.List;
-
-import org.aarboard.nextcloud.api.provisioning.User;
-import org.aarboard.nextcloud.api.provisioning.UserData;
-import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -47,7 +36,7 @@ public class TestConfigConnector extends ATestClass {
         if (_nc != null)
         {
             List<String> apps = _nc.getAppConfigApps();
-            assertTrue(apps != null);
+            assertNotNull(apps);
         }
     }
 
@@ -57,7 +46,7 @@ public class TestConfigConnector extends ATestClass {
         if (_nc != null)
         {
             List<String> appKeys = _nc.getAppConfigAppKeys("files");
-            assertTrue(appKeys != null);
+            assertNotNull(appKeys);
         }
     }
 
@@ -67,7 +56,7 @@ public class TestConfigConnector extends ATestClass {
         if (_nc != null)
         {
             String version = _nc.getAppConfigAppKeyValue("files", "installed_version");
-            assertTrue(version != null);
+            assertNotNull(version);
         }
     }
 }

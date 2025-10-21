@@ -39,9 +39,9 @@ import org.aarboard.nextcloud.api.webdav.pathresolver.NextcloudVersion;
 import org.aarboard.nextcloud.api.webdav.pathresolver.WebDavPathResolver;
 import org.aarboard.nextcloud.api.webdav.pathresolver.WebDavPathResolverBuilder;
 
-public class NextcloudConnector {
+public class NextcloudConnector implements AutoCloseable {
 
-    private final ServerConfig _serverConfig;
+    private final ServerConfig serverConfig;
     private final ProvisionConnector pc;
     private final FilesharingConnector fc;
     private final ConfigConnector cc;
@@ -73,7 +73,7 @@ public class NextcloudConnector {
 
     /**
      * @param serviceUrl url of the nextcloud instance, e.g.
-     * https://nextcloud.instance.com:8443/cloud
+     * <a href="https://nextcloud.instance.com:8443/cloud">...</a>
      * @param loginName User for login
      * @param password Password for login
      */
@@ -83,7 +83,7 @@ public class NextcloudConnector {
 
     /**
      * @param serviceUrl url of the nextcloud instance, e.g.
-     * https://nextcloud.instance.com:8443/cloud
+     * <a href="https://nextcloud.instance.com:8443/cloud">...</a>
      * @param bearerToken Bearer token for login
      */
     public NextcloudConnector(String serviceUrl, String bearerToken) {
@@ -91,24 +91,24 @@ public class NextcloudConnector {
     }
 
     /**
-     * @param serviceUrl url of the nextcloud instance, e.g.
-     * https://nextcloud.instance.com:8443/cloud
+     * @param originalServiceUrl url of the nextcloud instance, e.g.
+     * <a href="https://nextcloud.instance.com:8443/cloud">...</a>
      * @param authenticationConfig Authentication config
      */
-    public NextcloudConnector(String serviceUrl, AuthenticationConfig authenticationConfig) {
+    public NextcloudConnector(String originalServiceUrl, AuthenticationConfig authenticationConfig) {
         try {
-            URL _serviceUrl = new URL(serviceUrl);
-            boolean useHTTPS = serviceUrl.startsWith("https");
-            _serverConfig = new ServerConfig(_serviceUrl.getHost(), useHTTPS, _serviceUrl.getPort(),
+            URL serviceUrl = new URL(originalServiceUrl);
+            boolean useHTTPS = originalServiceUrl.startsWith("https");
+            this.serverConfig = new ServerConfig(serviceUrl.getHost(), useHTTPS, serviceUrl.getPort(),
                     authenticationConfig);
-            if (!_serviceUrl.getPath().isEmpty()) {
-                _serverConfig.setSubPathPrefix(_serviceUrl.getPath());
+            if (!serviceUrl.getPath().isEmpty()) {
+                this.serverConfig.setSubPathPrefix(serviceUrl.getPath());
             }
-            pc = new ProvisionConnector(_serverConfig);
-            fc = new FilesharingConnector(_serverConfig);
-            cc = new ConfigConnector(_serverConfig);
-            fd = new Folders(_serverConfig);
-            fl = new Files(_serverConfig);
+            pc = new ProvisionConnector(this.serverConfig);
+            fc = new FilesharingConnector(this.serverConfig);
+            cc = new ConfigConnector(this.serverConfig);
+            fd = new Folders(this.serverConfig);
+            fl = new Files(this.serverConfig);
 
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException(e);
@@ -124,12 +124,12 @@ public class NextcloudConnector {
      */
     public NextcloudConnector(String serverName, boolean useHTTPS, int port,
             AuthenticationConfig authenticationConfig) {
-        _serverConfig = new ServerConfig(serverName, useHTTPS, port, authenticationConfig);
-        pc = new ProvisionConnector(_serverConfig);
-        fc = new FilesharingConnector(_serverConfig);
-        cc = new ConfigConnector(_serverConfig);
-        fd = new Folders(_serverConfig);
-        fl = new Files(_serverConfig);
+        this.serverConfig = new ServerConfig(serverName, useHTTPS, port, authenticationConfig);
+        pc = new ProvisionConnector(this.serverConfig);
+        fc = new FilesharingConnector(this.serverConfig);
+        cc = new ConfigConnector(this.serverConfig);
+        fd = new Folders(this.serverConfig);
+        fl = new Files(this.serverConfig);
     }
 
     /**
@@ -171,8 +171,8 @@ public class NextcloudConnector {
         WebDavPathResolver resolver = WebDavPathResolverBuilder.get(type)
                 .ofVersion(NextcloudVersion.get(getServerVersion()))
                 .withUserName(getCurrentUser().getId())
-//                .withUserName(_serverConfig.getUserName())
-                .withBasePathPrefix(_serverConfig.getSubPathPrefix()).build();
+//                .withUserName(this.serverConfig.getUserName())
+                .withBasePathPrefix(this.serverConfig.getSubPathPrefix()).build();
 
         this.fd.setWebDavPathResolver(resolver);
         this.fl.setWebDavPathResolver(resolver);
@@ -189,13 +189,23 @@ public class NextcloudConnector {
     }
 
     /**
+     * Close the HTTP client. Perform this to cleanly shut down this
+     * application.
+     *
+     * @throws Exception In case of errors
+     */
+    public void close() throws Exception {
+        shutdown();
+    }
+
+    /**
      * Trust all HTTPS certificates presented by the server. This is e.g. used
      * to work against a Nextcloud instance with a self-signed certificate.
      *
-     * @param trustAllCertificates Do we accep self signed certificates or not
+     * @param trustAllCertificates Do we accept self-signed certificates or not
      */
     public void trustAllCertificates(boolean trustAllCertificates) {
-        _serverConfig.setTrustAllCertificates(trustAllCertificates);
+        this.serverConfig.setTrustAllCertificates(trustAllCertificates);
     }
 
     /**
@@ -206,7 +216,7 @@ public class NextcloudConnector {
      * installed in root
      */
     public void setSubpathPrefix(String subpathPrefix) {
-        _serverConfig.setSubPathPrefix(subpathPrefix);
+        this.serverConfig.setSubPathPrefix(subpathPrefix);
     }
 
     /**
@@ -662,7 +672,7 @@ public class NextcloudConnector {
     }
 
     /**
-     * Gets user details of currently logged in user
+     * Gets user details of currently logged-in user
      *
      * @return all user details
      */
@@ -968,7 +978,7 @@ public class NextcloudConnector {
      * @deprecated Since some nextcloud installations use fpm or fastcgi to
      * connect to php, here the uploads might get zero empty on the server Use a
      * (temp) file to upload the data, so the content length is known in advance
-     * https://github.com/a-schild/nextcloud-java-api/issues/20
+     * <a href="https://github.com/a-schild/nextcloud-java-api/issues/20">...</a>
      */
     public void uploadFile(InputStream inputStream, String remotePath) {
         fl.uploadFile(inputStream, remotePath);
@@ -987,7 +997,7 @@ public class NextcloudConnector {
      * @deprecated Since some nextcloud installations use fpm or fastcgi to
      * connect to php, here the uploads might get zero empty on the server Use a
      * (temp) file to upload the data, so the content length is known in advance
-     * https://github.com/a-schild/nextcloud-java-api/issues/20
+     * <a href="https://github.com/a-schild/nextcloud-java-api/issues/20">...</a>
      */
     public void uploadFile(InputStream inputStream, String remotePath, boolean continueHeader) {
         fl.uploadFile(inputStream, remotePath, continueHeader);
@@ -1136,7 +1146,7 @@ public class NextcloudConnector {
      * nextcloud server
      * @param downloadpath Local path where the file has to be downloaded in the
      * local machine
-     * @return boolean true if sucessfull
+     * @return boolean true if successful
      * @throws java.io.IOException In case of IO errors
      */
     public boolean downloadFile(String remotepath, String downloadpath) throws IOException {
@@ -1219,7 +1229,7 @@ public class NextcloudConnector {
      * @param appConfigAppKey a key name as returned by
      * {@link #getAppConfigAppKeys(String)}
      * @param value the value to set
-     * @return true if sucessfully set
+     * @return true if successfully set
      */
     public boolean setAppConfigAppKeyValue(String appConfigApp, String appConfigAppKey, Object value) {
         return cc.setAppConfigAppKeyValue(appConfigApp, appConfigAppKey, value);
@@ -1230,7 +1240,7 @@ public class NextcloudConnector {
      * @param appConfigAppKeyPath the full appConfigAppKeyPath combining
      * appConfigApp and appConfigAppKey with "/"
      * @param value the value to set
-     * @return Operation sucessfull
+     * @return Operation successful
      */
     public boolean setAppConfigAppKeyValue(String appConfigAppKeyPath, Object value) {
         return cc.setAppConfigAppKeyValue(appConfigAppKeyPath, value);
@@ -1243,7 +1253,7 @@ public class NextcloudConnector {
      * {@link #getAppConfigApps()}
      * @param appConfigAppkey a key name as returned by
      * {@link #getAppConfigAppKeys(String)}
-     * @return Operation sucessfull
+     * @return Operation successful
      */
     public boolean deleteAppConfigAppKeyEntry(String appConfigApp, String appConfigAppkey) {
         return cc.deleteAppConfigAppKeyEntry(appConfigApp, appConfigAppkey);

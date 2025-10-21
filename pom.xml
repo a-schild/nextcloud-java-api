@@ -3,19 +3,19 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.aarboard.nextcloud</groupId>
     <artifactId>nextcloud-api</artifactId>
-    <version>13.0.1</version>
+    <version>13.1.0</version>
     <packaging>jar</packaging>
     <properties>
         <!-- compile time dependencies -->
         <httpcore.version>4.4.16</httpcore.version>
         <httpasyncclient.version>4.1.5</httpasyncclient.version>
         <httpclient.version>4.5.14</httpclient.version>
-        <slf4j-api.version>2.0.9</slf4j-api.version>
+        <slf4j-api.version>2.0.13</slf4j-api.version>
         <sardine.version>5.12</sardine.version>
-        <commons-io.version>2.13.0</commons-io.version>
-        <commons-lang3.version>3.13.0</commons-lang3.version>
-        <commons-codec.version>1.16.0</commons-codec.version>
-        <jackson.version>2.15.2</jackson.version>
+        <commons-io.version>2.16.1</commons-io.version>
+        <commons-lang3.version>3.18.0</commons-lang3.version>
+        <commons-codec.version>1.17.0</commons-codec.version>
+        <jackson.version>2.17.1</jackson.version>
         <jakarta.xml.bind-api.version>4.0.1</jakarta.xml.bind-api.version>
         <jakarta-annotation-api.version>2.1.1</jakarta-annotation-api.version>
         <jaxb-impl.version>3.0.0</jaxb-impl.version>
@@ -42,8 +42,8 @@
         <maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
         <cyclonedx-maven-plugin.version>2.7.9</cyclonedx-maven-plugin.version>
 
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <netbeans.hint.license>gpl30</netbeans.hint.license>
     </properties>
     <name>NextCloud Java API library</name>
@@ -274,7 +274,7 @@
                 </executions>
                 <configuration>
                     <doCheck>false</doCheck>
-                    <doUpdate>true</doUpdate>
+                    <doUpdate>false</doUpdate>
                 </configuration>
             </plugin>
             <plugin>

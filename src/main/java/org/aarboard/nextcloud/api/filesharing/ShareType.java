@@ -22,8 +22,8 @@ import jakarta.xml.bind.annotation.XmlType;
 import java.security.InvalidParameterException;
 
 /**
- * https://docs.nextcloud.com/server/11/developer_manual/core/ocs-share-api.html
- * 
+ * <a href="https://docs.nextcloud.com/server/11/developer_manual/core/ocs-share-api.html">...</a>
+ *
  * @author a.schild
  */
 @XmlType

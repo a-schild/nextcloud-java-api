@@ -36,16 +36,16 @@ import org.apache.http.message.BasicNameValuePair;
  *
  * @author a.schild
  *
- * https://docs.nextcloud.com/server/11/developer_manual/core/ocs-share-api.html
- * 
+ * <a href="https://docs.nextcloud.com/server/11/developer_manual/core/ocs-share-api.html">...</a>
  * When specifying paths, you don't have to specify any webdav roots, or 
  * remote.php ... stuff. Just use the root of your file store directly
  *
  */
 public class FilesharingConnector
 {
-    private final static String ROOT_PART= "ocs/v1.php/apps/files_sharing/api/v1/";
-    private final static String SHARES_PART= ROOT_PART+"shares";
+
+    private static final String ROOT_PART= "ocs/v1.php/apps/files_sharing/api/v1/";
+    private static final String SHARES_PART= ROOT_PART+"shares";
 
     private final ConnectorCommon connectorCommon;
 
