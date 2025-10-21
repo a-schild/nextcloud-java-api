@@ -128,9 +128,10 @@ public class ServerConfig {
 	}
 	
 	/**
-         * @deprecated Use getSubPathPrefix() instead
+     * @deprecated Use getSubPathPrefix() instead
 	 * @return the configured subpath prefix
 	 */
+    @Deprecated
 	public String getSubpathPrefix(){
 		return getSubPathPrefix();
 	}
@@ -143,9 +144,10 @@ public class ServerConfig {
 	}
         
 	/**
-         * @deprecated Use setSubPathPrefix() instead
+     * @deprecated Use setSubPathPrefix() instead
 	 * @param subpathPrefix to apply
 	 */
+    @Deprecated
 	public void setSubpathPrefix(String subpathPrefix){
             setSubPathPrefix(subpathPrefix);
 	}
