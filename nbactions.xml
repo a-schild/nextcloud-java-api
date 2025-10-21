@@ -5,6 +5,7 @@
             <displayName>Deploy</displayName>
             <goals>
                 <goal>deploy</goal>
+                <goal>-DskipTests</goal>
             </goals>
         </action>
     </actions>

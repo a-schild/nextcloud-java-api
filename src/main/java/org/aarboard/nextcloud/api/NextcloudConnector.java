@@ -39,7 +39,7 @@ import org.aarboard.nextcloud.api.webdav.pathresolver.NextcloudVersion;
 import org.aarboard.nextcloud.api.webdav.pathresolver.WebDavPathResolver;
 import org.aarboard.nextcloud.api.webdav.pathresolver.WebDavPathResolverBuilder;
 
-public class NextcloudConnector {
+public class NextcloudConnector implements AutoCloseable {
 
     private final ServerConfig serverConfig;
     private final ProvisionConnector pc;
@@ -186,6 +186,16 @@ public class NextcloudConnector {
      */
     public void shutdown() throws IOException {
         ConnectorCommon.shutdown();
+    }
+
+    /**
+     * Close the HTTP client. Perform this to cleanly shut down this
+     * application.
+     *
+     * @throws Exception In case of errors
+     */
+    public void close() throws Exception {
+        shutdown();
     }
 
     /**
@@ -970,6 +980,7 @@ public class NextcloudConnector {
      * (temp) file to upload the data, so the content length is known in advance
      * <a href="https://github.com/a-schild/nextcloud-java-api/issues/20">...</a>
      */
+    @Deprecated
     public void uploadFile(InputStream inputStream, String remotePath) {
         fl.uploadFile(inputStream, remotePath);
     }
@@ -989,6 +1000,7 @@ public class NextcloudConnector {
      * (temp) file to upload the data, so the content length is known in advance
      * <a href="https://github.com/a-schild/nextcloud-java-api/issues/20">...</a>
      */
+    @Deprecated
     public void uploadFile(InputStream inputStream, String remotePath, boolean continueHeader) {
         fl.uploadFile(inputStream, remotePath, continueHeader);
     }

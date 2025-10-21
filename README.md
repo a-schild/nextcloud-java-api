@@ -19,10 +19,11 @@ Java api library to access nextcloud features from java applications
 	<dependency>
 	    <groupId>com.github.a-schild</groupId>
 	    <artifactId>nextcloud-java-api</artifactId>
-	    <version>13.1.0</version>
+	    <version>14.0.0</version>
 	</dependency>
 ```
 
+- The 14.x versions require Java 11+,as the jakarta.xml binding requires Java 11+
 - The 13.x versions are now using the jakarta.xml binding stuff, to prevent problems with Java 11+
   No API changes have been made in v13, but at some places the XML stuff is exposed
   Which made it necessary to bump the major version number
