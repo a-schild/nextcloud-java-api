@@ -2,7 +2,7 @@
 
 ## Version 14.1.0
 - 2025-10-22
-  - Add User properties: lastLogin, backend, language, and locale
+  - Add User properties: lastLogin, backend, language, locale, and subAdminGroups
 
 ## Version 14.0.0
 - 2025-10-21
