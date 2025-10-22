@@ -29,6 +29,8 @@ public class User
 {
     private String id;
     private boolean enabled;
+    private long lastLogin;
+    private String backend;
     private String email;
     private String displayname;
     private String phone;
@@ -37,6 +39,8 @@ public class User
     private String twitter;
     private Quota quota;
     private List<String> groups;
+    private String language;
+    private String locale;
 
     public String getId() {
         return id;
@@ -44,6 +48,14 @@ public class User
 
     public boolean isEnabled() {
         return enabled;
+    }
+
+    public long getLastLogin() {
+        return lastLogin;
+    }
+
+    public String getBackend() {
+        return backend;
     }
 
     public String getEmail() {
@@ -76,5 +88,13 @@ public class User
 
     public List<String> getGroups() {
         return groups;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public String getLocale() {
+        return locale;
     }
 }
