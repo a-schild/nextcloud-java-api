@@ -8,5 +8,7 @@ public enum UserData {
     ADDRESS,
     WEBSITE,
     TWITTER,
-    PASSWORD
+    PASSWORD,
+    LANGUAGE,
+    LOCALE
 }
