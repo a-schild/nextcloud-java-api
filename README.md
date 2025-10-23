@@ -11,7 +11,7 @@ Java api library to access nextcloud features from java applications
 - Management of groups
 - Folder management (Without access control)
 - List shares and create new file shares (No way to delete/update shares atm.)
-- Tested against nextCloud 27.0.1 server version, but should also work with older nextCloud and ownCloud systems
+- Tested against nextCloud 31.0.0 server version, but should also work with older nextCloud and ownCloud systems
 
 ## Usage
 - Add this dependency to your pom.xml file
@@ -19,7 +19,7 @@ Java api library to access nextcloud features from java applications
 	<dependency>
 	    <groupId>com.github.a-schild</groupId>
 	    <artifactId>nextcloud-java-api</artifactId>
-	    <version>14.0.0</version>
+	    <version>14.1.0</version>
 	</dependency>
 ```
 

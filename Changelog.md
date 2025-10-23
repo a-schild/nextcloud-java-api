@@ -3,12 +3,14 @@
 ## Version 14.1.0
 - 2025-10-23
   - Add HTTP proxy support (via system variables `https.proxyHost` and `https.proxyPort`)
+    Thanks to @xylo
   - Add User properties: lastLogin, backend, language, locale, and subAdminGroups
+    Thanks to @xylo
 
 ## Version 14.0.0
 - 2025-10-21
-  - Bump required java version from 8 to 11+ (Thanks to kindlich)
-  - Make connection autoclosable (thanks to raboof)
+  - Bump required java version from 8 to 11+ (Thanks to @kindlich)
+  - Make connection autoclosable (thanks to @raboof)
   - Bump pom.xml dependencies where possible
 
 ## Version 13.0.2
