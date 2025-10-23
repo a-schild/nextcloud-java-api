@@ -17,6 +17,7 @@
 package org.aarboard.nextcloud.api.provisioning;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
@@ -29,6 +30,10 @@ public class User
 {
     private String id;
     private boolean enabled;
+    private long lastLogin;
+    private String backend;
+    @JsonProperty("subadmin")
+    private List<String> subAdminGroups;
     private String email;
     private String displayname;
     private String phone;
@@ -37,6 +42,8 @@ public class User
     private String twitter;
     private Quota quota;
     private List<String> groups;
+    private String language;
+    private String locale;
 
     public String getId() {
         return id;
@@ -44,6 +51,23 @@ public class User
 
     public boolean isEnabled() {
         return enabled;
+    }
+
+    public long getLastLogin() {
+        return lastLogin;
+    }
+
+    public String getBackend() {
+        return backend;
+    }
+
+    /**
+     * Returns the list of groups the user is a sub-admin of.
+     *
+     * @return the list of groups the user is a sub-admin of
+     */
+    public List<String> getSubAdminGroups() {
+        return subAdminGroups;
     }
 
     public String getEmail() {
@@ -76,5 +100,13 @@ public class User
 
     public List<String> getGroups() {
         return groups;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public String getLocale() {
+        return locale;
     }
 }
