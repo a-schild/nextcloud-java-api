@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.aarboard.nextcloud</groupId>
     <artifactId>nextcloud-api</artifactId>
-    <version>14.0.1</version>
+    <version>14.1.0</version>
     <packaging>jar</packaging>
     <properties>
         <!-- compile time dependencies -->
@@ -381,7 +381,7 @@
                 <configuration>
                     <configuration>
                         <skipTests>${skipTests}</skipTests>
-                    </configuration>                    
+                    </configuration>
                     <systemProperties>
                         <property>
                             <name>nextcloud.api.test.servername</name>

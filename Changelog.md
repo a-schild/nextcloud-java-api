@@ -1,7 +1,8 @@
 # Changelog for nextcloud api
 
 ## Version 14.1.0
-- 2025-10-22
+- 2025-10-23
+  - Add HTTP proxy support (via system variables `https.proxyHost` and `https.proxyPort`)
   - Add User properties: lastLogin, backend, language, locale, and subAdminGroups
 
 ## Version 14.0.0
