@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.aarboard.nextcloud</groupId>
     <artifactId>nextcloud-api</artifactId>
-    <version>14.1.0</version>
+    <version>14.1.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <properties>
         <!-- compile time dependencies -->
@@ -207,6 +207,12 @@
                                 </goals>
                             </execution>
                         </executions>
+						<configuration>
+							<gpgArguments>
+								<arg>--pinentry-mode</arg>
+								<arg>loopback</arg>
+							</gpgArguments>
+						</configuration>
                     </plugin>
                     <plugin>
                         <groupId>org.cyclonedx</groupId>
@@ -329,6 +335,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publishingServerId>ossrh</publishingServerId>
+					<tokenAuth>true</tokenAuth>
+					<autoPublish>true</autoPublish>
                 </configuration>
             </plugin>
             <plugin>
@@ -338,6 +346,7 @@
                 <executions>
                     <execution>
                         <id>attach-sources</id>
+						<phase>verify</phase>
                         <goals>
                             <goal>jar-no-fork</goal>
                         </goals>
@@ -349,7 +358,7 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>${maven-javadoc-plugin.version}</version>
                 <configuration>
-                    <source>8</source>
+                    <source>11</source>
                 </configuration>
                 <executions>
                     <execution>

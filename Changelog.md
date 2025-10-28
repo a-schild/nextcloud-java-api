@@ -1,5 +1,9 @@
 # Changelog for nextcloud api
 
+## Version 14.1.1-SNAPSHOT
+- 2025-10-28
+  - Switch to autopublish
+
 ## Version 14.1.0
 - 2025-10-23
   - Add HTTP proxy support (via system variables `https.proxyHost` and `https.proxyPort`)
