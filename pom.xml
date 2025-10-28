@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.aarboard.nextcloud</groupId>
 	<artifactId>nextcloud-api</artifactId>
-	<version>14.1.1-SNAPSHOT</version>
+	<version>14.1.4-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<properties>
 		<!-- compile time dependencies -->
@@ -150,16 +150,6 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	<distributionManagement>
-		<snapshotRepository>
-			<id>central</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-		<repository>
-			<id>central</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-	</distributionManagement>
 	<scm>
 		<connection>scm:git:https://github.com/a-schild/nextcloud-java-api.git</connection>
 		<url>https://github.com/a-schild/nextcloud-java-api</url>
@@ -177,7 +167,6 @@
 						<extensions>true</extensions>
 						<configuration>
 							<publishingServerId>central</publishingServerId>
-							<tokenAuth>true</tokenAuth>
 							<autoPublish>true</autoPublish>
 						</configuration>
 					</plugin>
