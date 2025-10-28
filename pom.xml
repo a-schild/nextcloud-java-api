@@ -334,7 +334,7 @@
                 <version>0.9.0</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <publishingServerId>ossrh</publishingServerId>
+                    <publishingServerId>central</publishingServerId>
 					<tokenAuth>true</tokenAuth>
 					<autoPublish>true</autoPublish>
                 </configuration>
