@@ -19,7 +19,7 @@ Java api library to access nextcloud features from java applications
 	<dependency>
 	    <groupId>com.github.a-schild</groupId>
 	    <artifactId>nextcloud-java-api</artifactId>
-	    <version>14.1.0</version>
+	    <version>14.1.1-SNAPSHOT</version>
 	</dependency>
 ```
 
