@@ -34,7 +34,7 @@
 		<templating-maven-plugin.version>1.0.0</templating-maven-plugin.version>
 		<maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
 		<nexus-staging-maven-plugin.version>1.7.0</nexus-staging-maven-plugin.version>
-		<central-publishing-maven-plugin>0.9.0</central-publishing-maven-plugin>
+		<central-publishing-maven-plugin.version>0.9.0</central-publishing-maven-plugin.version>
 		<maven-source-plugin.version>3.3.1</maven-source-plugin.version>
 		<maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
 		<maven-scm-provider-gitexe.version>2.2.1</maven-scm-provider-gitexe.version>
@@ -383,7 +383,7 @@
 			<plugin>
 				<groupId>org.sonatype.central</groupId>
 				<artifactId>central-publishing-maven-plugin</artifactId>
-				<version>0.9.0</version>
+				<version>${central-publishing-maven-plugin.version}</version>
 				<extensions>true</extensions>
 				<configuration>
 					<publishingServerId>ossrh</publishingServerId>
