@@ -1,6 +1,6 @@
 # Changelog for nextcloud api
 
-## Version 14.1.1-SNAPSHOT
+## Version 14.1.4
 - 2025-10-28
   - Switch to autopublish
 
