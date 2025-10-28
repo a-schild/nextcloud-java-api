@@ -1,8 +1,8 @@
 # nextcloud-java-api
 Java api library to access nextcloud features from java applications
 
-![Sonatype Nexus (Releases)](https://img.shields.io/nexus/r/org.aarboard.nextcloud/nextcloud-api?label=release&nexusVersion=2&server=https%3A%2F%2Foss.sonatype.org%2F)
-![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/org.aarboard.nextcloud/nextcloud-api?label=snapshot&server=https%3A%2F%2Foss.sonatype.org%2F)
+![Sonatype Nexus (Releases)](https://img.shields.io/maven-central/v/org.aarboard.nextcloud/nextcloud-api)
+![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/org.aarboard.nextcloud/nextcloud-api?server=https%3A%2F%2Foss.sonatype.org)
 
 ## What is the nextcloud api library?
 > Use nextcloud features from inside your java application
