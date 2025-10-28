@@ -3,44 +3,45 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.aarboard.nextcloud</groupId>
     <artifactId>nextcloud-api</artifactId>
-    <version>13.1.0</version>
+    <version>14.1.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <properties>
         <!-- compile time dependencies -->
         <httpcore.version>4.4.16</httpcore.version>
         <httpasyncclient.version>4.1.5</httpasyncclient.version>
         <httpclient.version>4.5.14</httpclient.version>
-        <slf4j-api.version>2.0.13</slf4j-api.version>
-        <sardine.version>5.12</sardine.version>
-        <commons-io.version>2.16.1</commons-io.version>
-        <commons-lang3.version>3.18.0</commons-lang3.version>
-        <commons-codec.version>1.17.0</commons-codec.version>
-        <jackson.version>2.17.1</jackson.version>
-        <jakarta.xml.bind-api.version>4.0.1</jakarta.xml.bind-api.version>
+        <slf4j-api.version>2.0.17</slf4j-api.version>
+        <sardine.version>5.13</sardine.version>
+        <commons-io.version>2.20.0</commons-io.version>
+        <commons-lang3.version>3.19.0</commons-lang3.version>
+        <commons-codec.version>1.19.0</commons-codec.version>
+        <jackson.version>2.20.0</jackson.version>
+        <jakarta.xml.bind-api.version>4.0.4</jakarta.xml.bind-api.version>
         <jakarta-annotation-api.version>2.1.1</jakarta-annotation-api.version>
-        <jaxb-impl.version>3.0.0</jaxb-impl.version>
+        <jaxb-impl.version>3.0.2</jaxb-impl.version>
         
         <!-- test dependencies versions -->
+        <skipTests>true</skipTests>
         <slf4j-simple.version>${slf4j-api.version}</slf4j-simple.version>
-        <jaxb-runtime.version>4.0.3</jaxb-runtime.version>
+        <jaxb-runtime.version>4.0.6</jaxb-runtime.version>
         <junit.version>4.13.2</junit.version>
 
         <!-- build environment versions -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
-        <maven-gpg-plugin.version>3.1.0</maven-gpg-plugin.version>
-        <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
+        <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
+        <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
+        <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
-        <buildnumber-maven-plugin.version>3.1.0</buildnumber-maven-plugin.version>
+        <buildnumber-maven-plugin.version>3.2.1</buildnumber-maven-plugin.version>
         <templating-maven-plugin.version>1.0.0</templating-maven-plugin.version>
-        <maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version>
-        <nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
-        <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
-        <maven-javadoc-plugin.version>3.6.0</maven-javadoc-plugin.version>
-        <maven-scm-provider-gitexe.version>2.0.1</maven-scm-provider-gitexe.version>
-        <maven-gpg-plugin.version>3.1.0</maven-gpg-plugin.version>
-        <maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
-        <cyclonedx-maven-plugin.version>2.7.9</cyclonedx-maven-plugin.version>
+        <maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
+        <nexus-staging-maven-plugin.version>1.7.0</nexus-staging-maven-plugin.version>
+        <central-publishing-maven-plugin>0.9.0</central-publishing-maven-plugin>
+        <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
+        <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
+        <maven-scm-provider-gitexe.version>2.2.1</maven-scm-provider-gitexe.version>
+        <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
+        <cyclonedx-maven-plugin.version>2.9.1</cyclonedx-maven-plugin.version>
 
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
@@ -206,6 +207,12 @@
                                 </goals>
                             </execution>
                         </executions>
+						<configuration>
+							<gpgArguments>
+								<arg>--pinentry-mode</arg>
+								<arg>loopback</arg>
+							</gpgArguments>
+						</configuration>
                     </plugin>
                     <plugin>
                         <groupId>org.cyclonedx</groupId>
@@ -322,14 +329,14 @@
                 </dependencies>
             </plugin>
             <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>${nexus-staging-maven-plugin.version}</version>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.9.0</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    <publishingServerId>ossrh</publishingServerId>
+					<tokenAuth>true</tokenAuth>
+					<autoPublish>true</autoPublish>
                 </configuration>
             </plugin>
             <plugin>
@@ -339,6 +346,7 @@
                 <executions>
                     <execution>
                         <id>attach-sources</id>
+						<phase>verify</phase>
                         <goals>
                             <goal>jar-no-fork</goal>
                         </goals>
@@ -350,7 +358,7 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>${maven-javadoc-plugin.version}</version>
                 <configuration>
-                    <source>8</source>
+                    <source>11</source>
                 </configuration>
                 <executions>
                     <execution>
@@ -380,6 +388,9 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
+                    <configuration>
+                        <skipTests>${skipTests}</skipTests>
+                    </configuration>
                     <systemProperties>
                         <property>
                             <name>nextcloud.api.test.servername</name>

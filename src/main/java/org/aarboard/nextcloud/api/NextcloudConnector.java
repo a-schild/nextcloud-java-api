@@ -980,6 +980,7 @@ public class NextcloudConnector implements AutoCloseable {
      * (temp) file to upload the data, so the content length is known in advance
      * <a href="https://github.com/a-schild/nextcloud-java-api/issues/20">...</a>
      */
+    @Deprecated
     public void uploadFile(InputStream inputStream, String remotePath) {
         fl.uploadFile(inputStream, remotePath);
     }
@@ -999,6 +1000,7 @@ public class NextcloudConnector implements AutoCloseable {
      * (temp) file to upload the data, so the content length is known in advance
      * <a href="https://github.com/a-schild/nextcloud-java-api/issues/20">...</a>
      */
+    @Deprecated
     public void uploadFile(InputStream inputStream, String remotePath, boolean continueHeader) {
         fl.uploadFile(inputStream, remotePath, continueHeader);
     }
