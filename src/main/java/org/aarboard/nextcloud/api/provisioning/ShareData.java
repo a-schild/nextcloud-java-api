@@ -5,7 +5,8 @@ public enum ShareData
     PERMISSIONS("permissions"),
     PASSWORD("password"),
     PUBLICUPLOAD("publicUpload"),
-    EXPIREDATE("expireDate");
+    EXPIREDATE("expireDate"),
+	HIDEDOWNLOAD("hideDownload");
 
     public final String parameterName;
 

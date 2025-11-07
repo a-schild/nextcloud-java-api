@@ -205,17 +205,6 @@ public class Files extends AWebdavHandler{
         {
             throw new NextcloudApiException(e);
         }
-        finally
-        {
-            try
-            {
-                sardine.shutdown();
-            }
-            catch(Exception ex2)
-            {
-                LOG.warn(ERROR_SHUTDOWN, ex2);
-            }
-        }
         return in;
     }
     
