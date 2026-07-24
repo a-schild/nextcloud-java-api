@@ -18,6 +18,9 @@ package org.aarboard.nextcloud.api;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Collections;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.Container.ExecResult;
@@ -121,6 +124,41 @@ public final class NextcloudTestContainer {
         System.setProperty("nextcloud.api.test.serverport", String.valueOf(container.getMappedPort(80)));
         System.setProperty("nextcloud.api.test.username", ADMIN_USER);
         System.setProperty("nextcloud.api.test.password", ADMIN_PASSWORD);
+        createAppToken();
+    }
+
+    /**
+     * Creates an app password for the admin user and publishes it as the
+     * {@code nextcloud.api.test.apptoken} system property. Nextcloud accepts an
+     * app password as a bearer token, so this lets the tests exercise the
+     * bearer-token authentication path. Best-effort.
+     */
+    private static void createAppToken() {
+        try {
+            ExecResult result = container.execInContainer(ExecConfig.builder()
+                    .user("www-data")
+                    .envVars(Collections.singletonMap("OC_PASS", ADMIN_PASSWORD))
+                    .command(new String[] {"php", "occ", "user:add-app-password", ADMIN_USER,
+                            "--password-from-env"})
+                    .build());
+            if (result.getExitCode() != 0) {
+                System.err.println("Could not create app token: " + result.getStdout() + result.getStderr());
+                return;
+            }
+            // The output labels the token (e.g. "app password:") and prints the
+            // token itself, a long alphanumeric string, on the following line.
+            Matcher matcher = Pattern.compile("[A-Za-z0-9]{40,}").matcher(result.getStdout());
+            if (matcher.find()) {
+                System.setProperty("nextcloud.api.test.apptoken", matcher.group());
+                return;
+            }
+            System.err.println("Could not parse app token from: " + result.getStdout());
+        } catch (IOException | InterruptedException e) {
+            System.err.println("Could not create app token: " + e.getMessage());
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+        }
     }
 
     /**
