@@ -110,7 +110,12 @@ public final class NextcloudTestContainer {
                         .forResponsePredicate(body -> body.contains("\"installed\":true"))
                         .withStartupTimeout(Duration.ofMinutes(5)));
         container.start();
-        disablePasswordPolicy();
+        // Create test users with fixed simple passwords without the default
+        // password policy rejecting them.
+        occ("app:disable", "password_policy");
+        // The Group Folders app is not bundled; install it so the group folder
+        // tests have something to talk to.
+        occ("app:install", "groupfolders");
 
         System.setProperty("nextcloud.api.test.servername", container.getHost());
         System.setProperty("nextcloud.api.test.serverport", String.valueOf(container.getMappedPort(80)));
@@ -119,24 +124,29 @@ public final class NextcloudTestContainer {
     }
 
     /**
-     * Disables the {@code password_policy} app so the tests, which create users
-     * with fixed simple passwords, are not rejected by Nextcloud's default
-     * password/complexity/breach checks. Best-effort: a failure here is logged
-     * but does not abort the suite. occ must run as the {@code www-data} user
-     * (it refuses to run as root).
+     * Runs an {@code occ} command inside the container to configure the server
+     * for the tests. Best-effort: a failure is logged but does not abort the
+     * suite. occ must run as the {@code www-data} user (it refuses to run as
+     * root).
+     *
+     * @param args the occ command and its arguments
      */
-    private static void disablePasswordPolicy() {
+    private static void occ(String... args) {
+        String[] command = new String[args.length + 2];
+        command[0] = "php";
+        command[1] = "occ";
+        System.arraycopy(args, 0, command, 2, args.length);
         try {
             ExecResult result = container.execInContainer(ExecConfig.builder()
                     .user("www-data")
-                    .command(new String[] {"php", "occ", "app:disable", "password_policy"})
+                    .command(command)
                     .build());
             if (result.getExitCode() != 0) {
-                System.err.println("Could not disable password_policy app: "
+                System.err.println("occ " + String.join(" ", args) + " failed: "
                         + result.getStdout() + result.getStderr());
             }
         } catch (IOException | InterruptedException e) {
-            System.err.println("Could not disable password_policy app: " + e.getMessage());
+            System.err.println("occ " + String.join(" ", args) + " failed: " + e.getMessage());
             if (e instanceof InterruptedException) {
                 Thread.currentThread().interrupt();
             }
