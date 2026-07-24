@@ -21,5 +21,7 @@ jobs:
 
       # Docker is preinstalled on ubuntu-latest runners, so Testcontainers can
       # spin up the throw-away Nextcloud server used by the integration tests.
+      # GPG signing is bound to the verify phase but is only needed for
+      # releases (the publish workflow supplies the key), so skip it here.
       - name: Build and run tests
-        run: mvn --batch-mode --update-snapshots verify -DskipTests=false
+        run: mvn --batch-mode --update-snapshots verify -DskipTests=false -Dgpg.skip=true
