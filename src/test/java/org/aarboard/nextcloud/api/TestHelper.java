@@ -30,6 +30,9 @@ public class TestHelper {
     private int     serverPort= 443;
 
     public TestHelper() {
+        // Auto-provision a Nextcloud container when no external server was
+        // configured and Docker is available (no-op otherwise).
+        NextcloudTestContainer.ensureStarted();
         serverName= System.getProperty("nextcloud.api.test.servername");
         userName= System.getProperty("nextcloud.api.test.username");
         password= System.getProperty("nextcloud.api.test.password");
