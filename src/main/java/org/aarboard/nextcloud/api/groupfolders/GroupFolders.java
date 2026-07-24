@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import org.aarboard.nextcloud.api.ServerConfig;
 import org.aarboard.nextcloud.api.utils.ConnectorCommon;
-import org.aarboard.nextcloud.api.utils.EmptyAnswerParser;
 import org.aarboard.nextcloud.api.utils.JsonAnswerParser;
 import org.aarboard.nextcloud.api.utils.NextcloudResponseHelper;
 import org.aarboard.nextcloud.api.utils.XMLAnswer;

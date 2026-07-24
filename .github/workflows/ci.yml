@@ -25,3 +25,11 @@ jobs:
       # releases (the publish workflow supplies the key), so skip it here.
       - name: Build and run tests
         run: mvn --batch-mode --update-snapshots verify -DskipTests=false -Dgpg.skip=true
+
+      - name: Upload JaCoCo coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-coverage-report
+          path: target/site/jacoco
+          if-no-files-found: warn
