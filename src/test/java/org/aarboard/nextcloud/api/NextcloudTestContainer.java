@@ -94,6 +94,10 @@ public final class NextcloudTestContainer {
                 .withExposedPorts(80)
                 .withEnv("NEXTCLOUD_ADMIN_USER", ADMIN_USER)
                 .withEnv("NEXTCLOUD_ADMIN_PASSWORD", ADMIN_PASSWORD)
+                // Selecting a database is what triggers the image's unattended
+                // install; without it Nextcloud stays uninstalled. SQLite keeps
+                // the container self-contained (no extra DB service needed).
+                .withEnv("SQLITE_DATABASE", "nextcloud")
                 // Nextcloud strips the port before checking trusted domains, so
                 // matching the host (localhost / 127.0.0.1) is enough even though
                 // Testcontainers maps port 80 to a random host port.
