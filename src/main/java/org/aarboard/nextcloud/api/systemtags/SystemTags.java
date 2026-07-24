@@ -59,11 +59,11 @@ public class SystemTags extends AWebdavHandler {
     private static final String SYSTEMTAGS_RELATIONS = "remote.php/dav/systemtags-relations/files/";
     private static final String NS_OC = "http://owncloud.org/ns";
 
-    private static final QName PROP_ID = new QName(NS_OC, "id");
-    private static final QName PROP_DISPLAY_NAME = new QName(NS_OC, "display-name");
-    private static final QName PROP_USER_VISIBLE = new QName(NS_OC, "user-visible");
-    private static final QName PROP_USER_ASSIGNABLE = new QName(NS_OC, "user-assignable");
-    private static final QName PROP_CAN_ASSIGN = new QName(NS_OC, "can-assign");
+    private static final QName PROP_ID = new QName(NS_OC, "id", "oc");
+    private static final QName PROP_DISPLAY_NAME = new QName(NS_OC, "display-name", "oc");
+    private static final QName PROP_USER_VISIBLE = new QName(NS_OC, "user-visible", "oc");
+    private static final QName PROP_USER_ASSIGNABLE = new QName(NS_OC, "user-assignable", "oc");
+    private static final QName PROP_CAN_ASSIGN = new QName(NS_OC, "can-assign", "oc");
 
     public SystemTags(ServerConfig serverConfig) {
         super(serverConfig);
