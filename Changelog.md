@@ -1,5 +1,19 @@
 # Changelog for nextcloud api
 
+## Version 14.1.5
+- 2026-07-24
+  - Updated dependencies:
+    - jackson-databind 2.20.0 -> 2.22.1
+    - commons-codec 1.19.0 -> 1.22.0
+    - commons-io 2.20.0 -> 2.22.0
+    - commons-lang3 3.19.0 -> 3.20.0
+    - jaxb-runtime 4.0.6 -> 4.0.9
+    - jaxb-impl (test) 3.0.2 -> 4.0.9 (aligned with jaxb-runtime)
+  - Updated build plugin: central-publishing-maven-plugin 0.9.0 -> 0.11.0
+  - Fixed Maven coordinates in README usage example (org.aarboard.nextcloud:nextcloud-api)
+  - Removed obsolete oss.sonatype.org snapshot badge
+  - Added Dependabot configuration for Maven and GitHub Actions
+
 ## Version 14.1.4
 - 2025-10-28
   - Switch to autopublish
