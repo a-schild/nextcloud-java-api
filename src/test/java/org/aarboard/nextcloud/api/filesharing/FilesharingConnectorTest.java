@@ -239,4 +239,18 @@ public class FilesharingConnectorTest {
         }
     }
 
+    @Test
+    public void t09_testDoShareWithExpireDate() {
+        System.out.println("shareFolderWithExpireDate");
+        if (_sc != null)
+        {
+            FilesharingConnector instance = new FilesharingConnector(_sc);
+            SharePermissions permissions = new SharePermissions(SingleRight.READ);
+            LocalDate expireDate = LocalDate.of(9999, 3, 3);
+            Share result = instance.doShare(TEST_FOLDER2, ShareType.PUBLIC_LINK, "", true, "1234-myWebDav", permissions, expireDate);
+            assertNotNull(result);
+            assertEquals(expireDate, result.getExpiration());
+        }
+    }
+
 }
