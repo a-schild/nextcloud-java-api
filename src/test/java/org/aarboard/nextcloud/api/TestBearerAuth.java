@@ -35,6 +35,7 @@ public class TestBearerAuth {
         String serverName = th.getServerName();
         String token = clean(System.getProperty("nextcloud.api.test.apptoken"));
         if (serverName != null && token != null) {
+            System.out.println("bearerTokenAuthentication (running against " + serverName + ")");
             // 4-argument constructor uses the token as a bearer token
             try (NextcloudConnector nc = new NextcloudConnector(serverName,
                     th.getServerPort() == 443, th.getServerPort(), token)) {

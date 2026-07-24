@@ -19,6 +19,8 @@ package org.aarboard.nextcloud.api;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Collections;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.Container.ExecResult;
@@ -143,13 +145,12 @@ public final class NextcloudTestContainer {
                 System.err.println("Could not create app token: " + result.getStdout() + result.getStderr());
                 return;
             }
-            // Output contains a line like "The password is: <token>"
-            for (String line : result.getStdout().split("\\R")) {
-                int idx = line.indexOf("is:");
-                if (idx >= 0) {
-                    System.setProperty("nextcloud.api.test.apptoken", line.substring(idx + 3).trim());
-                    return;
-                }
+            // The output labels the token (e.g. "app password:") and prints the
+            // token itself, a long alphanumeric string, on the following line.
+            Matcher matcher = Pattern.compile("[A-Za-z0-9]{40,}").matcher(result.getStdout());
+            if (matcher.find()) {
+                System.setProperty("nextcloud.api.test.apptoken", matcher.group());
+                return;
             }
             System.err.println("Could not parse app token from: " + result.getStdout());
         } catch (IOException | InterruptedException e) {
