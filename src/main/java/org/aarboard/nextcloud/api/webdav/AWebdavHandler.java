@@ -162,6 +162,35 @@ public abstract class AWebdavHandler
         return uB.toString();
     }
 
+    /**
+     * Builds the full URL for an arbitrary DAV path (not the user's files root),
+     * e.g. the system tags endpoints.
+     *
+     * @param davPath path below the host, without a leading slash
+     *                (e.g. {@code remote.php/dav/systemtags/})
+     * @return the full URL including scheme, host and port
+     */
+    protected String buildDavUrl(String davPath)
+    {
+        String path = this.serverConfig.getSubPathPrefix() != null
+                ? "/" + this.serverConfig.getSubPathPrefix() + "/" + davPath
+                : "/" + davPath;
+        URIBuilder uB = new URIBuilder()
+                .setScheme(this.serverConfig.isUseHTTPS() ? "https" : "http")
+                .setHost(this.serverConfig.getServerName())
+                .setPort(this.serverConfig.getPort())
+                .setPath(path);
+        return uB.toString();
+    }
+
+    /**
+     * @return the server configuration backing this handler
+     */
+    protected ServerConfig getServerConfig()
+    {
+        return this.serverConfig;
+    }
+
     protected String getWebdavPathPrefix()
     {
         if (resolver != null)
