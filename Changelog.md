@@ -1,6 +1,9 @@
 # Changelog for nextcloud api
 
 ## Version 14.2.0
+- Add system tags support: list, create and delete system tags, and assign or
+  remove tags on a file via the new `SystemTags` connector and
+  `NextcloudConnector` methods (issue #110)
 - Security: harden XML response parsing against XXE by disabling DTDs and
   external entities in the StAX parser
 - Security: no longer embed the basic-auth credentials in the request URL

@@ -37,6 +37,8 @@ import org.aarboard.nextcloud.api.filesharing.SingleShareXMLAnswer;
 import org.aarboard.nextcloud.api.groupfolders.GroupFolderInfo;
 import org.aarboard.nextcloud.api.groupfolders.GroupFolders;
 import org.aarboard.nextcloud.api.provisioning.*;
+import org.aarboard.nextcloud.api.systemtags.SystemTags;
+import org.aarboard.nextcloud.api.systemtags.Tag;
 import org.aarboard.nextcloud.api.utils.*;
 import org.aarboard.nextcloud.api.webdav.Files;
 import org.aarboard.nextcloud.api.webdav.Folders;
@@ -54,6 +56,7 @@ public class NextcloudConnector implements AutoCloseable {
     private final Folders fd;
     private final Files fl;
     private final GroupFolders gf;
+    private final SystemTags st;
 
     /**
      * 
@@ -117,6 +120,7 @@ public class NextcloudConnector implements AutoCloseable {
             fd = new Folders(this.serverConfig);
             fl = new Files(this.serverConfig);
             gf = new GroupFolders(this.serverConfig);
+            st = new SystemTags(this.serverConfig);
 
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException(e);
@@ -139,6 +143,7 @@ public class NextcloudConnector implements AutoCloseable {
         fd = new Folders(this.serverConfig);
         fl = new Files(this.serverConfig);
         gf = new GroupFolders(this.serverConfig);
+        st = new SystemTags(this.serverConfig);
     }
 
     /**
@@ -259,6 +264,62 @@ public class NextcloudConnector implements AutoCloseable {
      */
     public boolean declinePendingRemoteShare(int remoteShareId) {
         return fc.declinePendingRemoteShare(remoteShareId);
+    }
+
+    /**
+     * @return all system tags on the server
+     */
+    public java.util.List<Tag> getSystemTags() {
+        return st.getTags();
+    }
+
+    /**
+     * @param fileId numeric file id (see {@code getProperties(path, true).getFileId()})
+     * @return the system tags assigned to the given file
+     */
+    public java.util.List<Tag> getSystemTagsForFile(long fileId) {
+        return st.getTagsForFile(fileId);
+    }
+
+    /**
+     * Creates a new system tag.
+     *
+     * @param name           display name of the tag
+     * @param userVisible    whether the tag is visible to users
+     * @param userAssignable whether users can assign the tag
+     * @return the id of the created tag
+     */
+    public int createSystemTag(String name, boolean userVisible, boolean userAssignable) {
+        return st.createTag(name, userVisible, userAssignable);
+    }
+
+    /**
+     * Deletes a system tag.
+     *
+     * @param tagId id of the tag
+     */
+    public void deleteSystemTag(int tagId) {
+        st.deleteTag(tagId);
+    }
+
+    /**
+     * Assigns a system tag to a file.
+     *
+     * @param fileId numeric file id
+     * @param tagId  id of the tag
+     */
+    public void assignSystemTag(long fileId, int tagId) {
+        st.assignTag(fileId, tagId);
+    }
+
+    /**
+     * Removes a system tag from a file.
+     *
+     * @param fileId numeric file id
+     * @param tagId  id of the tag
+     */
+    public void removeSystemTag(long fileId, int tagId) {
+        st.removeTag(fileId, tagId);
     }
 
     /**
