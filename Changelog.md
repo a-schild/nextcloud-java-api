@@ -18,6 +18,10 @@
   to trust a specific self-signed or private-CA certificate while keeping
   certificate-chain and hostname verification enabled (a safe alternative to
   `trustAllCertificates`, which now also logs a warning when enabled)
+- WebDAV (file/folder) operations now honour the same TLS trust configuration
+  (`trustAllCertificates` / `trustCertificate`) as the OCS calls, so file
+  transfers work against servers with a self-signed or private-CA certificate
+  (issue #125)
 - Add support for the Group Folders app: create, rename, delete and list group
   folders, grant/revoke group access, set group permissions and set the folder
   quota via the new `GroupFolders` connector and `NextcloudConnector` methods

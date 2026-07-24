@@ -7,11 +7,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -19,8 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-
-import javax.net.ssl.SSLContext;
 
 import org.aarboard.nextcloud.api.ServerConfig;
 import org.aarboard.nextcloud.api.exception.NextcloudApiException;
@@ -47,7 +41,6 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.TrustAllStrategy;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
@@ -55,7 +48,6 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClients;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.ssl.SSLContexts;
 
 public class ConnectorCommon
 {
@@ -314,33 +306,16 @@ public class ConnectorCommon
 				LOG.warn("TLS certificate validation is DISABLED (trustAllCertificates=true): "
 					+ "all certificates and hostnames are accepted. Do NOT use this in production; "
 					+ "prefer trustCertificate(...) to trust a specific self-signed/CA certificate.");
-				try {
-					SSLContext sslContext = SSLContexts.custom()
-						.loadTrustMaterial(null, TrustAllStrategy.INSTANCE).build();
-					return HttpAsyncClients.custom()
-						.setSSLHostnameVerifier((NoopHostnameVerifier.INSTANCE))
-						.setSSLContext(sslContext)
-						.build();
-				} catch (KeyManagementException | NoSuchAlgorithmException
-						| KeyStoreException e) {
-					throw new IOException(e);
-				}
+				return HttpAsyncClients.custom()
+					.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
+					.setSSLContext(SslUtils.buildSslContext(serverConfig))
+					.build();
 			} else if (serverConfig.hasTrustedCertificates()) {
-				try {
-					KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-					trustStore.load(null, null);
-					int index = 0;
-					for (X509Certificate certificate : serverConfig.getTrustedCertificates()) {
-						trustStore.setCertificateEntry("nextcloud-trusted-" + index++, certificate);
-					}
-					// Only the pinned certificates are trusted; hostname
-					// verification stays enabled (default verifier).
-					SSLContext sslContext = SSLContexts.custom()
-						.loadTrustMaterial(trustStore, null).build();
-					return HttpAsyncClients.custom().setSSLContext(sslContext).build();
-				} catch (GeneralSecurityException e) {
-					throw new IOException(e);
-				}
+				// Only the pinned certificates are trusted; hostname verification
+				// stays enabled (default verifier).
+				return HttpAsyncClients.custom()
+					.setSSLContext(SslUtils.buildSslContext(serverConfig))
+					.build();
 			} else if (System.getProperty("https.proxyHost") != null && System.getProperty("https.proxyPort") != null) {
 				HttpHost proxy = new HttpHost(System.getProperty("https.proxyHost"), Integer.parseInt(System.getProperty("https.proxyPort")), "http");
 				return HttpAsyncClients.custom().setProxy(proxy).build();
