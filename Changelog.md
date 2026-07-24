@@ -3,6 +3,10 @@
 ## Version 14.1.6
 - Add optional `expireDate` parameter to `doShare` / `doShareAsync`, so an
   expiration date can be set when creating a share (issue #76)
+- Fix file uploads (and other WebDAV writes) failing on servers running on a
+  non-standard port: preemptive authentication now uses the configured port, so
+  the server no longer issues an auth challenge that a streamed upload cannot
+  retry (issue #112)
 - Testing: integration tests can now auto-provision a throw-away Nextcloud
   server via Testcontainers when Docker is available, and are executed in CI
   (GitHub Actions)
