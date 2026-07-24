@@ -49,6 +49,15 @@ import org.aarboard.nextcloud.api.webdav.pathresolver.WebDavPathResolverBuilder;
 
 public class NextcloudConnector implements AutoCloseable {
 
+    /**
+     * Number of open connectors sharing the static HTTP client, so it is only
+     * shut down once the last connector is closed (see issue #87).
+     */
+    private static final java.util.concurrent.atomic.AtomicInteger OPEN_INSTANCES =
+            new java.util.concurrent.atomic.AtomicInteger(0);
+
+    private volatile boolean closed = false;
+
     private final ServerConfig serverConfig;
     private final ProvisionConnector pc;
     private final FilesharingConnector fc;
@@ -121,6 +130,7 @@ public class NextcloudConnector implements AutoCloseable {
             fl = new Files(this.serverConfig);
             gf = new GroupFolders(this.serverConfig);
             st = new SystemTags(this.serverConfig);
+            OPEN_INSTANCES.incrementAndGet();
 
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException(e);
@@ -144,6 +154,7 @@ public class NextcloudConnector implements AutoCloseable {
         fl = new Files(this.serverConfig);
         gf = new GroupFolders(this.serverConfig);
         st = new SystemTags(this.serverConfig);
+        OPEN_INSTANCES.incrementAndGet();
     }
 
     /**
@@ -193,8 +204,11 @@ public class NextcloudConnector implements AutoCloseable {
     }
 
     /**
-     * Close the HTTP client. Perform this to cleanly shut down this
-     * application.
+     * Immediately shuts down the shared HTTP client, regardless of how many
+     * other {@link NextcloudConnector} instances are still open. Prefer
+     * {@link #close()} (e.g. via try-with-resources), which only shuts the
+     * shared client down once the last connector is closed. Use this only when
+     * you explicitly want to tear everything down at once.
      *
      * @throws IOException In case of IO errors
      */
@@ -401,13 +415,22 @@ public class NextcloudConnector implements AutoCloseable {
     }
 
     /**
-     * Close the HTTP client. Perform this to cleanly shut down this
-     * application.
+     * Closes this connector. The shared HTTP client is only shut down once the
+     * last open {@link NextcloudConnector} has been closed, so closing one
+     * connector no longer breaks others that are still in use (see issue #87).
+     * Idempotent: closing an already-closed connector does nothing.
      *
      * @throws Exception In case of errors
      */
+    @Override
     public void close() throws Exception {
-        shutdown();
+        if (closed) {
+            return;
+        }
+        closed = true;
+        if (OPEN_INSTANCES.decrementAndGet() <= 0) {
+            shutdown();
+        }
     }
 
     /**

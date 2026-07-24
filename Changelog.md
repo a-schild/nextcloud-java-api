@@ -1,6 +1,10 @@
 # Changelog for nextcloud api
 
 ## Version 14.2.0
+- Fix connector lifecycle: closing a `NextcloudConnector` now shuts down the
+  shared HTTP client only once the last open connector is closed, so closing
+  one connector no longer breaks others still in use (issue #87). Use
+  `shutdown()` to force an immediate teardown.
 - Add system tags support: list, create and delete system tags, and assign or
   remove tags on a file via the new `SystemTags` connector and
   `NextcloudConnector` methods (issue #110)
