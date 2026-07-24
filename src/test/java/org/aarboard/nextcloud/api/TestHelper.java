@@ -30,11 +30,14 @@ public class TestHelper {
     private int     serverPort= 443;
 
     public TestHelper() {
-        serverName= System.getProperty("nextcloud.api.test.servername");
-        userName= System.getProperty("nextcloud.api.test.username");
-        password= System.getProperty("nextcloud.api.test.password");
-        String sPort= System.getProperty("nextcloud.api.test.serverport");
-        if (sPort == null || sPort.isEmpty())
+        // Auto-provision a Nextcloud container when no external server was
+        // configured and Docker is available (no-op otherwise).
+        NextcloudTestContainer.ensureStarted();
+        serverName= clean(System.getProperty("nextcloud.api.test.servername"));
+        userName= clean(System.getProperty("nextcloud.api.test.username"));
+        password= clean(System.getProperty("nextcloud.api.test.password"));
+        String sPort= clean(System.getProperty("nextcloud.api.test.serverport"));
+        if (sPort == null)
         {
             serverPort= 443;
         }
@@ -42,6 +45,22 @@ public class TestHelper {
         {
             serverPort= Integer.parseInt(sPort);
         }
+    }
+
+    /**
+     * Normalises a system property: blank values and unexpanded {@code ${...}}
+     * Maven placeholders (surefire injects those when no profile defines them)
+     * are treated as "not set" and returned as null.
+     */
+    private static String clean(String value) {
+        if (value == null) {
+            return null;
+        }
+        value= value.trim();
+        if (value.isEmpty() || value.startsWith("${")) {
+            return null;
+        }
+        return value;
     }
 
     /**
