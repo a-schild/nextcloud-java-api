@@ -47,6 +47,7 @@ public class FilesharingConnector
 
     private static final String ROOT_PART= "ocs/v1.php/apps/files_sharing/api/v1/";
     private static final String SHARES_PART= ROOT_PART+"shares";
+    private static final String REMOTE_SHARES_PART= ROOT_PART+"remote_shares";
 
     private final ConnectorCommon connectorCommon;
 
@@ -329,5 +330,155 @@ public class FilesharingConnector
     public CompletableFuture<XMLAnswer> deleteShareAsync(int shareId)
     {
         return connectorCommon.executeDelete(SHARES_PART, Integer.toString(shareId), null, XMLAnswerParser.getInstance(XMLAnswer.class));
+    }
+
+    /**
+     * (Re)sends the share notification email to the recipients of a share
+     *
+     * @param shareId unique identifier of the share
+     * @return true if the operation succeeded
+     */
+    public boolean sendShareEmail(int shareId)
+    {
+        return NextcloudResponseHelper.isStatusCodeOkay(sendShareEmailAsync(shareId));
+    }
+
+    /**
+     * (Re)sends the share notification email to the recipients of a share asynchronously
+     *
+     * @param shareId unique identifier of the share
+     * @return a CompletableFuture containing the result of the operation
+     */
+    public CompletableFuture<XMLAnswer> sendShareEmailAsync(int shareId)
+    {
+        return connectorCommon.executePost(SHARES_PART+"/"+shareId+"/send-email", XMLAnswerParser.getInstance(XMLAnswer.class));
+    }
+
+    /**
+     * Gets all accepted federated (server-to-server) shares of this user
+     *
+     * @return accepted remote shares
+     */
+    public List<RemoteShare> getRemoteShares()
+    {
+        return NextcloudResponseHelper.getAndCheckStatus(getRemoteSharesAsync()).getRemoteShares();
+    }
+
+    /**
+     * Gets all accepted federated (server-to-server) shares of this user asynchronously
+     *
+     * @return a CompletableFuture containing the result of the operation
+     */
+    public CompletableFuture<RemoteSharesXMLAnswer> getRemoteSharesAsync()
+    {
+        return connectorCommon.executeGet(REMOTE_SHARES_PART, null, XMLAnswerParser.getInstance(RemoteSharesXMLAnswer.class));
+    }
+
+    /**
+     * Gets information about a single accepted federated share
+     *
+     * @param remoteShareId id of the remote share
+     * @return the remote share if found, otherwise null
+     */
+    public RemoteShare getRemoteShareInfo(int remoteShareId)
+    {
+        return NextcloudResponseHelper.getAndCheckStatus(getRemoteShareInfoAsync(remoteShareId)).getRemoteShare();
+    }
+
+    /**
+     * Gets information about a single accepted federated share asynchronously
+     *
+     * @param remoteShareId id of the remote share
+     * @return a CompletableFuture containing the result of the operation
+     */
+    public CompletableFuture<SingleRemoteShareXMLAnswer> getRemoteShareInfoAsync(int remoteShareId)
+    {
+        return connectorCommon.executeGet(REMOTE_SHARES_PART+"/"+remoteShareId, null, XMLAnswerParser.getInstance(SingleRemoteShareXMLAnswer.class));
+    }
+
+    /**
+     * Deletes (unshares) an accepted federated share
+     *
+     * @param remoteShareId id of the remote share
+     * @return true if the operation succeeded
+     */
+    public boolean deleteRemoteShare(int remoteShareId)
+    {
+        return NextcloudResponseHelper.isStatusCodeOkay(deleteRemoteShareAsync(remoteShareId));
+    }
+
+    /**
+     * Deletes (unshares) an accepted federated share asynchronously
+     *
+     * @param remoteShareId id of the remote share
+     * @return a CompletableFuture containing the result of the operation
+     */
+    public CompletableFuture<XMLAnswer> deleteRemoteShareAsync(int remoteShareId)
+    {
+        return connectorCommon.executeDelete(REMOTE_SHARES_PART, Integer.toString(remoteShareId), null, XMLAnswerParser.getInstance(XMLAnswer.class));
+    }
+
+    /**
+     * Gets all pending (not yet accepted) federated shares of this user
+     *
+     * @return pending remote shares
+     */
+    public List<RemoteShare> getPendingRemoteShares()
+    {
+        return NextcloudResponseHelper.getAndCheckStatus(getPendingRemoteSharesAsync()).getRemoteShares();
+    }
+
+    /**
+     * Gets all pending (not yet accepted) federated shares of this user asynchronously
+     *
+     * @return a CompletableFuture containing the result of the operation
+     */
+    public CompletableFuture<RemoteSharesXMLAnswer> getPendingRemoteSharesAsync()
+    {
+        return connectorCommon.executeGet(REMOTE_SHARES_PART+"/pending", null, XMLAnswerParser.getInstance(RemoteSharesXMLAnswer.class));
+    }
+
+    /**
+     * Accepts a pending federated share
+     *
+     * @param remoteShareId id of the pending remote share
+     * @return true if the operation succeeded
+     */
+    public boolean acceptPendingRemoteShare(int remoteShareId)
+    {
+        return NextcloudResponseHelper.isStatusCodeOkay(acceptPendingRemoteShareAsync(remoteShareId));
+    }
+
+    /**
+     * Accepts a pending federated share asynchronously
+     *
+     * @param remoteShareId id of the pending remote share
+     * @return a CompletableFuture containing the result of the operation
+     */
+    public CompletableFuture<XMLAnswer> acceptPendingRemoteShareAsync(int remoteShareId)
+    {
+        return connectorCommon.executePost(REMOTE_SHARES_PART+"/pending/"+remoteShareId, XMLAnswerParser.getInstance(XMLAnswer.class));
+    }
+
+    /**
+     * Declines a pending federated share
+     *
+     * @param remoteShareId id of the pending remote share
+     * @return true if the operation succeeded
+     */
+    public boolean declinePendingRemoteShare(int remoteShareId)
+    {
+        return NextcloudResponseHelper.isStatusCodeOkay(declinePendingRemoteShareAsync(remoteShareId));
+    }
+
+    /**
+     * Declines a pending federated share asynchronously
+     *
+     * @param remoteShareId id of the pending remote share
+     * @return a CompletableFuture containing the result of the operation
+     */
+    public CompletableFuture<XMLAnswer> declinePendingRemoteShareAsync(int remoteShareId)
+    {
+        return connectorCommon.executeDelete(REMOTE_SHARES_PART+"/pending", Integer.toString(remoteShareId), null, XMLAnswerParser.getInstance(XMLAnswer.class));
     }
 }

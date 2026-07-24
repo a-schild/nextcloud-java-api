@@ -6,6 +6,13 @@
   quota via the new `GroupFolders` connector and `NextcloudConnector` methods
   (issue #109). Thanks to Denis Verkhovsky for the original implementation the
   port is based on.
+- Extend OCS Share API coverage (issue #107):
+  - Federated/remote shares: list accepted and pending shares, get info, delete,
+    and accept/decline pending shares
+  - (Re)send the share notification email via `sendShareEmail`
+  - New `ShareType` values `CIRCLE` (7) and `TALK` (10)
+  - New `ShareData` attributes `NOTE`, `LABEL`, `ATTRIBUTES`, `SENDMAIL` for
+    `editShare`, and `Share` now exposes `getNote()` / `getLabel()`
 
 ## Version 14.1.6
 - 2026-07-24

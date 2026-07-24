@@ -64,6 +64,8 @@ public class Share
     private LocalDate   expiration;
     private String url;
     private String mimetype;
+    private String note;
+    private String label;
 
     public int getId() {
         return id;
@@ -131,6 +133,14 @@ public class Share
 
     public String getMimetype() {
         return mimetype;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public String getLabel() {
+        return label;
     }
 
     private static final class SharePermissionsAdapter extends XmlAdapter<Integer, SharePermissions>
