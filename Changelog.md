@@ -6,6 +6,10 @@
 - Fix JSON parsing of empty OCS results: the API serializes empty collections
   as `[]` instead of `{}`, which caused a `MismatchedInputException` when e.g.
   listing users or groups on an empty result (issue #112)
+- Fix file uploads (and other WebDAV writes) failing on servers running on a
+  non-standard port: preemptive authentication now uses the configured port, so
+  the server no longer issues an auth challenge that a streamed upload cannot
+  retry (issue #112)
 - Testing: integration tests can now auto-provision a throw-away Nextcloud
   server via Testcontainers when Docker is available, and are executed in CI
   (GitHub Actions)

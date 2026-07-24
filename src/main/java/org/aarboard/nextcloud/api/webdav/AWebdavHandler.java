@@ -179,7 +179,13 @@ public abstract class AWebdavHandler
             Sardine sardine = SardineFactory.begin();
             sardine.setCredentials(this.serverConfig.getUserName(),
                     this.serverConfig.getAuthenticationConfig().getPassword());
-            sardine.enablePreemptiveAuthentication(this.serverConfig.getServerName());
+            // Pass the configured port so preemptive authentication also applies
+            // on non-standard ports (e.g. behind a reverse proxy). Without it the
+            // hostname-only overload assumes ports 80/443, the server then issues
+            // an auth challenge, and non-repeatable requests such as a streamed
+            // file upload (PUT) fail because they cannot be retried.
+            sardine.enablePreemptiveAuthentication(this.serverConfig.getServerName(),
+                    this.serverConfig.getPort(), this.serverConfig.getPort());
             return sardine;
         }
       return new SardineImpl(this.serverConfig.getAuthenticationConfig().getBearerToken());
