@@ -10,7 +10,9 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import javax.net.ssl.SSLContext;
@@ -229,39 +231,74 @@ public class ConnectorCommon
         }
     }
 
-	private static class HttpAsyncClientSingleton {
-		private static CloseableHttpAsyncClient HTTPC_CLIENT;
-		
-		private HttpAsyncClientSingleton(){}
-		
-		public static CloseableHttpAsyncClient getInstance(ServerConfig serverConfig)
-			throws IOException{
-			if (HTTPC_CLIENT == null) {
-				if (serverConfig.isTrustAllCertificates()) {
-					try {
-						SSLContext sslContext = SSLContexts.custom()
-							.loadTrustMaterial(null, TrustAllStrategy.INSTANCE).build();
-						HTTPC_CLIENT = HttpAsyncClients.custom()
-							.setSSLHostnameVerifier((NoopHostnameVerifier.INSTANCE))
-							.setSSLContext(sslContext)
-							.build();
-					} catch (KeyManagementException | NoSuchAlgorithmException
-							| KeyStoreException e) {
-						throw new IOException(e);
-					}
+	private static final class HttpAsyncClientSingleton {
+		/**
+		 * One client per distinct security-relevant configuration. Keying by the
+		 * trust-all flag (and proxy) prevents a connector created with
+		 * {@code trustAllCertificates(true)} from leaking its
+		 * certificate-validation-disabled client to a later, secure connector in
+		 * the same JVM (and vice versa).
+		 */
+		private static final Map<String, CloseableHttpAsyncClient> CLIENTS = new HashMap<>();
 
-				} else if (System.getProperty("https.proxyHost") != null && System.getProperty("https.proxyPort") != null) {
-					HttpHost proxy = new HttpHost(System.getProperty("https.proxyHost"), Integer.parseInt(System.getProperty("https.proxyPort")), "http");
-					HTTPC_CLIENT = HttpAsyncClients.custom().setProxy(proxy).build();
-				} else {
-					HTTPC_CLIENT = HttpAsyncClients.createDefault();
-				}
-				
-				HTTPC_CLIENT.start();
+		private HttpAsyncClientSingleton(){}
+
+		public static synchronized CloseableHttpAsyncClient getInstance(ServerConfig serverConfig)
+			throws IOException{
+			String key = clientKey(serverConfig);
+			CloseableHttpAsyncClient client = CLIENTS.get(key);
+			if (client == null) {
+				client = buildClient(serverConfig);
+				client.start();
+				CLIENTS.put(key, client);
 			}
-			return HTTPC_CLIENT;
+			return client;
 		}
-		
+
+		private static String clientKey(ServerConfig serverConfig) {
+			return "trustAll=" + serverConfig.isTrustAllCertificates()
+					+ ";proxyHost=" + System.getProperty("https.proxyHost")
+					+ ";proxyPort=" + System.getProperty("https.proxyPort");
+		}
+
+		private static CloseableHttpAsyncClient buildClient(ServerConfig serverConfig)
+			throws IOException {
+			if (serverConfig.isTrustAllCertificates()) {
+				try {
+					SSLContext sslContext = SSLContexts.custom()
+						.loadTrustMaterial(null, TrustAllStrategy.INSTANCE).build();
+					return HttpAsyncClients.custom()
+						.setSSLHostnameVerifier((NoopHostnameVerifier.INSTANCE))
+						.setSSLContext(sslContext)
+						.build();
+				} catch (KeyManagementException | NoSuchAlgorithmException
+						| KeyStoreException e) {
+					throw new IOException(e);
+				}
+			} else if (System.getProperty("https.proxyHost") != null && System.getProperty("https.proxyPort") != null) {
+				HttpHost proxy = new HttpHost(System.getProperty("https.proxyHost"), Integer.parseInt(System.getProperty("https.proxyPort")), "http");
+				return HttpAsyncClients.custom().setProxy(proxy).build();
+			} else {
+				return HttpAsyncClients.createDefault();
+			}
+		}
+
+		public static synchronized void shutdownAll() throws IOException {
+			IOException firstError = null;
+			for (CloseableHttpAsyncClient client : CLIENTS.values()) {
+				try {
+					client.close();
+				} catch (IOException e) {
+					if (firstError == null) {
+						firstError = e;
+					}
+				}
+			}
+			CLIENTS.clear();
+			if (firstError != null) {
+				throw firstError;
+			}
+		}
 	}
 
     public interface ResponseParser<R> {
@@ -273,9 +310,6 @@ public class ConnectorCommon
      * @throws IOException error on shutdown
      */
     public static void shutdown() throws IOException {
-            if(HttpAsyncClientSingleton.HTTPC_CLIENT != null) {
-                HttpAsyncClientSingleton.getInstance(null).close();
-                HttpAsyncClientSingleton.HTTPC_CLIENT = null;
-            }		
+        HttpAsyncClientSingleton.shutdownAll();
     }
 }
