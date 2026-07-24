@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.aarboard.nextcloud</groupId>
 	<artifactId>nextcloud-api</artifactId>
-	<version>14.1.4</version>
+	<version>14.1.5-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<properties>
 		<!-- compile time dependencies -->
@@ -12,17 +12,17 @@
 		<httpclient.version>4.5.14</httpclient.version>
 		<slf4j-api.version>2.0.17</slf4j-api.version>
 		<sardine.version>5.13</sardine.version>
-		<commons-io.version>2.20.0</commons-io.version>
-		<commons-lang3.version>3.19.0</commons-lang3.version>
-		<commons-codec.version>1.19.0</commons-codec.version>
-		<jackson.version>2.20.0</jackson.version>
+		<commons-io.version>2.22.0</commons-io.version>
+		<commons-lang3.version>3.20.0</commons-lang3.version>
+		<commons-codec.version>1.22.0</commons-codec.version>
+		<jackson.version>2.22.1</jackson.version>
 		<jakarta.xml.bind-api.version>4.0.4</jakarta.xml.bind-api.version>
 		<jakarta-annotation-api.version>2.1.1</jakarta-annotation-api.version>
-		<jaxb-impl.version>3.0.2</jaxb-impl.version>
+		<jaxb-impl.version>4.0.9</jaxb-impl.version>
 		<!-- test dependencies versions -->
 		<skipTests>true</skipTests>
 		<slf4j-simple.version>${slf4j-api.version}</slf4j-simple.version>
-		<jaxb-runtime.version>4.0.6</jaxb-runtime.version>
+		<jaxb-runtime.version>4.0.9</jaxb-runtime.version>
 		<junit.version>4.13.2</junit.version>
 		<!-- build environment versions -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -34,7 +34,7 @@
 		<templating-maven-plugin.version>1.0.0</templating-maven-plugin.version>
 		<maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
 		<nexus-staging-maven-plugin.version>1.7.0</nexus-staging-maven-plugin.version>
-		<central-publishing-maven-plugin.version>0.9.0</central-publishing-maven-plugin.version>
+		<central-publishing-maven-plugin.version>0.11.0</central-publishing-maven-plugin.version>
 		<maven-source-plugin.version>3.3.1</maven-source-plugin.version>
 		<maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
 		<maven-scm-provider-gitexe.version>2.2.1</maven-scm-provider-gitexe.version>
