@@ -134,10 +134,9 @@ public class ConnectorCommon
         .setPort(serverConfig.getPort())
         .setPath(subPath);
 
-        if (serverConfig.getAuthenticationConfig().usesBasicAuthentication()) {
-            uB.setUserInfo(serverConfig.getAuthenticationConfig().getLoginName(),
-                serverConfig.getAuthenticationConfig().getPassword());
-        }
+        // Basic auth credentials are supplied via the request context
+        // (see prepareContext()); they are deliberately NOT embedded in the URL
+        // to avoid leaking the password through logs, proxies or exceptions.
 
         if (queryParams != null) {
             uB.addParameters(queryParams);

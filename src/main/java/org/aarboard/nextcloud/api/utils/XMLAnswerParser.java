@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import org.aarboard.nextcloud.api.exception.NextcloudApiException;
 import org.aarboard.nextcloud.api.utils.ConnectorCommon.ResponseParser;
 
@@ -14,7 +17,23 @@ public class XMLAnswerParser<A extends XMLAnswer> implements ResponseParser<A>
 {
     private static final Map<String, XMLAnswerParser<? extends XMLAnswer>> PARSERS = new HashMap<>();
 
+    /**
+     * Shared, hardened StAX factory. DTD support and external entity resolution
+     * are disabled to prevent XXE attacks from a malicious or MITM'd server
+     * response. The factory is only configured once here and thereafter used
+     * read-only, which is safe to share across threads.
+     */
+    private static final XMLInputFactory XML_INPUT_FACTORY = createHardenedInputFactory();
+
     private final JAXBContext jAXBContext;
+
+    private static XMLInputFactory createHardenedInputFactory()
+    {
+        XMLInputFactory factory = XMLInputFactory.newFactory();
+        factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+        factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+        return factory;
+    }
 
     public XMLAnswerParser(Class<A> answerClass)
     {
@@ -57,9 +76,15 @@ public class XMLAnswerParser<A extends XMLAnswer> implements ResponseParser<A>
     }
 
     @SuppressWarnings("unchecked")
-    private A tryParseAnswer(Reader xmlStream) throws JAXBException {
+    private A tryParseAnswer(Reader xmlStream) throws JAXBException, XMLStreamException {
         Unmarshaller unmarshaller = jAXBContext.createUnmarshaller();
-        Object result = unmarshaller.unmarshal(xmlStream);
-        return (A) result;
+        // Unmarshal through the hardened StAX reader (not the raw Reader) so
+        // DTDs / external entities are never processed.
+        XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(xmlStream);
+        try {
+            return (A) unmarshaller.unmarshal(xmlStreamReader);
+        } finally {
+            xmlStreamReader.close();
+        }
     }
 }

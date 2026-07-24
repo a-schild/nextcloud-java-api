@@ -1,6 +1,11 @@
 # Changelog for nextcloud api
 
 ## Version 14.2.0
+- Security: harden XML response parsing against XXE by disabling DTDs and
+  external entities in the StAX parser
+- Security: no longer embed the basic-auth credentials in the request URL
+  (they are sent via the request context instead), avoiding password leakage
+  through logs, proxies or exceptions
 - Add support for the Group Folders app: create, rename, delete and list group
   folders, grant/revoke group access, set group permissions and set the folder
   quota via the new `GroupFolders` connector and `NextcloudConnector` methods
