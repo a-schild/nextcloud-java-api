@@ -16,6 +16,7 @@
  */
 package org.aarboard.nextcloud.api.filesharing;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -162,7 +163,31 @@ public class FilesharingConnector
             String password,
             SharePermissions permissions)
     {
-        return NextcloudResponseHelper.getAndCheckStatus(doShareAsync(path, shareType, shareWithUserOrGroupIdOrEmail, publicUpload, password, permissions)).getShare();
+        return doShare(path, shareType, shareWithUserOrGroupIdOrEmail, publicUpload, password, permissions, null);
+    }
+
+    /**
+     * Shares the specified path with the provided parameters
+     *
+     * @param path                  path to the file/folder which should be shared
+     * @param shareType             0 = user; 1 = group; 3 = public link; 4 = email; 6 = federated cloud share
+     * @param shareWithUserOrGroupIdOrEmail user / group id / email with which the file should be shared
+     * @param publicUpload          allow public upload to a public shared folder (true/false)
+     * @param password              password to protect public link Share with
+     * @param permissions           1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all (default: 31, for public shares: 1)
+     * @param expireDate            expiration date of the share, or null for no expiration
+     * @return created share on success
+     */
+    public Share doShare(
+            String path,
+            ShareType shareType,
+            String shareWithUserOrGroupIdOrEmail,
+            Boolean publicUpload,
+            String password,
+            SharePermissions permissions,
+            LocalDate expireDate)
+    {
+        return NextcloudResponseHelper.getAndCheckStatus(doShareAsync(path, shareType, shareWithUserOrGroupIdOrEmail, publicUpload, password, permissions, expireDate)).getShare();
     }
 
     /**
@@ -184,6 +209,30 @@ public class FilesharingConnector
             String password,
             SharePermissions permissions)
     {
+        return doShareAsync(path, shareType, shareWithUserOrGroupIdOrEmail, publicUpload, password, permissions, null);
+    }
+
+    /**
+    * Shares the specified path with the provided parameters asynchronously
+    *
+    * @param path                  path to the file/folder which should be shared
+    * @param shareType             0 = user; 1 = group; 3 = public link; 4 = email; 6 = federated cloud share
+    * @param shareWithUserOrGroupIdOrEmail user / group id / email with which the file should be shared
+    * @param publicUpload          allow public upload to a public shared folder (true/false)
+    * @param password              password to protect public link Share with
+    * @param permissions           1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all (default: 31, for public shares: 1)
+    * @param expireDate            expiration date of the share, or null for no expiration
+    * @return a CompletableFuture containing the result of the operation
+    */
+    public CompletableFuture<SingleShareXMLAnswer> doShareAsync(
+            String path,
+            ShareType shareType,
+            String shareWithUserOrGroupIdOrEmail,
+            Boolean publicUpload,
+            String password,
+            SharePermissions permissions,
+            LocalDate expireDate)
+    {
         List<NameValuePair> postParams= new LinkedList<>();
         postParams.add(new BasicNameValuePair("path", path));
         postParams.add(new BasicNameValuePair("shareType", Integer.toString(shareType.getIntValue())));
@@ -199,6 +248,10 @@ public class FilesharingConnector
         if (permissions != null)
         {
             postParams.add(new BasicNameValuePair("permissions", Integer.toString(permissions.getCurrentPermission())));
+        }
+        if (expireDate != null)
+        {
+            postParams.add(new BasicNameValuePair("expireDate", expireDate.toString()));
         }
 
         return connectorCommon.executePost(SHARES_PART, postParams, XMLAnswerParser.getInstance(SingleShareXMLAnswer.class));

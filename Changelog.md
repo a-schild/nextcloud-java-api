@@ -1,5 +1,9 @@
 # Changelog for nextcloud api
 
+## Version 14.1.6
+- Add optional `expireDate` parameter to `doShare` / `doShareAsync`, so an
+  expiration date can be set when creating a share (issue #76)
+
 ## Version 14.1.5
 - 2026-07-24
   - Updated dependencies:

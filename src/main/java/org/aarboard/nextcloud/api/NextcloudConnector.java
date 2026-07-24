@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import org.aarboard.nextcloud.api.config.ConfigConnector;
@@ -897,6 +898,33 @@ public class NextcloudConnector implements AutoCloseable {
     }
 
     /**
+     * Shares the specified path with the provided parameters
+     *
+     * @param path path to the file/folder which should be shared
+     * @param shareType 0 = user; 1 = group; 3 = public link; 4 = email; 6 =
+     * federated cloud share
+     * @param shareWithUserOrGroupId user / group id / email with which the file
+     * should be shared
+     * @param publicUpload allow public upload to a public shared folder
+     * (true/false)
+     * @param password password to protect public link Share with
+     * @param permissions 1 = read; 2 = update; 4 = create; 8 = delete; 16 =
+     * share; 31 = all (default: 31, for public shares: 1)
+     * @param expireDate expiration date of the share, or null for no expiration
+     * @return created share on success
+     */
+    public Share doShare(
+            String path,
+            ShareType shareType,
+            String shareWithUserOrGroupId,
+            Boolean publicUpload,
+            String password,
+            SharePermissions permissions,
+            LocalDate expireDate) {
+        return fc.doShare(path, shareType, shareWithUserOrGroupId, publicUpload, password, permissions, expireDate);
+    }
+
+    /**
      * Shares the specified path with the provided parameters asynchronously
      *
      * @param path path to the file/folder which should be shared
@@ -919,6 +947,33 @@ public class NextcloudConnector implements AutoCloseable {
             String password,
             SharePermissions permissions) {
         return fc.doShareAsync(path, shareType, shareWithUserOrGroupId, publicUpload, password, permissions);
+    }
+
+    /**
+     * Shares the specified path with the provided parameters asynchronously
+     *
+     * @param path path to the file/folder which should be shared
+     * @param shareType 0 = user; 1 = group; 3 = public link; 4 = email; 6 =
+     * federated cloud share
+     * @param shareWithUserOrGroupId user / group id / email with which the file
+     * should be shared
+     * @param publicUpload allow public upload to a public shared folder
+     * (true/false)
+     * @param password password to protect public link Share with
+     * @param permissions 1 = read; 2 = update; 4 = create; 8 = delete; 16 =
+     * share; 31 = all (default: 31, for public shares: 1)
+     * @param expireDate expiration date of the share, or null for no expiration
+     * @return a CompletableFuture containing the result of the operation
+     */
+    public CompletableFuture<SingleShareXMLAnswer> doShareAsync(
+            String path,
+            ShareType shareType,
+            String shareWithUserOrGroupId,
+            Boolean publicUpload,
+            String password,
+            SharePermissions permissions,
+            LocalDate expireDate) {
+        return fc.doShareAsync(path, shareType, shareWithUserOrGroupId, publicUpload, password, permissions, expireDate);
     }
 
     /**
