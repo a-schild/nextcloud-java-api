@@ -19,6 +19,11 @@ public class JsonAnswerParser<A extends JsonAnswer> implements ConnectorCommon.R
     private JsonAnswerParser(Class<A> answerClass) {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.enable(DeserializationFeature.UNWRAP_ROOT_VALUE);
+        // The OCS API serializes empty PHP associative arrays as a JSON array
+        // "[]" instead of an object "{}". Treat such empty arrays as a null
+        // object so answers with no data (e.g. an empty user/group list)
+        // deserialize instead of throwing a MismatchedInputException.
+        objectMapper.enable(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT);
 
         objectReader = objectMapper.readerFor(answerClass);
     }

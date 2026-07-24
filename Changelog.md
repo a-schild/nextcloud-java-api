@@ -3,6 +3,9 @@
 ## Version 14.1.6
 - Add optional `expireDate` parameter to `doShare` / `doShareAsync`, so an
   expiration date can be set when creating a share (issue #76)
+- Fix JSON parsing of empty OCS results: the API serializes empty collections
+  as `[]` instead of `{}`, which caused a `MismatchedInputException` when e.g.
+  listing users or groups on an empty result (issue #112)
 - Fix file uploads (and other WebDAV writes) failing on servers running on a
   non-standard port: preemptive authentication now uses the configured port, so
   the server no longer issues an auth challenge that a streamed upload cannot
