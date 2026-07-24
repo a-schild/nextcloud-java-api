@@ -3,6 +3,9 @@
 ## Version 14.1.6
 - Add optional `expireDate` parameter to `doShare` / `doShareAsync`, so an
   expiration date can be set when creating a share (issue #76)
+- Fix JSON parsing of empty OCS results: the API serializes empty collections
+  as `[]` instead of `{}`, which caused a `MismatchedInputException` when e.g.
+  listing users or groups on an empty result (issue #112)
 - Testing: integration tests can now auto-provision a throw-away Nextcloud
   server via Testcontainers when Docker is available, and are executed in CI
   (GitHub Actions)
