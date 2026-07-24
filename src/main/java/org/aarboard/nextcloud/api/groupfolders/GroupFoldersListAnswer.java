@@ -18,19 +18,20 @@ package org.aarboard.nextcloud.api.groupfolders;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import org.aarboard.nextcloud.api.utils.JsonAnswer;
 
 /**
- * Answer of the "list group folders" call.
+ * Answer of the "list group folders" call. The server returns {@code data} as
+ * an object keyed by the folder id, which Jackson maps directly into a map (an
+ * empty result comes back as {@code []} and is handled as a null map by the
+ * shared object mapper).
  */
 public class GroupFoldersListAnswer extends JsonAnswer {
 
     @JsonProperty
-    @JsonDeserialize(using = GroupListDeserializer.class)
     private Map<Integer, GroupFolderInfo> data;
 
     @JsonIgnore

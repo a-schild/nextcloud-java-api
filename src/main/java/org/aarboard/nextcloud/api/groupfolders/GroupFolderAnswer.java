@@ -21,23 +21,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.aarboard.nextcloud.api.utils.JsonAnswer;
 
 /**
- * Answer of the "create group folder" call, carrying the id of the new folder.
+ * Answer of the "create group folder" call. The server returns the full
+ * created folder, of which we expose the id.
  */
 public class GroupFolderAnswer extends JsonAnswer {
 
     @JsonProperty
-    private Data data;
+    private GroupFolderInfo data;
 
     @JsonIgnore
     public Integer getId() {
         if (data != null) {
-            return data.id;
+            return data.getId();
         }
         return null;
-    }
-
-    public static class Data {
-        @JsonProperty
-        public Integer id;
     }
 }
