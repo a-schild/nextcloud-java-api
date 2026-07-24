@@ -21,10 +21,7 @@ jobs:
 
       # Docker is preinstalled on ubuntu-latest runners, so Testcontainers can
       # spin up the throw-away Nextcloud server used by the integration tests.
-      #
-      # continue-on-error is temporary: ~45 tests currently fail against a clean
-      # Nextcloud 31 (tracked in #112). Remove it once the suite is green so CI
-      # gates again.
+      # GPG signing is bound to the verify phase but is only needed for
+      # releases (the publish workflow supplies the key), so skip it here.
       - name: Build and run tests
-        continue-on-error: true
-        run: mvn --batch-mode --update-snapshots verify -DskipTests=false
+        run: mvn --batch-mode --update-snapshots verify -DskipTests=false -Dgpg.skip=true
