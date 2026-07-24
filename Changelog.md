@@ -11,6 +11,9 @@
   connector using `trustAllCertificates(true)` can no longer cause a later,
   secure connector to run with certificate validation disabled. Client creation
   is now also thread-safe.
+- Security: reject path separators in user/group identifiers used as URL path
+  segments (user and group provisioning, group folder group names) to prevent
+  URL/path injection
 - Add support for the Group Folders app: create, rename, delete and list group
   folders, grant/revoke group access, set group permissions and set the folder
   quota via the new `GroupFolders` connector and `NextcloudConnector` methods

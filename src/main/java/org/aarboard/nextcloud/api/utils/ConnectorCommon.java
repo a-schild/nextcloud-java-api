@@ -58,6 +58,27 @@ public class ConnectorCommon
         this.serverConfig = serverConfig;
     }
 
+    /**
+     * Ensures a value can be safely used as a single URL path segment. Nextcloud
+     * object identifiers (user ids, group ids, ...) cannot legitimately contain
+     * a path separator, so rejecting one here prevents URL/path injection. All
+     * other reserved characters are already percent-encoded by the URL builder.
+     *
+     * @param value the identifier to use as a path segment
+     * @return the value unchanged if it is safe
+     * @throws IllegalArgumentException if the value is null or contains a
+     *         path separator
+     */
+    public static String requireValidPathSegment(String value) {
+        if (value == null) {
+            throw new IllegalArgumentException("Path segment must not be null");
+        }
+        if (value.indexOf('/') >= 0 || value.indexOf('\\') >= 0) {
+            throw new IllegalArgumentException("Path segment must not contain a path separator: " + value);
+        }
+        return value;
+    }
+
     public <R> CompletableFuture<R> executeGet(String part, ResponseParser<R> parser) {
         return executeGet(part, null, parser);
     }

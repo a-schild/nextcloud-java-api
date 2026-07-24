@@ -135,7 +135,7 @@ public class GroupFolders {
 
     public CompletableFuture<XMLAnswer> revokeAccessAsync(int groupFolderId, String group) {
         return connectorCommon.executeDelete(GROUP_FOLDERS_ROOT,
-                String.format("%d/groups/%s", groupFolderId, group),
+                String.format("%d/groups/%s", groupFolderId, ConnectorCommon.requireValidPathSegment(group)),
                 XMLAnswerParser.getInstance(XMLAnswer.class));
     }
 
@@ -154,7 +154,8 @@ public class GroupFolders {
     public CompletableFuture<XMLAnswer> setGroupPermissionsAsync(int groupFolderId, String group, int permissions) {
         List<NameValuePair> postParams = new ArrayList<>();
         postParams.add(new BasicNameValuePair("permissions", String.valueOf(permissions)));
-        String url = String.format("%s/%d/groups/%s", GROUP_FOLDERS_ROOT, groupFolderId, group);
+        String url = String.format("%s/%d/groups/%s", GROUP_FOLDERS_ROOT, groupFolderId,
+                ConnectorCommon.requireValidPathSegment(group));
         return connectorCommon.executePost(url, postParams, XMLAnswerParser.getInstance(XMLAnswer.class));
     }
 
