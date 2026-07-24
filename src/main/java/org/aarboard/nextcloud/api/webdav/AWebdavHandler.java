@@ -26,14 +26,20 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.stream.Collectors;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
 import org.aarboard.nextcloud.api.ServerConfig;
 import org.aarboard.nextcloud.api.exception.NextcloudApiException;
 import org.aarboard.nextcloud.api.provisioning.ProvisionConnector;
 import org.aarboard.nextcloud.api.provisioning.User;
+import org.aarboard.nextcloud.api.utils.SslUtils;
 import org.aarboard.nextcloud.api.webdav.pathresolver.NextcloudVersion;
 import org.aarboard.nextcloud.api.webdav.pathresolver.WebDavPathResolver;
 import org.aarboard.nextcloud.api.webdav.pathresolver.WebDavPathResolverBuilder;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -175,10 +181,17 @@ public abstract class AWebdavHandler
      */
     protected Sardine buildAuthSardine()
     {
+        ConnectionSocketFactory secureSocketFactory = buildSecureSocketFactory();
         if (this.serverConfig.getAuthenticationConfig().usesBasicAuthentication()) {
-            Sardine sardine = SardineFactory.begin();
-            sardine.setCredentials(this.serverConfig.getUserName(),
-                    this.serverConfig.getAuthenticationConfig().getPassword());
+            String userName = this.serverConfig.getUserName();
+            String password = this.serverConfig.getAuthenticationConfig().getPassword();
+            Sardine sardine;
+            if (secureSocketFactory != null) {
+                sardine = TrustingSardineImpl.withBasicAuth(userName, password, secureSocketFactory);
+            } else {
+                sardine = SardineFactory.begin();
+                sardine.setCredentials(userName, password);
+            }
             // Pass the configured port so preemptive authentication also applies
             // on non-standard ports (e.g. behind a reverse proxy). Without it the
             // hostname-only overload assumes ports 80/443, the server then issues
@@ -188,7 +201,27 @@ public abstract class AWebdavHandler
                     this.serverConfig.getPort(), this.serverConfig.getPort());
             return sardine;
         }
-      return new SardineImpl(this.serverConfig.getAuthenticationConfig().getBearerToken());
+        String bearerToken = this.serverConfig.getAuthenticationConfig().getBearerToken();
+        if (secureSocketFactory != null) {
+            return TrustingSardineImpl.withBearerToken(bearerToken, secureSocketFactory);
+        }
+        return new SardineImpl(bearerToken);
+    }
+
+    /**
+     * @return a TLS socket factory matching the configured certificate trust
+     *         settings, or {@code null} to use Sardine's default (JVM trust store)
+     */
+    private ConnectionSocketFactory buildSecureSocketFactory()
+    {
+        SSLContext sslContext = SslUtils.buildSslContext(this.serverConfig);
+        if (sslContext == null) {
+            return null;
+        }
+        HostnameVerifier hostnameVerifier = SslUtils.isHostnameVerificationDisabled(this.serverConfig)
+                ? NoopHostnameVerifier.INSTANCE
+                : SSLConnectionSocketFactory.getDefaultHostnameVerifier();
+        return new SSLConnectionSocketFactory(sslContext, hostnameVerifier);
     }
 
     /**
