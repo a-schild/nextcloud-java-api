@@ -31,6 +31,8 @@ import org.aarboard.nextcloud.api.filesharing.SharePermissions;
 import org.aarboard.nextcloud.api.filesharing.ShareType;
 import org.aarboard.nextcloud.api.filesharing.SharesXMLAnswer;
 import org.aarboard.nextcloud.api.filesharing.SingleShareXMLAnswer;
+import org.aarboard.nextcloud.api.groupfolders.GroupFolderInfo;
+import org.aarboard.nextcloud.api.groupfolders.GroupFolders;
 import org.aarboard.nextcloud.api.provisioning.*;
 import org.aarboard.nextcloud.api.utils.*;
 import org.aarboard.nextcloud.api.webdav.Files;
@@ -48,6 +50,7 @@ public class NextcloudConnector implements AutoCloseable {
     private final ConfigConnector cc;
     private final Folders fd;
     private final Files fl;
+    private final GroupFolders gf;
 
     /**
      * 
@@ -110,6 +113,7 @@ public class NextcloudConnector implements AutoCloseable {
             cc = new ConfigConnector(this.serverConfig);
             fd = new Folders(this.serverConfig);
             fl = new Files(this.serverConfig);
+            gf = new GroupFolders(this.serverConfig);
 
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException(e);
@@ -131,6 +135,7 @@ public class NextcloudConnector implements AutoCloseable {
         cc = new ConfigConnector(this.serverConfig);
         fd = new Folders(this.serverConfig);
         fl = new Files(this.serverConfig);
+        gf = new GroupFolders(this.serverConfig);
     }
 
     /**
@@ -187,6 +192,84 @@ public class NextcloudConnector implements AutoCloseable {
      */
     public void shutdown() throws IOException {
         ConnectorCommon.shutdown();
+    }
+
+    /**
+     * Creates a new group folder (Group Folders app must be installed).
+     *
+     * @param mountPoint name/mount point of the group folder
+     * @return the id of the newly created group folder
+     */
+    public int createGroupFolder(String mountPoint) {
+        return gf.createGroupFolder(mountPoint);
+    }
+
+    /**
+     * Renames (changes the mount point of) a group folder.
+     *
+     * @param groupFolderId id of the group folder
+     * @param newMountPoint new name/mount point
+     */
+    public void renameGroupFolder(int groupFolderId, String newMountPoint) {
+        gf.renameGroupFolder(groupFolderId, newMountPoint);
+    }
+
+    /**
+     * Deletes a group folder.
+     *
+     * @param groupFolderId id of the group folder
+     */
+    public void deleteGroupFolder(int groupFolderId) {
+        gf.deleteGroupFolder(groupFolderId);
+    }
+
+    /**
+     * @return all group folders visible to the current user
+     */
+    public Collection<GroupFolderInfo> getGroupFolders() {
+        return gf.getGroupFolders();
+    }
+
+    /**
+     * Grants a group access to a group folder.
+     *
+     * @param groupFolderId id of the group folder
+     * @param group         group id to grant access to
+     */
+    public void grantAccessToGroupFolder(int groupFolderId, String group) {
+        gf.grantAccess(groupFolderId, group);
+    }
+
+    /**
+     * Revokes a group's access to a group folder.
+     *
+     * @param groupFolderId id of the group folder
+     * @param group         group id to revoke access from
+     */
+    public void revokeAccessToGroupFolder(int groupFolderId, String group) {
+        gf.revokeAccess(groupFolderId, group);
+    }
+
+    /**
+     * Sets the permissions a group has on a group folder.
+     *
+     * @param groupFolderId id of the group folder
+     * @param group         group id
+     * @param permissions   permission bit mask (1 = read, 2 = update, 4 =
+     *                      create, 8 = delete, 16 = share, 31 = all)
+     */
+    public void setGroupFolderPermissions(int groupFolderId, String group, int permissions) {
+        gf.setGroupPermissions(groupFolderId, group, permissions);
+    }
+
+    /**
+     * Sets the quota of a group folder.
+     *
+     * @param groupFolderId id of the group folder
+     * @param quota         quota in bytes, or {@code -3} for an unlimited quota
+     */
+    public void setGroupFolderQuota(int groupFolderId, long quota) {
+        gf.setQuota(groupFolderId, quota);
     }
 
     /**
