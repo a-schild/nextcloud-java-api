@@ -6,6 +6,11 @@
 - Security: no longer embed the basic-auth credentials in the request URL
   (they are sent via the request context instead), avoiding password leakage
   through logs, proxies or exceptions
+- Security/correctness: the shared HTTP client is now cached per security
+  configuration (trust-all / proxy) instead of a single JVM-wide instance, so a
+  connector using `trustAllCertificates(true)` can no longer cause a later,
+  secure connector to run with certificate validation disabled. Client creation
+  is now also thread-safe.
 - Add support for the Group Folders app: create, rename, delete and list group
   folders, grant/revoke group access, set group permissions and set the folder
   quota via the new `GroupFolders` connector and `NextcloudConnector` methods
