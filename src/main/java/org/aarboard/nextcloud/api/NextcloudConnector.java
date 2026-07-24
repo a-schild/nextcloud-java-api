@@ -30,6 +30,7 @@ import org.aarboard.nextcloud.api.filesharing.Share;
 import org.aarboard.nextcloud.api.filesharing.SharePermissions;
 import org.aarboard.nextcloud.api.filesharing.ShareType;
 import org.aarboard.nextcloud.api.filesharing.SharesXMLAnswer;
+import org.aarboard.nextcloud.api.filesharing.RemoteShare;
 import org.aarboard.nextcloud.api.filesharing.SingleShareXMLAnswer;
 import org.aarboard.nextcloud.api.groupfolders.GroupFolderInfo;
 import org.aarboard.nextcloud.api.groupfolders.GroupFolders;
@@ -192,6 +193,70 @@ public class NextcloudConnector implements AutoCloseable {
      */
     public void shutdown() throws IOException {
         ConnectorCommon.shutdown();
+    }
+
+    /**
+     * (Re)sends the share notification email to the recipients of a share
+     *
+     * @param shareId unique identifier of the share
+     * @return true if the operation succeeded
+     */
+    public boolean sendShareEmail(int shareId) {
+        return fc.sendShareEmail(shareId);
+    }
+
+    /**
+     * @return all accepted federated (server-to-server) shares of this user
+     */
+    public Collection<RemoteShare> getRemoteShares() {
+        return fc.getRemoteShares();
+    }
+
+    /**
+     * Gets information about a single accepted federated share
+     *
+     * @param remoteShareId id of the remote share
+     * @return the remote share if found, otherwise null
+     */
+    public RemoteShare getRemoteShareInfo(int remoteShareId) {
+        return fc.getRemoteShareInfo(remoteShareId);
+    }
+
+    /**
+     * Deletes (unshares) an accepted federated share
+     *
+     * @param remoteShareId id of the remote share
+     * @return true if the operation succeeded
+     */
+    public boolean deleteRemoteShare(int remoteShareId) {
+        return fc.deleteRemoteShare(remoteShareId);
+    }
+
+    /**
+     * @return all pending (not yet accepted) federated shares of this user
+     */
+    public Collection<RemoteShare> getPendingRemoteShares() {
+        return fc.getPendingRemoteShares();
+    }
+
+    /**
+     * Accepts a pending federated share
+     *
+     * @param remoteShareId id of the pending remote share
+     * @return true if the operation succeeded
+     */
+    public boolean acceptPendingRemoteShare(int remoteShareId) {
+        return fc.acceptPendingRemoteShare(remoteShareId);
+    }
+
+    /**
+     * Declines a pending federated share
+     *
+     * @param remoteShareId id of the pending remote share
+     * @return true if the operation succeeded
+     */
+    public boolean declinePendingRemoteShare(int remoteShareId) {
+        return fc.declinePendingRemoteShare(remoteShareId);
     }
 
     /**

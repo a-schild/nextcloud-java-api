@@ -6,7 +6,11 @@ public enum ShareData
     PASSWORD("password"),
     PUBLICUPLOAD("publicUpload"),
     EXPIREDATE("expireDate"),
-	HIDEDOWNLOAD("hideDownload");
+	HIDEDOWNLOAD("hideDownload"),
+    NOTE("note"),
+    LABEL("label"),
+    ATTRIBUTES("attributes"),
+    SENDMAIL("sendMail");
 
     public final String parameterName;
 

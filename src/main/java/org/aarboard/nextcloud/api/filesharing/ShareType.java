@@ -34,7 +34,9 @@ public enum ShareType {
     @XmlEnumValue("1") GROUP(1),
     @XmlEnumValue("3") PUBLIC_LINK(3),
     @XmlEnumValue("4") EMAIL(4),
-    @XmlEnumValue("6") FEDERATED_CLOUD_SHARE(6);
+    @XmlEnumValue("6") FEDERATED_CLOUD_SHARE(6),
+    @XmlEnumValue("7") CIRCLE(7),
+    @XmlEnumValue("10") TALK(10);
 
     private final int intValue;
     

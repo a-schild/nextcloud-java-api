@@ -25,6 +25,7 @@ import static org.junit.Assert.fail;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -250,6 +251,43 @@ public class FilesharingConnectorTest {
             Share result = instance.doShare(TEST_FOLDER2, ShareType.PUBLIC_LINK, "", true, "1234-myWebDav", permissions, expireDate);
             assertNotNull(result);
             assertEquals(expireDate, result.getExpiration());
+        }
+    }
+
+    @Test
+    public void t10_testEditShareNoteAndLabel() {
+        System.out.println("editShareNoteAndLabel");
+        if (_sc != null)
+        {
+            FilesharingConnector instance = new FilesharingConnector(_sc);
+            SharePermissions permissions = new SharePermissions(SingleRight.READ);
+            Share created = instance.doShare(TEST_FOLDER2, ShareType.PUBLIC_LINK, "", true, "1234-myWebDav", permissions);
+            assertNotNull(created);
+
+            assertTrue(instance.editShare(created.getId(), ShareData.NOTE, "my share note"));
+            assertTrue(instance.editShare(created.getId(), ShareData.LABEL, "my label"));
+
+            Share reloaded = instance.getShareInfo(created.getId());
+            assertEquals("my share note", reloaded.getNote());
+            assertEquals("my label", reloaded.getLabel());
+
+            assertTrue(instance.deleteShare(created.getId()));
+        }
+    }
+
+    @Test
+    public void t11_testGetRemoteShares() {
+        System.out.println("getRemoteShares");
+        if (_sc != null)
+        {
+            FilesharingConnector instance = new FilesharingConnector(_sc);
+            // On a single, non-federated server these are simply empty; the call
+            // must complete and parse without error.
+            List<RemoteShare> accepted = instance.getRemoteShares();
+            assertTrue(accepted == null || accepted.isEmpty());
+
+            List<RemoteShare> pending = instance.getPendingRemoteShares();
+            assertTrue(pending == null || pending.isEmpty());
         }
     }
 
