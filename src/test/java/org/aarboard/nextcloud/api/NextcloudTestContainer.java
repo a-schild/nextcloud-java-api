@@ -60,6 +60,14 @@ public final class NextcloudTestContainer {
     }
 
     /**
+     * @return true if the value is a real, usable setting (not null, not blank,
+     *         and not an unexpanded {@code ${...}} Maven placeholder).
+     */
+    static boolean isConfigured(String value) {
+        return value != null && !value.trim().isEmpty() && !value.trim().startsWith("${");
+    }
+
+    /**
      * Ensures a Nextcloud server is available for the tests, starting a
      * container on the first call if needed. Safe to call repeatedly.
      */
@@ -70,7 +78,10 @@ public final class NextcloudTestContainer {
         attempted = true;
 
         // An external server was configured explicitly - use it, don't start Docker.
-        if (System.getProperty("nextcloud.api.test.servername") != null) {
+        // Note: the surefire config injects an (empty / unexpanded "${...}") value
+        // for this property even when no settings.xml profile defines it, so a bare
+        // null-check is not enough - it must be a real, non-blank host.
+        if (isConfigured(System.getProperty("nextcloud.api.test.servername"))) {
             return;
         }
 
