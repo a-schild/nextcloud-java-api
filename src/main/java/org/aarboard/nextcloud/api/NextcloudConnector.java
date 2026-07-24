@@ -21,10 +21,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.cert.X509Certificate;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import org.aarboard.nextcloud.api.config.ConfigConnector;
+import org.aarboard.nextcloud.api.exception.NextcloudApiException;
 import org.aarboard.nextcloud.api.filesharing.FilesharingConnector;
 import org.aarboard.nextcloud.api.filesharing.Share;
 import org.aarboard.nextcloud.api.filesharing.SharePermissions;
@@ -350,11 +352,44 @@ public class NextcloudConnector implements AutoCloseable {
     /**
      * Trust all HTTPS certificates presented by the server. This is e.g. used
      * to work against a Nextcloud instance with a self-signed certificate.
+     * <p>
+     * <b>Warning:</b> this disables all certificate and hostname verification
+     * and is vulnerable to man-in-the-middle attacks. Prefer
+     * {@link #trustCertificate(java.security.cert.X509Certificate)} /
+     * {@link #trustCertificates(java.io.InputStream)} to trust a specific
+     * self-signed or CA certificate while keeping verification enabled.
      *
      * @param trustAllCertificates Do we accept self-signed certificates or not
      */
     public void trustAllCertificates(boolean trustAllCertificates) {
         this.serverConfig.setTrustAllCertificates(trustAllCertificates);
+    }
+
+    /**
+     * Trust a specific certificate (a self-signed server certificate or a
+     * private CA) in addition to nothing else. Unlike
+     * {@link #trustAllCertificates(boolean)}, certificate-chain and hostname
+     * verification remain enabled - only this certificate is accepted as a
+     * trust anchor, which is safe against man-in-the-middle attacks. Configure
+     * this before making any request.
+     *
+     * @param certificate the certificate to trust
+     */
+    public void trustCertificate(X509Certificate certificate) {
+        this.serverConfig.addTrustedCertificate(certificate);
+    }
+
+    /**
+     * Trust the X.509 certificate(s) read from the given stream (PEM or DER),
+     * e.g. the server's self-signed certificate or a private CA file. Chain and
+     * hostname verification remain enabled. Configure this before making any
+     * request.
+     *
+     * @param certificateStream stream containing one or more X.509 certificates
+     * @throws NextcloudApiException if the stream cannot be parsed
+     */
+    public void trustCertificates(InputStream certificateStream) {
+        this.serverConfig.addTrustedCertificates(certificateStream);
     }
 
     /**

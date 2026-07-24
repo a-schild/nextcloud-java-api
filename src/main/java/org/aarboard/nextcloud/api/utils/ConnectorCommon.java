@@ -6,10 +6,15 @@ import java.io.Reader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.security.GeneralSecurityException;
 import java.security.KeyManagementException;
+import java.security.KeyStore;
 import java.security.KeyStoreException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +24,8 @@ import javax.net.ssl.SSLContext;
 
 import org.aarboard.nextcloud.api.ServerConfig;
 import org.aarboard.nextcloud.api.exception.NextcloudApiException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -52,6 +59,8 @@ import org.apache.http.ssl.SSLContexts;
 
 public class ConnectorCommon
 {
+    private static final Logger LOG = LoggerFactory.getLogger(ConnectorCommon.class);
+
     private final ServerConfig serverConfig;
 
     public ConnectorCommon(ServerConfig serverConfig) {
@@ -278,13 +287,33 @@ public class ConnectorCommon
 
 		private static String clientKey(ServerConfig serverConfig) {
 			return "trustAll=" + serverConfig.isTrustAllCertificates()
+					+ ";certs=" + trustedCertificatesFingerprint(serverConfig)
 					+ ";proxyHost=" + System.getProperty("https.proxyHost")
 					+ ";proxyPort=" + System.getProperty("https.proxyPort");
+		}
+
+		private static String trustedCertificatesFingerprint(ServerConfig serverConfig) {
+			if (!serverConfig.hasTrustedCertificates()) {
+				return "none";
+			}
+			try {
+				MessageDigest digest = MessageDigest.getInstance("SHA-256");
+				for (X509Certificate certificate : serverConfig.getTrustedCertificates()) {
+					digest.update(certificate.getEncoded());
+				}
+				return Base64.getEncoder().encodeToString(digest.digest());
+			} catch (GeneralSecurityException e) {
+				// Fall back to an identity-based key; still keyed per config
+				return String.valueOf(serverConfig.getTrustedCertificates().hashCode());
+			}
 		}
 
 		private static CloseableHttpAsyncClient buildClient(ServerConfig serverConfig)
 			throws IOException {
 			if (serverConfig.isTrustAllCertificates()) {
+				LOG.warn("TLS certificate validation is DISABLED (trustAllCertificates=true): "
+					+ "all certificates and hostnames are accepted. Do NOT use this in production; "
+					+ "prefer trustCertificate(...) to trust a specific self-signed/CA certificate.");
 				try {
 					SSLContext sslContext = SSLContexts.custom()
 						.loadTrustMaterial(null, TrustAllStrategy.INSTANCE).build();
@@ -294,6 +323,22 @@ public class ConnectorCommon
 						.build();
 				} catch (KeyManagementException | NoSuchAlgorithmException
 						| KeyStoreException e) {
+					throw new IOException(e);
+				}
+			} else if (serverConfig.hasTrustedCertificates()) {
+				try {
+					KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+					trustStore.load(null, null);
+					int index = 0;
+					for (X509Certificate certificate : serverConfig.getTrustedCertificates()) {
+						trustStore.setCertificateEntry("nextcloud-trusted-" + index++, certificate);
+					}
+					// Only the pinned certificates are trusted; hostname
+					// verification stays enabled (default verifier).
+					SSLContext sslContext = SSLContexts.custom()
+						.loadTrustMaterial(trustStore, null).build();
+					return HttpAsyncClients.custom().setSSLContext(sslContext).build();
+				} catch (GeneralSecurityException e) {
 					throw new IOException(e);
 				}
 			} else if (System.getProperty("https.proxyHost") != null && System.getProperty("https.proxyPort") != null) {

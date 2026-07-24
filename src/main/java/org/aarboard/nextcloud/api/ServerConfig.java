@@ -16,18 +16,29 @@
  */
 package org.aarboard.nextcloud.api;
 
+import java.io.InputStream;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import org.aarboard.nextcloud.api.exception.NextcloudApiException;
+
 /**
  *
  * @author a.schild
  */
 public class ServerConfig {
-    
+
     private AuthenticationConfig authenticationConfig;
     private String serverName;
     private String subPathPrefix;
     private boolean useHTTPS;
     private int port;
     private boolean trustAllCertificates;
+    private final List<X509Certificate> trustedCertificates = new ArrayList<>();
 
     /**
      * Use this constructor if your nextcloud instance is installed in the 
@@ -202,6 +213,55 @@ public class ServerConfig {
 	 */
 	public boolean isTrustAllCertificates(){
 		return trustAllCertificates;
+	}
+
+	/**
+	 * Adds a certificate (a self-signed server certificate or a private CA) that
+	 * the client should trust in addition to nothing else. Unlike
+	 * {@link #setTrustAllCertificates(boolean)}, hostname verification and normal
+	 * certificate-chain validation stay enabled - only these certificates are
+	 * accepted as trust anchors, which is safe against man-in-the-middle attacks.
+	 *
+	 * @param certificate the certificate to trust
+	 */
+	public void addTrustedCertificate(X509Certificate certificate){
+		if (certificate != null) {
+			this.trustedCertificates.add(certificate);
+		}
+	}
+
+	/**
+	 * Adds the X.509 certificate(s) read from the given stream (PEM or DER) to
+	 * the set of trusted certificates.
+	 *
+	 * @param certificateStream stream containing one or more X.509 certificates
+	 * @throws NextcloudApiException if the stream cannot be parsed
+	 */
+	public void addTrustedCertificates(InputStream certificateStream){
+		try {
+			CertificateFactory factory = CertificateFactory.getInstance("X.509");
+			for (Certificate certificate : factory.generateCertificates(certificateStream)) {
+				if (certificate instanceof X509Certificate) {
+					this.trustedCertificates.add((X509Certificate) certificate);
+				}
+			}
+		} catch (CertificateException e) {
+			throw new NextcloudApiException(e);
+		}
+	}
+
+	/**
+	 * @return the explicitly trusted certificates (may be empty)
+	 */
+	public List<X509Certificate> getTrustedCertificates(){
+		return Collections.unmodifiableList(trustedCertificates);
+	}
+
+	/**
+	 * @return true if one or more certificates have been explicitly trusted
+	 */
+	public boolean hasTrustedCertificates(){
+		return !trustedCertificates.isEmpty();
 	}
 
         /**
