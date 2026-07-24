@@ -16,9 +16,12 @@
  */
 package org.aarboard.nextcloud.api;
 
+import java.io.IOException;
 import java.time.Duration;
 
 import org.testcontainers.DockerClientFactory;
+import org.testcontainers.containers.Container.ExecResult;
+import org.testcontainers.containers.ExecConfig;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
@@ -107,10 +110,36 @@ public final class NextcloudTestContainer {
                         .forResponsePredicate(body -> body.contains("\"installed\":true"))
                         .withStartupTimeout(Duration.ofMinutes(5)));
         container.start();
+        disablePasswordPolicy();
 
         System.setProperty("nextcloud.api.test.servername", container.getHost());
         System.setProperty("nextcloud.api.test.serverport", String.valueOf(container.getMappedPort(80)));
         System.setProperty("nextcloud.api.test.username", ADMIN_USER);
         System.setProperty("nextcloud.api.test.password", ADMIN_PASSWORD);
+    }
+
+    /**
+     * Disables the {@code password_policy} app so the tests, which create users
+     * with fixed simple passwords, are not rejected by Nextcloud's default
+     * password/complexity/breach checks. Best-effort: a failure here is logged
+     * but does not abort the suite. occ must run as the {@code www-data} user
+     * (it refuses to run as root).
+     */
+    private static void disablePasswordPolicy() {
+        try {
+            ExecResult result = container.execInContainer(ExecConfig.builder()
+                    .user("www-data")
+                    .command(new String[] {"php", "occ", "app:disable", "password_policy"})
+                    .build());
+            if (result.getExitCode() != 0) {
+                System.err.println("Could not disable password_policy app: "
+                        + result.getStdout() + result.getStderr());
+            }
+        } catch (IOException | InterruptedException e) {
+            System.err.println("Could not disable password_policy app: " + e.getMessage());
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+        }
     }
 }
