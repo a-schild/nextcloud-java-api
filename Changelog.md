@@ -68,7 +68,7 @@
     - jaxb-runtime 4.0.6 -> 4.0.9
     - jaxb-impl (test) 3.0.2 -> 4.0.9 (aligned with jaxb-runtime)
   - Updated build plugin: central-publishing-maven-plugin 0.9.0 -> 0.11.0
-  - Fixed Maven coordinates in README usage example (org.aarboard.nextcloud:nextcloud-api)
+  - Fixed Maven coordinates in README usage example (org.aarboard.nextcloud:nextcloud-api) (issue #74)
   - Removed obsolete oss.sonatype.org snapshot badge
   - Added Dependabot configuration for Maven and GitHub Actions
 
