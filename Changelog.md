@@ -1,6 +1,7 @@
 # Changelog for nextcloud api
 
 ## Version 14.2.0
+- 2026-07-26
 - Fix connector lifecycle: closing a `NextcloudConnector` now shuts down the
   shared HTTP client only once the last open connector is closed, so closing
   one connector no longer breaks others still in use (issue #87). Use
