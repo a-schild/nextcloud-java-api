@@ -25,7 +25,7 @@
 		<jaxb-runtime.version>4.0.9</jaxb-runtime.version>
 		<junit.version>4.13.2</junit.version>
 		<!-- Testcontainers 1.21.x is the last line supporting Java 8/11; 2.x requires Java 17 -->
-		<testcontainers.version>1.21.4</testcontainers.version>
+		<testcontainers.version>2.0.5</testcontainers.version>
 		<!-- build environment versions -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
