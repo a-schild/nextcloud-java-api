@@ -51,6 +51,12 @@ try (NextcloudConnector nc = new NextcloudConnector("cloud.example.org", true, 4
 
     String ics = thisWeek.get(0).getData();   // the iCalendar document
 
+    // Pass true to have the server expand recurring events into one VEVENT per
+    // occurrence in the range, instead of one event carrying its RRULE. The
+    // expanded result is a computed view of that range, so don't write it back.
+    List<CalendarEntry> occurrences = nc.getCalendarEntriesInRange("personal",
+            Instant.now(), Instant.now().plus(7, ChronoUnit.DAYS), true);
+
     // Store an entry, and update it only while it still carries this etag
     String etag = nc.putCalendarEntry("personal", "my-event.ics", ics);
     nc.putCalendarEntry("personal", "my-event.ics", changedIcs, etag);

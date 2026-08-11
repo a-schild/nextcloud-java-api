@@ -118,7 +118,9 @@ public class Calendars extends ADavCollectionHandler {
     /**
      * Fetches the events of a calendar overlapping a time range. Recurring
      * events are matched on their expanded occurrences, but are returned as the
-     * stored iCalendar document, not expanded into one entry per occurrence.
+     * stored iCalendar document, i.e. as a single entry carrying its recurrence
+     * rule. Use {@link #getCalendarEntriesInRange(String, Instant, Instant,
+     * boolean)} to have the server expand them instead.
      *
      * @param calendarName name of the calendar
      * @param from         start of the range, inclusive
@@ -126,18 +128,54 @@ public class Calendars extends ADavCollectionHandler {
      * @return the matching entries
      */
     public List<CalendarEntry> getCalendarEntriesInRange(String calendarName, Instant from, Instant to) {
+        return getCalendarEntriesInRange(calendarName, from, to, false);
+    }
+
+    /**
+     * Fetches the events of a calendar overlapping a time range, optionally
+     * expanding recurring events.
+     * <p>
+     * With {@code expandRecurrences} set, the server resolves each recurring
+     * event into one {@code VEVENT} per occurrence falling in the range: the
+     * recurrence rule is gone, every occurrence carries its own
+     * {@code RECURRENCE-ID} and start/end, overridden occurrences are already
+     * applied, and all times are returned in UTC. That makes the result
+     * directly usable for displaying a period, but it is a computed view for
+     * this range only - it is not the stored resource, so it must not be
+     * written back with {@link #putCalendarEntry(String, String, String)}.
+     * <p>
+     * Without it, each matching event is returned once, exactly as stored.
+     *
+     * @param calendarName      name of the calendar
+     * @param from              start of the range, inclusive
+     * @param to                end of the range, exclusive
+     * @param expandRecurrences whether the server should expand recurring
+     *                          events into their individual occurrences
+     * @return the matching entries
+     * @since 14.3
+     */
+    public List<CalendarEntry> getCalendarEntriesInRange(String calendarName, Instant from, Instant to,
+            boolean expandRecurrences) {
         if (from == null || to == null) {
             throw new IllegalArgumentException("Both range bounds must be set");
         }
         if (to.isBefore(from)) {
             throw new IllegalArgumentException("The end of the range must not be before its start");
         }
+        String start = UTC_TIMESTAMP.format(from);
+        String end = UTC_TIMESTAMP.format(to);
+
+        // The expand element is a child of calendar-data, the time-range in the
+        // filter only selects which resources match.
+        String calendarData = expandRecurrences
+                ? "<c:calendar-data><c:expand start=\"" + start + "\" end=\"" + end + "\"/></c:calendar-data>"
+                : "<c:calendar-data/>";
+
         String body = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                 + "<c:calendar-query xmlns:d=\"" + NS_DAV + "\" xmlns:c=\"" + NS_CALDAV + "\">"
-                + "<d:prop><d:getetag/><c:calendar-data/></d:prop>"
+                + "<d:prop><d:getetag/>" + calendarData + "</d:prop>"
                 + "<c:filter><c:comp-filter name=\"VCALENDAR\"><c:comp-filter name=\"VEVENT\">"
-                + "<c:time-range start=\"" + UTC_TIMESTAMP.format(from) + "\""
-                + " end=\"" + UTC_TIMESTAMP.format(to) + "\"/>"
+                + "<c:time-range start=\"" + start + "\" end=\"" + end + "\"/>"
                 + "</c:comp-filter></c:comp-filter></c:filter>"
                 + "</c:calendar-query>";
 

@@ -5,6 +5,9 @@
   - Calendars: list calendars, read all entries of a calendar, query the events
     overlapping a time range, read a single entry, create/replace and delete
     entries, and create and delete calendars
+  - The time-range query optionally lets the server expand recurring events
+    into one occurrence per repetition (`getCalendarEntriesInRange(..., true)`)
+    instead of returning the stored event with its recurrence rule
   - Address books: list address books, read all contacts, read a single
     contact, create/replace and delete contacts, and create and delete address
     books

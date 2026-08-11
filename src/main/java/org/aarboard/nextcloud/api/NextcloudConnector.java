@@ -314,7 +314,8 @@ public class NextcloudConnector implements AutoCloseable {
     }
 
     /**
-     * Fetches the events of a calendar overlapping a time range.
+     * Fetches the events of a calendar overlapping a time range. Recurring
+     * events are returned once, as stored, carrying their recurrence rule.
      *
      * @param calendarName name of the calendar
      * @param from         start of the range, inclusive
@@ -325,6 +326,25 @@ public class NextcloudConnector implements AutoCloseable {
     public java.util.List<CalendarEntry> getCalendarEntriesInRange(String calendarName,
             java.time.Instant from, java.time.Instant to) {
         return cal.getCalendarEntriesInRange(calendarName, from, to);
+    }
+
+    /**
+     * Fetches the events of a calendar overlapping a time range, optionally
+     * having the server expand recurring events into one occurrence each.
+     * <p>
+     * An expanded result is a computed view of that range, not the stored
+     * resource, so it must not be written back.
+     *
+     * @param calendarName      name of the calendar
+     * @param from              start of the range, inclusive
+     * @param to                end of the range, exclusive
+     * @param expandRecurrences whether recurring events should be expanded
+     * @return the matching entries
+     * @since 14.3
+     */
+    public java.util.List<CalendarEntry> getCalendarEntriesInRange(String calendarName,
+            java.time.Instant from, java.time.Instant to, boolean expandRecurrences) {
+        return cal.getCalendarEntriesInRange(calendarName, from, to, expandRecurrences);
     }
 
     /**

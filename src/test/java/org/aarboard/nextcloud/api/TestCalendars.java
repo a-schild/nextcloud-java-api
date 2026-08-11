@@ -46,6 +46,7 @@ public class TestCalendars {
     private static final String CALENDAR = "api-test-calendar";
     private static final String DISPLAY_NAME = "API test calendar";
     private static final String ENTRY = "api-test-event-1.ics";
+    private static final String RECURRING_ENTRY = "api-test-event-recurring.ics";
 
     /** The event starts here, so a range around it must match and one after it must not. */
     private static final Instant EVENT_START = Instant.parse("2026-08-12T09:00:00Z");
@@ -63,6 +64,22 @@ public class TestCalendars {
                 + "DTSTART:20260812T090000Z\r\n"
                 + "DTEND:20260812T100000Z\r\n"
                 + "SUMMARY:" + summary + "\r\n"
+                + "END:VEVENT\r\n"
+                + "END:VCALENDAR\r\n";
+    }
+
+    /** A daily event with exactly three occurrences, starting at EVENT_START. */
+    private static String recurringICalendar() {
+        return "BEGIN:VCALENDAR\r\n"
+                + "VERSION:2.0\r\n"
+                + "PRODID:-//nextcloud-java-api//integration test//EN\r\n"
+                + "BEGIN:VEVENT\r\n"
+                + "UID:api-test-event-recurring\r\n"
+                + "DTSTAMP:20260811T080000Z\r\n"
+                + "DTSTART:20260812T090000Z\r\n"
+                + "DTEND:20260812T100000Z\r\n"
+                + "RRULE:FREQ=DAILY;COUNT=3\r\n"
+                + "SUMMARY:API test recurring event\r\n"
                 + "END:VEVENT\r\n"
                 + "END:VCALENDAR\r\n";
     }
@@ -147,8 +164,58 @@ public class TestCalendars {
         assertTrue("No event should be in a range after it", miss.isEmpty());
     }
 
+    /**
+     * A daily event repeating three times must come back as one stored resource
+     * when recurrences are not expanded, and as three occurrences when they are.
+     */
     @Test
-    public void t05_updateWithEtagPrecondition() {
+    public void t05_expandRecurringEvent() {
+        if (serverName == null) {
+            return;
+        }
+        _nc.putCalendarEntry(CALENDAR, RECURRING_ENTRY, recurringICalendar());
+        try {
+            Instant from = EVENT_START.minus(1, ChronoUnit.DAYS);
+            Instant to = EVENT_START.plus(10, ChronoUnit.DAYS);
+
+            List<CalendarEntry> stored = _nc.getCalendarEntriesInRange(CALENDAR, from, to, false);
+            CalendarEntry storedRecurring = stored.stream()
+                    .filter(e -> RECURRING_ENTRY.equals(e.getName()))
+                    .findFirst().orElse(null);
+            assertNotNull("The recurring event should match the range", storedRecurring);
+            assertTrue("Unexpanded, the recurrence rule must still be there",
+                    storedRecurring.getData().contains("RRULE:"));
+            assertEquals("Unexpanded, the event is a single resource",
+                    1, countOccurrences(storedRecurring.getData(), "BEGIN:VEVENT"));
+
+            List<CalendarEntry> expanded = _nc.getCalendarEntriesInRange(CALENDAR, from, to, true);
+            CalendarEntry expandedRecurring = expanded.stream()
+                    .filter(e -> RECURRING_ENTRY.equals(e.getName()))
+                    .findFirst().orElse(null);
+            assertNotNull("The recurring event should also match when expanding", expandedRecurring);
+            assertEquals("Expanded, each occurrence is its own VEVENT",
+                    3, countOccurrences(expandedRecurring.getData(), "BEGIN:VEVENT"));
+            assertTrue("Expanded occurrences carry a RECURRENCE-ID",
+                    expandedRecurring.getData().contains("RECURRENCE-ID"));
+            assertFalse("Expanded, the recurrence rule is resolved away",
+                    expandedRecurring.getData().contains("RRULE:"));
+        } finally {
+            _nc.deleteCalendarEntry(CALENDAR, RECURRING_ENTRY);
+        }
+    }
+
+    private static int countOccurrences(String haystack, String needle) {
+        int count = 0;
+        int index = haystack.indexOf(needle);
+        while (index >= 0) {
+            count++;
+            index = haystack.indexOf(needle, index + needle.length());
+        }
+        return count;
+    }
+
+    @Test
+    public void t06_updateWithEtagPrecondition() {
         if (serverName == null) {
             return;
         }
@@ -171,7 +238,7 @@ public class TestCalendars {
     }
 
     @Test
-    public void t06_deleteEntry() {
+    public void t07_deleteEntry() {
         if (serverName == null) {
             return;
         }
@@ -182,7 +249,7 @@ public class TestCalendars {
     }
 
     @Test
-    public void t07_deleteCalendar() {
+    public void t08_deleteCalendar() {
         if (serverName == null) {
             return;
         }
@@ -193,7 +260,7 @@ public class TestCalendars {
     }
 
     @Test
-    public void t08_rejectsNameWithPathSeparator() {
+    public void t09_rejectsNameWithPathSeparator() {
         if (serverName == null) {
             return;
         }
