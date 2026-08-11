@@ -168,6 +168,16 @@
 		<url>https://github.com/a-schild/nextcloud-java-api</url>
 		<tag>HEAD</tag>
 	</scm>
+	<distributionManagement>
+		<!-- Only used for -SNAPSHOT versions; releases go through the Central
+		     Portal via the central-publishing-maven-plugin. The id must match the
+		     server id the publish workflows set up (central). -->
+		<snapshotRepository>
+			<id>central</id>
+			<name>Central Portal Snapshots</name>
+			<url>https://central.sonatype.com/repository/maven-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 	<profiles>
 		<profile>
 			<id>release</id>
