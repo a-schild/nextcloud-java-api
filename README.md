@@ -1,7 +1,8 @@
 # nextcloud-java-api
 Java api library to access nextcloud features from java applications
 
-![Maven Central](https://img.shields.io/maven-central/v/org.aarboard.nextcloud/nextcloud-api)
+[![Maven Central](https://img.shields.io/maven-central/v/org.aarboard.nextcloud/nextcloud-api?label=maven%20central)](https://central.sonatype.com/artifact/org.aarboard.nextcloud/nextcloud-api)
+[![Snapshot](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fcentral.sonatype.com%2Frepository%2Fmaven-snapshots%2Forg%2Faarboard%2Fnextcloud%2Fnextcloud-api%2Fmaven-metadata.xml&label=snapshot&color=orange)](https://central.sonatype.com/repository/maven-snapshots/org/aarboard/nextcloud/nextcloud-api/)
 
 ## What is the nextcloud api library?
 > Use nextcloud features from inside your java application
