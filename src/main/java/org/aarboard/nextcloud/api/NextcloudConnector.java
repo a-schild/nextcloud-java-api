@@ -35,6 +35,12 @@ import org.aarboard.nextcloud.api.filesharing.SharesXMLAnswer;
 import org.aarboard.nextcloud.api.filesharing.RemoteShare;
 import org.aarboard.nextcloud.api.filesharing.SingleShareXMLAnswer;
 import org.aarboard.nextcloud.api.groupfolders.GroupFolderInfo;
+import org.aarboard.nextcloud.api.calendar.Calendar;
+import org.aarboard.nextcloud.api.calendar.CalendarEntry;
+import org.aarboard.nextcloud.api.calendar.Calendars;
+import org.aarboard.nextcloud.api.contacts.AddressBook;
+import org.aarboard.nextcloud.api.contacts.AddressBooks;
+import org.aarboard.nextcloud.api.contacts.Contact;
 import org.aarboard.nextcloud.api.groupfolders.GroupFolders;
 import org.aarboard.nextcloud.api.provisioning.*;
 import org.aarboard.nextcloud.api.systemtags.SystemTags;
@@ -66,6 +72,8 @@ public class NextcloudConnector implements AutoCloseable {
     private final Files fl;
     private final GroupFolders gf;
     private final SystemTags st;
+    private final Calendars cal;
+    private final AddressBooks ab;
 
     /**
      * 
@@ -130,6 +138,8 @@ public class NextcloudConnector implements AutoCloseable {
             fl = new Files(this.serverConfig);
             gf = new GroupFolders(this.serverConfig);
             st = new SystemTags(this.serverConfig);
+            cal = new Calendars(this.serverConfig);
+            ab = new AddressBooks(this.serverConfig);
             OPEN_INSTANCES.incrementAndGet();
 
         } catch (MalformedURLException e) {
@@ -154,6 +164,8 @@ public class NextcloudConnector implements AutoCloseable {
         fl = new Files(this.serverConfig);
         gf = new GroupFolders(this.serverConfig);
         st = new SystemTags(this.serverConfig);
+        cal = new Calendars(this.serverConfig);
+        ab = new AddressBooks(this.serverConfig);
         OPEN_INSTANCES.incrementAndGet();
     }
 
@@ -278,6 +290,210 @@ public class NextcloudConnector implements AutoCloseable {
      */
     public boolean declinePendingRemoteShare(int remoteShareId) {
         return fc.declinePendingRemoteShare(remoteShareId);
+    }
+
+    /**
+     * Lists the calendars of the authenticated user.
+     *
+     * @return the user's calendars
+     * @since 14.3
+     */
+    public java.util.List<Calendar> listCalendars() {
+        return cal.listCalendars();
+    }
+
+    /**
+     * Fetches every entry of a calendar as a raw iCalendar document.
+     *
+     * @param calendarName name of the calendar
+     * @return all entries of the calendar
+     * @since 14.3
+     */
+    public java.util.List<CalendarEntry> getCalendarEntries(String calendarName) {
+        return cal.getCalendarEntries(calendarName);
+    }
+
+    /**
+     * Fetches the events of a calendar overlapping a time range.
+     *
+     * @param calendarName name of the calendar
+     * @param from         start of the range, inclusive
+     * @param to           end of the range, exclusive
+     * @return the matching entries
+     * @since 14.3
+     */
+    public java.util.List<CalendarEntry> getCalendarEntriesInRange(String calendarName,
+            java.time.Instant from, java.time.Instant to) {
+        return cal.getCalendarEntriesInRange(calendarName, from, to);
+    }
+
+    /**
+     * Fetches a single calendar entry.
+     *
+     * @param calendarName name of the calendar
+     * @param entryName    name of the entry, or its href
+     * @return the entry, or {@code null} if it does not exist
+     * @since 14.3
+     */
+    public CalendarEntry getCalendarEntry(String calendarName, String entryName) {
+        return cal.getCalendarEntry(calendarName, entryName);
+    }
+
+    /**
+     * Creates a calendar entry, or replaces it if one of that name exists.
+     *
+     * @param calendarName name of the calendar
+     * @param entryName    name of the entry, conventionally the event UID
+     *                     followed by {@code .ics}
+     * @param iCalendar    the iCalendar document to store
+     * @return the etag of the stored entry
+     * @since 14.3
+     */
+    public String putCalendarEntry(String calendarName, String entryName, String iCalendar) {
+        return cal.putCalendarEntry(calendarName, entryName, iCalendar);
+    }
+
+    /**
+     * Replaces a calendar entry only while it still carries the given etag.
+     *
+     * @param calendarName name of the calendar
+     * @param entryName    name of the entry
+     * @param iCalendar    the iCalendar document to store
+     * @param etag         the etag the stored entry must still have
+     * @return the etag of the stored entry
+     * @since 14.3
+     */
+    public String putCalendarEntry(String calendarName, String entryName, String iCalendar, String etag) {
+        return cal.putCalendarEntry(calendarName, entryName, iCalendar, etag);
+    }
+
+    /**
+     * Deletes a calendar entry.
+     *
+     * @param calendarName name of the calendar
+     * @param entryName    name of the entry, or its href
+     * @since 14.3
+     */
+    public void deleteCalendarEntry(String calendarName, String entryName) {
+        cal.deleteCalendarEntry(calendarName, entryName);
+    }
+
+    /**
+     * Creates a calendar.
+     *
+     * @param calendarName name of the calendar as it appears in the URL
+     * @param displayName  name shown in the UI, may be {@code null}
+     * @param color        HTML colour code, e.g. {@code #FF0000}, may be
+     *                     {@code null}
+     * @since 14.3
+     */
+    public void createCalendar(String calendarName, String displayName, String color) {
+        cal.createCalendar(calendarName, displayName, color);
+    }
+
+    /**
+     * Deletes a calendar and all of its entries.
+     *
+     * @param calendarName name of the calendar
+     * @since 14.3
+     */
+    public void deleteCalendar(String calendarName) {
+        cal.deleteCalendar(calendarName);
+    }
+
+    /**
+     * Lists the address books of the authenticated user.
+     *
+     * @return the user's address books
+     * @since 14.3
+     */
+    public java.util.List<AddressBook> listAddressBooks() {
+        return ab.listAddressBooks();
+    }
+
+    /**
+     * Fetches every contact of an address book as a raw vCard document.
+     *
+     * @param addressBookName name of the address book
+     * @return all contacts of the address book
+     * @since 14.3
+     */
+    public java.util.List<Contact> getContacts(String addressBookName) {
+        return ab.getContacts(addressBookName);
+    }
+
+    /**
+     * Fetches a single contact.
+     *
+     * @param addressBookName name of the address book
+     * @param contactName     name of the contact resource, or its href
+     * @return the contact, or {@code null} if it does not exist
+     * @since 14.3
+     */
+    public Contact getContact(String addressBookName, String contactName) {
+        return ab.getContact(addressBookName, contactName);
+    }
+
+    /**
+     * Creates a contact, or replaces it if one of that name exists.
+     *
+     * @param addressBookName name of the address book
+     * @param contactName     name of the contact resource, conventionally the
+     *                        vCard UID followed by {@code .vcf}
+     * @param vCard           the vCard document to store
+     * @return the etag of the stored contact
+     * @since 14.3
+     */
+    public String putContact(String addressBookName, String contactName, String vCard) {
+        return ab.putContact(addressBookName, contactName, vCard);
+    }
+
+    /**
+     * Replaces a contact only while it still carries the given etag.
+     *
+     * @param addressBookName name of the address book
+     * @param contactName     name of the contact resource
+     * @param vCard           the vCard document to store
+     * @param etag            the etag the stored contact must still have
+     * @return the etag of the stored contact
+     * @since 14.3
+     */
+    public String putContact(String addressBookName, String contactName, String vCard, String etag) {
+        return ab.putContact(addressBookName, contactName, vCard, etag);
+    }
+
+    /**
+     * Deletes a contact.
+     *
+     * @param addressBookName name of the address book
+     * @param contactName     name of the contact resource, or its href
+     * @since 14.3
+     */
+    public void deleteContact(String addressBookName, String contactName) {
+        ab.deleteContact(addressBookName, contactName);
+    }
+
+    /**
+     * Creates an address book.
+     *
+     * @param addressBookName name of the address book as it appears in the URL
+     * @param displayName     name shown in the UI, may be {@code null}
+     * @param description     description of the address book, may be
+     *                        {@code null}
+     * @since 14.3
+     */
+    public void createAddressBook(String addressBookName, String displayName, String description) {
+        ab.createAddressBook(addressBookName, displayName, description);
+    }
+
+    /**
+     * Deletes an address book and all of its contacts.
+     *
+     * @param addressBookName name of the address book
+     * @since 14.3
+     */
+    public void deleteAddressBook(String addressBookName) {
+        ab.deleteAddressBook(addressBookName);
     }
 
     /**
