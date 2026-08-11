@@ -1,0 +1,44 @@
+name: Publish SNAPSHOT to Maven Central snapshots
+
+# Manual only: pick the branch to publish from in the "Run workflow" dialog, or
+#   gh workflow run publish-snapshot.yaml --ref <branch>
+# Snapshots may be overwritten and are removed by Sonatype after about 90 days,
+# so this is for letting people try a build, not for permanent artifacts.
+on:
+  workflow_dispatch:
+
+jobs:
+  publish-snapshot:
+    name: Publish snapshot
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Maven Central Repository
+        uses: actions/setup-java@v5
+        with:
+          java-version: '11'
+          distribution: 'zulu'
+          server-id: central
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_SIGNING_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+      # A release version published here would land in the snapshot repository
+      # instead of going through the Central Portal release flow, so refuse it.
+      - name: Verify the version is a SNAPSHOT
+        run: |
+          VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
+          echo "Project version: $VERSION"
+          case "$VERSION" in
+            *-SNAPSHOT) echo "OK, publishing $VERSION" ;;
+            *) echo "::error::Refusing to publish non-SNAPSHOT version $VERSION"; exit 1 ;;
+          esac
+
+      - name: Publish snapshot
+        run: mvn -P release --batch-mode deploy -DskipTests
+        env:
+          MAVEN_USERNAME: ${{ secrets.CENTRAL_TOKEN_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_SIGNING_KEY_PASSWORD }}
