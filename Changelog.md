@@ -1,5 +1,26 @@
 # Changelog for nextcloud api
 
+## Version 14.3.0 (unreleased)
+- Add calendar (CalDAV) and contacts (CardDAV) support (issue #59):
+  - Calendars: list calendars, read all entries of a calendar, query the events
+    overlapping a time range, read a single entry, create/replace and delete
+    entries, and create and delete calendars
+  - The time-range query optionally lets the server expand recurring events
+    into one occurrence per repetition (`getCalendarEntriesInRange(..., true)`)
+    instead of returning the stored event with its recurrence rule
+  - Address books: list address books, read all contacts, read a single
+    contact, create/replace and delete contacts, and create and delete address
+    books
+  - Entries are exchanged as raw iCalendar/vCard documents, so the library
+    gains no iCalendar or vCard dependency and callers stay free to parse them
+    with the library of their choice (e.g. ical4j or ez-vcard)
+  - Updates accept the etag of the entry they are based on, so a concurrent
+    change is reported instead of silently overwritten
+  - DAV paths use the internal user id rather than the login name, so they are
+    also correct when the two differ (external user backends)
+- `NextcloudApiException` gained a `(String message, Throwable cause)`
+  constructor so failures can be reported with both context and cause
+
 ## Version 14.2.1
 - 2026-08-11
 - Updated dependencies:
