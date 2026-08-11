@@ -23,6 +23,29 @@ Java api library to access nextcloud features from java applications
 	</dependency>
 ```
 
+### Trying a pre-release snapshot
+
+Unreleased work is published as a `-SNAPSHOT` to the Central Portal snapshot
+repository so it can be tried before a release. Snapshots are overwritten by
+later builds and Sonatype removes them after about 90 days, so don't depend on
+one from a production build.
+
+```xml
+<repositories>
+    <repository>
+        <id>central-snapshots</id>
+        <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+        <snapshots><enabled>true</enabled></snapshots>
+    </repository>
+</repositories>
+
+<dependency>
+    <groupId>org.aarboard.nextcloud</groupId>
+    <artifactId>nextcloud-api</artifactId>
+    <version>14.3.0-SNAPSHOT</version>
+</dependency>
+```
+
 - The 14.x versions require Java 11+,as the jakarta.xml binding requires Java 11+
 - The 13.x versions are now using the jakarta.xml binding stuff, to prevent problems with Java 11+
   No API changes have been made in v13, but at some places the XML stuff is exposed
