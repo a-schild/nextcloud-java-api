@@ -1,5 +1,13 @@
 # Changelog for nextcloud api
 
+## Version 14.2.1 (unreleased)
+- Updated dependencies:
+  - commons-codec 1.22.0 -> 1.22.1
+- Updated build plugins:
+  - cyclonedx-maven-plugin 2.9.2 -> 2.9.3
+  - jacoco-maven-plugin 0.8.12 -> 0.8.15
+- CI: actions/upload-artifact 4 -> 7
+
 ## Version 14.2.0
 - 2026-07-26
 - Fix connector lifecycle: closing a `NextcloudConnector` now shuts down the
