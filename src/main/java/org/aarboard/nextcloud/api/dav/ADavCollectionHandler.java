@@ -64,6 +64,7 @@ public abstract class ADavCollectionHandler extends AWebdavHandler {
     protected static final String NS_APPLE_ICAL = "http://apple.com/ns/ical/";
 
     protected static final QName PROP_DISPLAYNAME = new QName(NS_DAV, "displayname", "d");
+    protected static final QName PROP_RESOURCETYPE = new QName(NS_DAV, "resourcetype", "d");
     protected static final QName PROP_CTAG = new QName(NS_CALENDARSERVER, "getctag", "cs");
 
     private static final ContentType XML_CONTENT_TYPE =
@@ -147,6 +148,10 @@ public abstract class ADavCollectionHandler extends AWebdavHandler {
         Set<QName> props = new java.util.HashSet<>(extraProps);
         props.add(PROP_DISPLAYNAME);
         props.add(PROP_CTAG);
+        // A PROPFIND naming specific properties returns only those, so the
+        // resource type has to be asked for explicitly - without it every
+        // collection would look like a non-calendar and be filtered out below.
+        props.add(PROP_RESOURCETYPE);
 
         String homeUrl = getHomeUrl();
         Sardine sardine = buildAuthSardine();
