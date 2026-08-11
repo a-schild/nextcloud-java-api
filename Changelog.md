@@ -3,6 +3,8 @@
 ## Version 14.2.1 (unreleased)
 - Updated dependencies:
   - commons-codec 1.22.0 -> 1.22.1
+  - testcontainers (test) 1.21.4 -> 2.0.5; verified to run on the JDK 11
+    baseline, the previous "2.x requires Java 17" note was incorrect
 - Updated build plugins:
   - cyclonedx-maven-plugin 2.9.2 -> 2.9.3
   - jacoco-maven-plugin 0.8.12 -> 0.8.15
