@@ -1,6 +1,7 @@
 # Changelog for nextcloud api
 
-## Version 14.2.1 (unreleased)
+## Version 14.2.1
+- 2026-08-11
 - Updated dependencies:
   - commons-codec 1.22.0 -> 1.22.1
   - testcontainers (test) 1.21.4 -> 2.0.5; verified to run on the JDK 11
