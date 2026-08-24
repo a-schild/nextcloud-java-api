@@ -1,6 +1,7 @@
 # Changelog for nextcloud api
 
 ## Version 14.2.2
+- 2026-08-24
 - Updated dependencies:
   - jackson-databind 2.22.1 -> 2.22.2
   - jakarta.annotation-api 2.1.1 -> 3.0.0; the Jakarta EE 11 release is still
