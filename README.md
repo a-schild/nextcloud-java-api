@@ -20,7 +20,7 @@ Java api library to access nextcloud features from java applications
 	<dependency>
 	    <groupId>org.aarboard.nextcloud</groupId>
 	    <artifactId>nextcloud-api</artifactId>
-	    <version>14.2.1</version>
+	    <version>14.2.2</version>
 	</dependency>
 ```
 

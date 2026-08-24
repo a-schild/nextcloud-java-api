@@ -21,6 +21,17 @@
 - `NextcloudApiException` gained a `(String message, Throwable cause)`
   constructor so failures can be reported with both context and cause
 
+## Version 14.2.2
+- 2026-08-24
+- Updated dependencies:
+  - jackson-databind 2.22.1 -> 2.22.2
+  - jakarta.annotation-api 2.1.1 -> 3.0.0; the Jakarta EE 11 release is still
+    built for Java 11, so it keeps the JDK 11 baseline
+- Build: dropped the unused `nexus-staging-maven-plugin.version` property
+  (publishing goes through the central-publishing-maven-plugin)
+- Staying on Jackson 2.x: Jackson 3.x requires Java 17, which would break the
+  JDK 11 baseline
+
 ## Version 14.2.1
 - 2026-08-11
 - Updated dependencies:
