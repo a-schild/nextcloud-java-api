@@ -15,7 +15,7 @@
 		<commons-io.version>2.22.0</commons-io.version>
 		<commons-lang3.version>3.20.0</commons-lang3.version>
 		<commons-codec.version>1.22.1</commons-codec.version>
-		<jackson.version>2.22.1</jackson.version>
+		<jackson.version>2.22.2</jackson.version>
 		<jakarta.xml.bind-api.version>4.0.5</jakarta.xml.bind-api.version>
 		<jakarta-annotation-api.version>2.1.1</jakarta-annotation-api.version>
 		<jaxb-impl.version>4.0.9</jaxb-impl.version>
