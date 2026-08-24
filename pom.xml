@@ -17,7 +17,12 @@
 		<commons-codec.version>1.22.1</commons-codec.version>
 		<jackson.version>2.22.2</jackson.version>
 		<jakarta.xml.bind-api.version>4.0.5</jakarta.xml.bind-api.version>
-		<jakarta-annotation-api.version>2.1.1</jakarta-annotation-api.version>
+		<!-- Jakarta Annotations 3.0 is the Jakarta EE 11 release but is still
+		     built for Java 11 (verified: bytecode major 55 and an OSGi
+		     Require-Capability of osgi.ee=JavaSE version=11), so it runs on our
+		     JDK 11 baseline. Versus 2.1.1 it only drops the deprecated
+		     jakarta.annotation.ManagedBean. -->
+		<jakarta-annotation-api.version>3.0.0</jakarta-annotation-api.version>
 		<jaxb-impl.version>4.0.9</jaxb-impl.version>
 		<!-- test dependencies versions -->
 		<skipTests>true</skipTests>
@@ -38,7 +43,6 @@
 		<buildnumber-maven-plugin.version>3.3.0</buildnumber-maven-plugin.version>
 		<templating-maven-plugin.version>3.1.0</templating-maven-plugin.version>
 		<maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
-		<nexus-staging-maven-plugin.version>1.7.0</nexus-staging-maven-plugin.version>
 		<central-publishing-maven-plugin.version>0.11.0</central-publishing-maven-plugin.version>
 		<maven-source-plugin.version>3.4.0</maven-source-plugin.version>
 		<maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
