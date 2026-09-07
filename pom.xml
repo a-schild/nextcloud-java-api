@@ -36,7 +36,7 @@
 		<testcontainers.version>2.0.5</testcontainers.version>
 		<!-- build environment versions -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
+		<maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
 		<maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
 		<maven-release-plugin.version>3.3.1</maven-release-plugin.version>
 		<maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
@@ -47,7 +47,7 @@
 		<maven-source-plugin.version>3.4.0</maven-source-plugin.version>
 		<maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
 		<maven-scm-provider-gitexe.version>2.2.1</maven-scm-provider-gitexe.version>
-		<maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
+		<maven-surefire-plugin.version>3.6.0</maven-surefire-plugin.version>
 		<cyclonedx-maven-plugin.version>2.9.3</cyclonedx-maven-plugin.version>
 		<jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
 		<maven.compiler.source>11</maven.compiler.source>
