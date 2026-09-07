@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.stream.Collectors;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -40,6 +41,9 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +65,8 @@ public abstract class AWebdavHandler
     private WebDavPathResolver resolver;
 
     private String nextcloudServerVersion;
+
+    private String currentUserId;
 
     protected AWebdavHandler(ServerConfig serverConfig)
     {
@@ -189,6 +195,83 @@ public abstract class AWebdavHandler
     protected ServerConfig getServerConfig()
     {
         return this.serverConfig;
+    }
+
+    /**
+     * Resolves the internal user id of the authenticated user, which is the one
+     * appearing in DAV paths. This is not necessarily the login name: with
+     * external user backends the two can differ, and the DAV endpoints only
+     * accept the internal id. The value is resolved once and then cached.
+     *
+     * @return the internal user id of the authenticated user
+     * @since 14.3
+     */
+    protected String getCurrentUserId()
+    {
+        if (null == this.currentUserId)
+        {
+            ProvisionConnector pc = new ProvisionConnector(this.serverConfig);
+            this.currentUserId = pc.getCurrentUser().getId();
+        }
+        return this.currentUserId;
+    }
+
+    /**
+     * Builds the value for the {@code Authorization} header matching the
+     * configured authentication method.
+     *
+     * @return the authorization header value
+     * @since 14.3
+     */
+    protected String authorizationHeader()
+    {
+        if (this.serverConfig.getAuthenticationConfig().usesBasicAuthentication())
+        {
+            String credentials = this.serverConfig.getUserName() + ":"
+                    + this.serverConfig.getAuthenticationConfig().getPassword();
+            return "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
+        }
+        return "Bearer " + this.serverConfig.getAuthenticationConfig().getBearerToken();
+    }
+
+    /**
+     * Builds a synchronous HTTP client honouring the configured certificate
+     * trust settings. Used for the DAV verbs Sardine does not expose.
+     *
+     * @return a new client the caller is responsible for closing
+     * @since 14.3
+     */
+    protected CloseableHttpClient buildSyncClient()
+    {
+        HttpClientBuilder builder = HttpClients.custom();
+        SSLContext sslContext = SslUtils.buildSslContext(this.serverConfig);
+        if (sslContext != null)
+        {
+            builder.setSSLContext(sslContext);
+            if (SslUtils.isHostnameVerificationDisabled(this.serverConfig))
+            {
+                builder.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);
+            }
+        }
+        return builder.build();
+    }
+
+    /**
+     * Shuts a Sardine connector down, logging but not propagating failures.
+     *
+     * @param sardine the connector to shut down
+     * @since 14.3
+     */
+    protected void shutdownSardine(Sardine sardine)
+    {
+        try
+        {
+            sardine.shutdown();
+        }
+        catch (IOException ex)
+        {
+            LOG.warn(ERROR_CLOSING, ex);
+        }
     }
 
     protected String getWebdavPathPrefix()
