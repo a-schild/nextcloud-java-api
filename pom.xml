@@ -10,7 +10,7 @@
 		<httpcore.version>4.4.16</httpcore.version>
 		<httpasyncclient.version>4.1.5</httpasyncclient.version>
 		<httpclient.version>4.5.14</httpclient.version>
-		<slf4j-api.version>2.0.18</slf4j-api.version>
+		<slf4j-api.version>2.0.19</slf4j-api.version>
 		<sardine.version>5.13</sardine.version>
 		<commons-io.version>2.22.0</commons-io.version>
 		<commons-lang3.version>3.20.0</commons-lang3.version>
