@@ -20,29 +20,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.sardine.DavResource;
 import com.github.sardine.Sardine;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.net.ssl.SSLContext;
 import javax.xml.namespace.QName;
 import org.aarboard.nextcloud.api.ServerConfig;
 import org.aarboard.nextcloud.api.exception.NextcloudApiException;
-import org.aarboard.nextcloud.api.utils.SslUtils;
 import org.aarboard.nextcloud.api.webdav.AWebdavHandler;
 import org.apache.http.Header;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
 
 /**
  * Access to Nextcloud <a href="https://docs.nextcloud.com/server/latest/developer_manual/client_apis/WebDAV/tags.html">system
@@ -212,32 +205,4 @@ public class SystemTags extends AWebdavHandler {
         return "true".equalsIgnoreCase(value) || "1".equals(value);
     }
 
-    private String authorizationHeader() {
-        if (getServerConfig().getAuthenticationConfig().usesBasicAuthentication()) {
-            String credentials = getServerConfig().getUserName() + ":"
-                    + getServerConfig().getAuthenticationConfig().getPassword();
-            return "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
-        }
-        return "Bearer " + getServerConfig().getAuthenticationConfig().getBearerToken();
-    }
-
-    private CloseableHttpClient buildSyncClient() {
-        HttpClientBuilder builder = HttpClients.custom();
-        SSLContext sslContext = SslUtils.buildSslContext(getServerConfig());
-        if (sslContext != null) {
-            builder.setSSLContext(sslContext);
-            if (SslUtils.isHostnameVerificationDisabled(getServerConfig())) {
-                builder.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);
-            }
-        }
-        return builder.build();
-    }
-
-    private void shutdownSardine(Sardine sardine) {
-        try {
-            sardine.shutdown();
-        } catch (IOException e) {
-            // best effort
-        }
-    }
 }
