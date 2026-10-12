@@ -13,8 +13,8 @@
 		<slf4j-api.version>2.0.20</slf4j-api.version>
 		<sardine.version>5.13</sardine.version>
 		<commons-io.version>2.22.0</commons-io.version>
-		<commons-lang3.version>3.20.0</commons-lang3.version>
-		<commons-codec.version>1.22.1</commons-codec.version>
+		<commons-lang3.version>3.21.0</commons-lang3.version>
+		<commons-codec.version>1.23.0</commons-codec.version>
 		<jackson.version>2.22.3</jackson.version>
 		<jakarta.xml.bind-api.version>4.0.5</jakarta.xml.bind-api.version>
 		<!-- Jakarta Annotations 3.0 is the Jakarta EE 11 release but is still
