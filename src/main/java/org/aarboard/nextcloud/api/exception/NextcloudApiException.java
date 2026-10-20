@@ -10,4 +10,13 @@ public class NextcloudApiException extends RuntimeException {
     public NextcloudApiException(String message) {
         super(message);
     }
+
+    /**
+     * @param message describes what failed
+     * @param cause   the underlying failure
+     * @since 14.3
+     */
+    public NextcloudApiException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
